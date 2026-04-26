@@ -6,8 +6,8 @@ import {
   ChevronDown, ChevronUp,
   Navigation, Layout, Square, Monitor, BarChart2
 } from 'lucide-react'
-import { useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
+import api from '../api/axios'
 
 /* ── Storage / Broadcast ── */
 const THEME_KEY    = 'roshd_theme_config'
@@ -273,6 +273,11 @@ export default function Settings() {
     setSaved(true)
     toast.success('Theme saved & pushed to client dashboard!')
     setTimeout(()=>setSaved(false), 3000)
+    api.post('/admin/log-event', {
+      action: 'config.update',
+      entityType: 'config',
+      detail: 'Client dashboard theme colors updated by admin',
+    }).catch(() => {})
   }
 
   const handleReset = () => {

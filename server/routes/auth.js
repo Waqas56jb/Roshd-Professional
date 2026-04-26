@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { supabaseAdmin } = require('../supabase');
+const { logActivity } = require('../activityLog');
 
 const router = express.Router();
 
@@ -43,6 +44,17 @@ router.post(
         .single();
 
       if (error) throw error;
+
+      await logActivity({
+        actorId:    data.id,
+        actorName:  data.name,
+        actorRole:  'user',
+        action:     'user.register',
+        entityType: 'user',
+        entityId:   data.id,
+        detail:     `New user registered: ${data.name} (${data.email})`,
+      });
+
       const token = signToken(data);
       res.status(201).json({ token, user: { id: data.id, name: data.name, email: data.email, role: data.role } });
     } catch (err) {
@@ -74,6 +86,16 @@ router.post(
 
       const valid = await bcrypt.compare(password, user.password_hash);
       if (!valid) return res.status(401).json({ error: 'Invalid email or password' });
+
+      await logActivity({
+        actorId:    user.id,
+        actorName:  user.name,
+        actorRole:  user.role,
+        action:     'user.login',
+        entityType: 'user',
+        entityId:   user.id,
+        detail:     `${user.name} signed in (${user.role})`,
+      });
 
       const token = signToken(user);
       res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });

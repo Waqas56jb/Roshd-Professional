@@ -7,6 +7,7 @@ import {
   Zap, Star, Target, Users, Settings2, Eye, EyeOff
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import api from '../api/axios'
 
 const STORAGE_KEY = 'roshd_dashboard_config'
 const CHANNEL_NAME = 'roshd_config'
@@ -295,6 +296,11 @@ export default function DashboardConfig() {
     setSaved(true)
     toast.success('Config saved & pushed to client dashboard!')
     setTimeout(()=>setSaved(false), 3000)
+    api.post('/admin/log-event', {
+      action: 'config.update',
+      entityType: 'config',
+      detail: 'Dashboard KPI and config values updated by admin',
+    }).catch(() => {})
   }
 
   const handleReset = () => {

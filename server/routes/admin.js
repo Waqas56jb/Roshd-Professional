@@ -1,6 +1,7 @@
 const express = require('express');
 const { adminMiddleware } = require('../middleware/auth');
 const { supabaseAdmin } = require('../supabase');
+const { logActivity } = require('../activityLog');
 
 const router = express.Router();
 
@@ -36,6 +37,18 @@ router.put('/users/:id/role', adminMiddleware, async (req, res) => {
       .select('id, name, email, role')
       .single();
     if (error) throw error;
+
+    await logActivity({
+      actorId:    req.user.id,
+      actorName:  req.user.name,
+      actorRole:  req.user.role,
+      action:     'role.update',
+      entityType: 'user',
+      entityId:   req.params.id,
+      detail:     `Role updated: ${data.name} → ${role}`,
+      metadata:   { targetUser: data.name, newRole: role },
+    });
+
     res.json({ user: data });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -45,8 +58,27 @@ router.put('/users/:id/role', adminMiddleware, async (req, res) => {
 // DELETE /api/admin/users/:id
 router.delete('/users/:id', adminMiddleware, async (req, res) => {
   try {
+    // Fetch name before deleting for the log
+    const { data: target } = await supabaseAdmin
+      .from('users')
+      .select('name, email')
+      .eq('id', req.params.id)
+      .single();
+
     const { error } = await supabaseAdmin.from('users').delete().eq('id', req.params.id);
     if (error) throw error;
+
+    await logActivity({
+      actorId:    req.user.id,
+      actorName:  req.user.name,
+      actorRole:  req.user.role,
+      action:     'user.delete',
+      entityType: 'user',
+      entityId:   req.params.id,
+      detail:     `User deleted: ${target?.name || 'Unknown'} (${target?.email || ''})`,
+      metadata:   { deletedUser: target?.name, deletedEmail: target?.email },
+    });
+
     res.json({ message: 'User deleted successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -75,6 +107,18 @@ router.post('/customers', adminMiddleware, async (req, res) => {
       .select()
       .single();
     if (error) throw error;
+
+    await logActivity({
+      actorId:    req.user.id,
+      actorName:  req.user.name,
+      actorRole:  req.user.role,
+      action:     'customer.create',
+      entityType: 'customer',
+      entityId:   data.id,
+      detail:     `Customer record added — Branch: ${data.branch || '?'}, Risk: ${data.risk || '?'}`,
+      metadata:   { branch: data.branch, risk: data.risk, service: data.service },
+    });
+
     res.status(201).json({ customer: data });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -84,12 +128,66 @@ router.post('/customers', adminMiddleware, async (req, res) => {
 // DELETE /api/admin/customers/:id
 router.delete('/customers/:id', adminMiddleware, async (req, res) => {
   try {
+    const { data: target } = await supabaseAdmin
+      .from('customers')
+      .select('id, branch, risk')
+      .eq('id', req.params.id)
+      .single();
+
     const { error } = await supabaseAdmin.from('customers').delete().eq('id', req.params.id);
     if (error) throw error;
+
+    await logActivity({
+      actorId:    req.user.id,
+      actorName:  req.user.name,
+      actorRole:  req.user.role,
+      action:     'customer.delete',
+      entityType: 'customer',
+      entityId:   req.params.id,
+      detail:     `Customer record deleted — Branch: ${target?.branch || '?'}, Risk: ${target?.risk || '?'}`,
+    });
+
     res.json({ message: 'Customer deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+// GET /api/admin/activity
+router.get('/activity', adminMiddleware, async (req, res) => {
+  const { limit = 20 } = req.query;
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('activity_logs')
+      .select('id, actor_name, actor_role, action, entity_type, detail, metadata, created_at')
+      .order('created_at', { ascending: false })
+      .limit(parseInt(limit));
+    if (error) throw error;
+    res.json({ logs: data || [] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/admin/log-event  (for client-side events like config saves)
+router.post('/log-event', adminMiddleware, async (req, res) => {
+  const { action, entityType, entityId, detail, metadata } = req.body
+  if (!action) return res.status(400).json({ error: 'action required' })
+  try {
+    await logActivity({
+      actorId:    req.user.id,
+      actorName:  req.user.name,
+      actorRole:  req.user.role,
+      action,
+      entityType: entityType || null,
+      entityId:   entityId   || null,
+      detail:     detail     || null,
+      metadata:   metadata   || null,
+    })
+    res.json({ ok: true })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
 
 module.exports = router;
