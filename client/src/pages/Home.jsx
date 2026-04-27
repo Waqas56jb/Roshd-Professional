@@ -182,7 +182,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))', gap:20 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap:20 }}>
               {[
                 { num:'01', icon: BrainCircuit, title:'Strategic Consulting',    desc:'Expert advisory to navigate complex business challenges with clarity and confidence.',     accent:'#3b82f6', bg:'#eff6ff' },
                 { num:'02', icon: BookOpen,     title:'Professional Training',   desc:'Structured programs that build skills, foster growth, and deliver measurable outcomes.',   accent:'#f59e0b', bg:'#fffbeb' },
@@ -217,7 +217,7 @@ export default function Home() {
         <div style={{ position:'absolute', top:0, left:0, right:0, height:1, background:'linear-gradient(90deg,transparent,rgba(245,158,11,0.4),transparent)' }} />
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12">
           <Reveal>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:32 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,140px),1fr))', gap:24 }}>
               {[
                 { icon: Users,    end:150, suffix:'+', label:'Clients Served',     color:'#60a5fa' },
                 { icon: Award,    end:10,  suffix:'+', label:'Years Experience',   color:'#fbbf24' },
@@ -228,7 +228,7 @@ export default function Home() {
                   <div style={{ width:60, height:60, background:`${s.color}18`, border:`1px solid ${s.color}30`, borderRadius:18, display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
                     <s.icon style={{ width:28, height:28, color:s.color }} />
                   </div>
-                  <p style={{ fontSize:48, fontWeight:900, color:s.color, lineHeight:1, marginBottom:8 }}>
+                  <p style={{ fontSize:'clamp(1.75rem,8vw,3rem)', fontWeight:900, color:s.color, lineHeight:1, marginBottom:8 }}>
                     <Counter end={s.end} suffix={s.suffix} />
                   </p>
                   <p style={{ fontSize:13, color:'rgba(148,163,184,0.85)', fontWeight:600 }}>{s.label}</p>
@@ -252,7 +252,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))', gap:24 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap:24 }}>
               {[
                 {
                   img: PROG[0], badge:'Most Popular', badgeColor:'#92400e', badgeBg:'#fef3c7',

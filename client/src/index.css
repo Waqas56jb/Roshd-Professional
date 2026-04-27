@@ -454,6 +454,9 @@
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.1);
 }
+@media (hover: none) {
+  .dash-kpi-card:hover { transform: none; box-shadow: none; }
+}
 .dash-kpi-top {
   display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px;
 }
@@ -667,14 +670,25 @@
    RESPONSIVE — Mobile / Tablet / iOS / Android  
    ═══════════════════════════════════════════════════════════ */
 
-/* Tablet ≤1023px */
+/* Tablet ≤1023px — only .dash-content scrolls so KPI/header never overlap tab body */
 @media (max-width: 1023px) {
   .dash-root          { height: 100dvh; overflow: hidden; }
-  /* Phones: one KPI column = full width labels; tablets: two columns */
   .dash-kpi-strip     { grid-template-columns: 1fr; gap: 10px; padding: 12px 14px; }
   .dash-tab-bar .dash-tab-pill { display: none; }
-  .dash-main          { overflow-y: auto; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
-  .dash-content       { overflow: visible; overflow-x: hidden; padding: 16px; }
+  .dash-main {
+    overflow: hidden;
+    overflow-x: hidden;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .dash-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px;
+  }
 }
 @media (min-width: 600px) and (max-width: 1023px) {
   .dash-kpi-strip     { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -704,9 +718,27 @@
   .dash-mobile-filters{ padding: 8px 12px; gap: 6px; }
   .dash-filter-select { font-size: 16px !important; height: 36px; }
 
-  /* KPI strip — always one column on phones */
-  .dash-kpi-strip     { grid-template-columns: 1fr !important; gap: 10px; padding: 10px 12px; }
-  .dash-kpi-card      { padding: 12px 14px !important; border-radius: 12px; }
+  /* KPI strip — horizontal swipe row (saves vertical space, no stacked overlap) */
+  .dash-kpi-strip {
+    display: flex !important;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 10px;
+    padding: 10px 12px;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+  }
+  .dash-kpi-card {
+    flex: 0 0 auto;
+    width: min(86vw, 300px);
+    min-width: 240px;
+    scroll-snap-align: start;
+    padding: 12px 14px !important;
+    border-radius: 12px;
+  }
   .dash-kpi-top       { gap: 5px; margin-bottom: 6px; }
   .dash-kpi-icon      { width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0; }
   .dash-kpi-label     {
@@ -724,8 +756,8 @@
   .dash-tab-bar       { padding: 0 12px; min-height: 36px; }
   .dash-tab-name      { font-size: 12px; }
 
-  /* Content area */
-  .dash-content       { padding: 12px; overflow-x: hidden; }
+  /* Content area — keep inner scroll */
+  .dash-content       { padding: 12px; overflow-y: auto; overflow-x: hidden; min-height: 0; }
 
   /* Touch targets */
   .dash-nav-item      { padding: 11px 14px !important; min-height: 44px !important; }
