@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence, useSpring, useMotionValue, animate } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -125,6 +126,14 @@ export default function Dashboard() {
       document.documentElement.style.setProperty('--dash-accent', adminConfig.accentColor)
     }
   }, [adminConfig?.accentColor])
+
+  // Lock page scroll while mobile drawer is open (iOS / Android)
+  useEffect(() => {
+    if (!sideOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [sideOpen])
 
   // Merge admin config over computed data in real-time
   const baseData = useMemo(() => getData(branch, gender, service), [branch, gender, service])
@@ -430,25 +439,39 @@ export default function Dashboard() {
         <SidebarContent tab={tab} setTab={setTab} onClose={()=>{}} data={data} user={user} logout={logout} navigate={navigate}/>
       </aside>
 
-      {/* Mobile overlay + drawer */}
-      <AnimatePresence>
-        {sideOpen && (
-          <>
-            <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}
-              onClick={()=>setSide(false)}
-              style={{position:'fixed',inset:0,background:'rgba(2,6,23,0.65)',zIndex:40,backdropFilter:'blur(3px)'}}
-            />
-            <motion.aside
-              initial={{x:'-100%'}} animate={{x:0}} exit={{x:'-100%'}}
-              transition={{type:'spring',stiffness:320,damping:38}}
-              className="dash-sidebar"
-              style={{position:'fixed',top:0,bottom:0,left:0,zIndex:50,display:'flex',flexDirection:'column'}}
-            >
-              <SidebarContent tab={tab} setTab={setTab} onClose={()=>setSide(false)} data={data} user={user} logout={logout} navigate={navigate}/>
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Mobile drawer: portal → document.body so parent overflow never clips it; full-viewport panel */}
+      {typeof document !== 'undefined' && createPortal(
+        <AnimatePresence>
+          {sideOpen && (
+            <>
+              <motion.div
+                key="dash-drawer-backdrop"
+                role="presentation"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="dash-drawer-backdrop"
+                onClick={() => setSide(false)}
+              />
+              <motion.aside
+                key="dash-drawer-panel"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Dashboard navigation"
+                initial={{ x: '-100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '-100%' }}
+                transition={{ type: 'spring', stiffness: 380, damping: 40 }}
+                className="dash-sidebar dash-sidebar--drawer"
+              >
+                <SidebarContent tab={tab} setTab={setTab} onClose={() => setSide(false)} data={data} user={user} logout={logout} navigate={navigate}/>
+              </motion.aside>
+            </>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       {/* Main */}
       <div className="dash-main">
