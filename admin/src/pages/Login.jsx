@@ -37,7 +37,11 @@ export default function AdminLogin() {
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
         @keyframes shimmer { 0%{backgroundPosition:200% center} 100%{backgroundPosition:-200% center} }
-        .admin-input:focus { border-color:#f59e0b !important; box-shadow:0 0 0 3px rgba(245,158,11,0.14) !important; background:#fff !important; }
+        .admin-input { color:#ffffff !important; }
+        .admin-input::placeholder { color:rgba(255,255,255,0.25) !important; }
+        .admin-input:focus { border-color:#f59e0b !important; box-shadow:0 0 0 3px rgba(245,158,11,0.14) !important; background:rgba(255,255,255,0.09) !important; color:#ffffff !important; }
+        .admin-input:-webkit-autofill,
+        .admin-input:-webkit-autofill:focus { -webkit-text-fill-color:#ffffff !important; -webkit-box-shadow:0 0 0 1000px rgba(15,23,42,0.95) inset !important; caret-color:#ffffff !important; }
         @media (max-width: 900px) {
           .al-left { display: none !important; }
           .al-wrap { grid-template-columns: 1fr !important; }
@@ -176,7 +180,7 @@ export default function AdminLogin() {
                   className="admin-input"
                   style={{
                     width:'100%', paddingLeft:42, paddingRight:16, paddingTop:13, paddingBottom:13,
-                    fontSize:14, fontWeight:500, color:'white',
+                    fontSize:14, fontWeight:500, color:'white', caretColor:'white',
                     background:'rgba(255,255,255,0.06)', border:'1.5px solid rgba(255,255,255,0.1)',
                     borderRadius:12, outline:'none', transition:'all 0.15s',
                     boxSizing:'border-box',
@@ -198,7 +202,7 @@ export default function AdminLogin() {
                   className="admin-input"
                   style={{
                     width:'100%', paddingLeft:42, paddingRight:48, paddingTop:13, paddingBottom:13,
-                    fontSize:14, fontWeight:500, color:'white',
+                    fontSize:14, fontWeight:500, color:'white', caretColor:'white',
                     background:'rgba(255,255,255,0.06)', border:'1.5px solid rgba(255,255,255,0.1)',
                     borderRadius:12, outline:'none', transition:'all 0.15s',
                     boxSizing:'border-box',
