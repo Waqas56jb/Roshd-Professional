@@ -130,17 +130,12 @@
 
   /* Admin layout padding */
   .admin-main-content {
-    padding: 16px 14px !important;
-  }
-
-  /* KPI numbers scale down */
-  .admin-kpi-value {
-    font-size: 22px !important;
+    padding: 14px 12px !important;
   }
 
   /* Hero header stacks nicely */
   .admin-hero {
-    padding: 18px 18px !important;
+    padding: 16px 14px !important;
   }
 
   /* Settings / DashboardConfig sticky footer */
@@ -165,11 +160,6 @@
     padding-right: 10px !important;
   }
 
-  /* Admin header search width */
-  .admin-search-expanded {
-    width: 160px !important;
-  }
-
   /* Users row actions always visible on mobile */
   .row-actions {
     opacity: 1 !important;
@@ -183,19 +173,28 @@
     grid-template-columns: 1fr !important;
   }
 
-  /* ActivityFeed time — wrap on very small */
-  .activity-row {
-    flex-wrap: wrap !important;
-  }
-
   /* Card padding reduce */
   .card {
     padding: 16px !important;
   }
+
+  /* Admin header title truncate */
+  .admin-header-title {
+    font-size: 14px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 160px;
+  }
+
+  /* All admin inner grids collapse */
+  [style*="gridTemplateColumns:'2fr 1fr'"],
+  [style*="gridTemplateColumns:'1fr 1fr'"] {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 @media (max-width: 480px) {
-  /* Single column everything */
   .admin-grid-trend,
   .admin-grid-half,
   .admin-grid-2col,
@@ -203,14 +202,27 @@
   .customers-modal-grid-2 {
     grid-template-columns: 1fr !important;
   }
+  .card { padding: 14px !important; }
+  .admin-main-content { padding: 10px 10px !important; }
+}
 
-  /* KPI numbers */
-  .admin-kpi-value {
-    font-size: 20px !important;
-  }
+/* ── iOS safe areas for admin ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .admin-main-content { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+}
 
-  /* Reduce card padding further */
-  .card {
-    padding: 14px !important;
+/* ── Touch targets (min 44px iOS HIG) ── */
+@media (max-width: 1023px) {
+  .sidebar-nav-item { min-height: 44px !important; }
+  .btn-primary, .btn-gold, .btn-danger, .btn-ghost { min-height: 44px !important; }
+  button { min-height: 36px; }
+}
+
+/* ── Prevent iOS input zoom (font-size ≥ 16px on inputs) ── */
+@media (max-width: 1023px) {
+  .input-field,
+  select,
+  textarea {
+    font-size: 16px !important;
   }
 }

@@ -527,14 +527,56 @@
 @media (max-width: 640px) {
   .dash-kpi-strip { grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
   .dash-content { padding: 12px; }
-  .dash-header { padding: 0 14px; }
+  .dash-header { padding: 0 14px; height: auto; min-height: 56px; }
+  .dash-header-title { font-size: 13px !important; }
+  .dash-header-eyebrow { display: none; }
   .dash-kpi-value { font-size: 22px !important; }
-  .dash-kpi-card { padding: 14px 16px !important; }
+  .dash-kpi-card { padding: 12px 14px !important; }
+  .dash-kpi-label { font-size: 10px !important; }
+  .dash-tab-bar { padding: 0 12px !important; min-height: 40px !important; }
+  .dash-tab-name { font-size: 12px !important; }
+  .dash-export-btn { padding: 7px 10px !important; font-size: 11px !important; }
+  .dash-mobile-filters { padding: 8px 12px; gap: 6px; }
+  .dash-filter-select { font-size: 11px !important; padding-right: 20px !important; }
 }
 @media (max-width: 400px) {
   .dash-kpi-strip { grid-template-columns: 1fr !important; }
   .dash-kpi-value { font-size: 20px !important; }
   .dash-content { padding: 10px !important; }
+}
+
+/* ── iOS safe area insets ── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .dash-root { padding-bottom: env(safe-area-inset-bottom); }
+  .dash-user-card { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+}
+
+/* ── Tab content inner grids: mobile collapse ── */
+@media (max-width: 640px) {
+  /* All auto-fit grids: force 1 column on phones */
+  .dash-content [style*="repeat(auto-fit"] { grid-template-columns: 1fr !important; }
+  .dash-content [style*="repeat(auto-fill"] { grid-template-columns: 1fr !important; }
+
+  /* Simulation sliders - stack */
+  .dash-content [style*="repeat(auto-fill,minmax(120"] { grid-template-columns: 1fr 1fr !important; }
+
+  /* Nav buttons: bigger touch target */
+  .dash-nav-item { padding: 10px 14px !important; min-height: 44px !important; }
+  .dash-close-btn { padding: 8px !important; min-width: 36px !important; min-height: 36px !important; }
+  .dash-logout-btn { min-width: 36px !important; min-height: 36px !important; }
+  .dash-menu-btn { padding: 8px 10px !important; min-height: 40px !important; }
+  .dash-export-btn { min-height: 36px !important; }
+
+  /* Prevent iOS input zoom: font-size must be ≥ 16px */
+  .dash-filter-select,
+  select, input, textarea { font-size: 16px !important; }
+}
+
+/* ── Scrollable content on mobile ── */
+@media (max-width: 1023px) {
+  .dash-root { height: 100dvh; }
+  .dash-main { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .dash-content { overflow: visible; }
 }
 .grid-pattern  {
   background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
