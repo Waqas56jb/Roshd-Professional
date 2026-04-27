@@ -331,7 +331,7 @@ export default function AdminDashboard() {
       </motion.div>
 
       {/* ── Row 1: Trend + Risk ── */}
-      <motion.div variants={fadeUp} style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:16 }}>
+      <motion.div variants={fadeUp} style={{ display:'grid', gridTemplateColumns:'2fr 1fr', gap:16 }} className="admin-grid-trend">
 
         {/* Satisfaction Trend (real stats + config score) */}
         <Card>
@@ -396,7 +396,7 @@ export default function AdminDashboard() {
       </motion.div>
 
       {/* ── Row 2: Drivers + Segments ── */}
-      <motion.div variants={fadeUp} style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }}>
+      <motion.div variants={fadeUp} style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16 }} className="admin-grid-half">
 
         {/* Driver Impact — from Dashboard Config */}
         <Card>

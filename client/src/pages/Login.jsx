@@ -187,7 +187,7 @@ export default function Login() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 700px) { .login-card { grid-template-columns: 1fr !important; } .login-card > div:first-child { display: none !important; } }
+        @media (max-width: 900px) { .login-card { grid-template-columns: 1fr !important; } .login-card > div:first-child { display: none !important; } }
       `}</style>
     </div>
   )

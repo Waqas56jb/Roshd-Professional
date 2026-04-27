@@ -74,7 +74,7 @@ export default function ExecutiveTab({ data }) {
           <p style={{fontSize:14,color:'rgba(255,255,255,0.85)',lineHeight:1.6}}>
             Low average score is <strong style={{color:'#f59e0b'}}>not</strong> a priority unless it has meaningful <strong style={{color:'#f59e0b'}}>effect size</strong>. Invest in what moves the needle.
           </p>
-          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginTop:16}}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(90px,1fr))',gap:8,marginTop:16}}>
             {[
               {label:'Score',  value:`${data.score.toFixed(1)}/5`, color:'#f59e0b'},
               {label:'R²',     value:`${data.explanatory}%`,       color:'#a78bfa'},

@@ -411,7 +411,7 @@ export default function Settings() {
             <p style={{ fontSize:11, color:'#94a3b8', margin:0, fontWeight:500 }}>Platform name and description</p>
           </div>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))', gap:14 }} className="admin-grid-2col">
           {[
             { label:'Platform Name', value:siteName, set:setSiteName },
             { label:'Tagline', value:siteTagline, set:setSiteTagline },
@@ -445,7 +445,7 @@ export default function Settings() {
           </div>
           <span style={{ fontSize:11, fontWeight:800, color:'#166534', background:'#dcfce7', padding:'3px 10px', borderRadius:99 }}>Active</span>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))', gap:10 }} className="admin-grid-2col">
           {[['6','Tables'],['RLS','Row Level Security'],['JWT','Auth Method'],['bcrypt','Password Hashing']].map(([v,l])=>(
             <div key={l} style={{ padding:'12px 14px', borderRadius:12, background:'#f8fafc', border:'1px solid #f1f5f9', textAlign:'center' }}>
               <p style={{ fontSize:18, fontWeight:900, color:'#0f172a', margin:'0 0 2px' }}>{v}</p>
@@ -456,7 +456,7 @@ export default function Settings() {
       </motion.div>
 
       {/* Sticky save */}
-      <div style={{ position:'sticky', bottom:0, background:'rgba(255,255,255,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid #e2e8f0', padding:'12px 0', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
+      <div className="admin-sticky-footer" style={{ position:'sticky', bottom:0, background:'rgba(255,255,255,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid #e2e8f0', padding:'12px 0', display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
         <span style={{ fontSize:11, color:'#94a3b8', fontWeight:600 }}>All color changes broadcast via BroadcastChannel in real-time</span>
         <button onClick={handleSave}
           style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'10px 22px', borderRadius:12, border:'none', background: saved?'#10b981':'linear-gradient(135deg,#f59e0b,#d97706)', color: saved?'white':'#0f172a', fontSize:13, fontWeight:900, cursor:'pointer', boxShadow:'0 4px 14px rgba(245,158,11,0.3)', transition:'all 0.3s' }}>

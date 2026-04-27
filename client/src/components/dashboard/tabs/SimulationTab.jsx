@@ -121,7 +121,7 @@ export default function SimulationTab({ data }) {
 
         {/* ROI + advice */}
         <div style={{background:'linear-gradient(135deg,#0f172a,#1a2744)',borderRadius:20,padding:22,border:'1px solid rgba(255,255,255,0.06)'}}>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginBottom:16}}>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(120px,1fr))',gap:12,marginBottom:16}}>
             <div style={{background:'rgba(245,158,11,0.1)',border:'1px solid rgba(245,158,11,0.2)',borderRadius:14,padding:'14px 16px'}}>
               <p style={{fontSize:9,fontWeight:900,textTransform:'uppercase',letterSpacing:'0.15em',color:'rgba(255,255,255,0.4)',marginBottom:5}}>ROI Index</p>
               <p style={{fontSize:28,fontWeight:900,color:'#f59e0b'}}>{roi}</p>

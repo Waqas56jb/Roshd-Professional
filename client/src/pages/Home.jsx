@@ -136,7 +136,7 @@ export default function Home() {
                 <span style={{ fontSize:10, color:'rgba(255,255,255,0.25)', fontWeight:800, letterSpacing:'0.25em', textTransform:'uppercase' }}>Trusted by leading organisations</span>
                 <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.08)' }} />
               </div>
-              <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24, maxWidth:420, margin:'0 auto' }}>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(100px,1fr))', gap:16, maxWidth:420, margin:'0 auto' }}>
                 {[
                   { n:'150+', l:'Clients Served',   icon: Users   },
                   { n:'10+',  l:'Years Experience',  icon: Award   },

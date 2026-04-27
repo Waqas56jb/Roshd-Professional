@@ -213,7 +213,7 @@ export default function Signup() {
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 700px) { .signup-card { grid-template-columns: 1fr !important; } .signup-card > div:first-child { display: none !important; } }
+        @media (max-width: 900px) { .signup-card { grid-template-columns: 1fr !important; } .signup-card > div:first-child { display: none !important; } }
       `}</style>
     </div>
   )

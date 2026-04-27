@@ -38,7 +38,7 @@ export default function ModelTab({ data }) {
           ))}
         </div>
 
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:8,marginTop:14}}>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(90px,1fr))',gap:8,marginTop:14}}>
           {[
             {label:'Small',  range:'f² ≈ 0.02', bg:'#fee2e2',c:'#991b1b'},
             {label:'Medium', range:'f² ≈ 0.15', bg:'#fef3c7',c:'#92400e'},

@@ -407,7 +407,7 @@ export default function DashboardConfig() {
       </AnimatePresence>
 
       {/* Sticky bottom bar */}
-      <div style={{ position:'sticky', bottom:0, background:'rgba(255,255,255,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid #e2e8f0', padding:'12px 0', marginTop:16, display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
+      <div className="admin-sticky-footer" style={{ position:'sticky', bottom:0, background:'rgba(255,255,255,0.96)', backdropFilter:'blur(12px)', borderTop:'1px solid #e2e8f0', padding:'12px 0', marginTop:16, display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <Database style={{ width:14, height:14, color:'#94a3b8' }}/>
           <span style={{ fontSize:11, color:'#94a3b8', fontWeight:600 }}>localStorage · BroadcastChannel · real-time push</span>

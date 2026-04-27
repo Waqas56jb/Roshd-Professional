@@ -311,7 +311,7 @@ export default function Users() {
 
                         {/* Actions */}
                         <td className="table-cell">
-                          <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity pr-1">
+                          <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 sm:opacity-0 sm:group-hover:opacity-100 row-actions transition-opacity pr-1">
                             <button onClick={() => setEditUser(u)}
                               className="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all"
                               title="Edit user">

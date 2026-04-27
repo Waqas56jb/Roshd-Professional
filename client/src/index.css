@@ -528,6 +528,13 @@
   .dash-kpi-strip { grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
   .dash-content { padding: 12px; }
   .dash-header { padding: 0 14px; }
+  .dash-kpi-value { font-size: 22px !important; }
+  .dash-kpi-card { padding: 14px 16px !important; }
+}
+@media (max-width: 400px) {
+  .dash-kpi-strip { grid-template-columns: 1fr !important; }
+  .dash-kpi-value { font-size: 20px !important; }
+  .dash-content { padding: 10px !important; }
 }
 .grid-pattern  {
   background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
@@ -543,6 +550,11 @@
 /* ── Layout helpers ── */
 @media (max-width: 1023px) {
   .lg-split { grid-template-columns: 1fr !important; gap: 40px !important; }
+}
+
+/* ── Home page mobile padding ── */
+@media (max-width: 640px) {
+  .py-28 { padding-top: 48px !important; padding-bottom: 48px !important; }
 }
 
 /* ── Scrollbar ── */

@@ -175,7 +175,7 @@ export default function Customers() {
                 <button onClick={() => setModal(false)} className="text-slate-400 hover:text-slate-600"><X className="w-5 h-5" /></button>
               </div>
               <form onSubmit={addCustomer} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 customers-modal-grid-2">
                   <div>
                     <label className="text-xs font-black text-slate-600 uppercase tracking-wide">ID</label>
                     <input required placeholder="C-008" value={form.id}
@@ -200,7 +200,7 @@ export default function Customers() {
                     </select>
                   </div>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 customers-modal-grid-4">
                   {['quality', 'communication', 'price', 'speed'].map(k => (
                     <div key={k}>
                       <label className="text-[10px] font-black text-slate-500 uppercase tracking-wide capitalize">{k.slice(0, 4)}.</label>

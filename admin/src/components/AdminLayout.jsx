@@ -14,7 +14,7 @@ export default function AdminLayout() {
 
       <div style={{ flex:1, display:'flex', flexDirection:'column', minWidth:0, overflow:'hidden' }}>
         <AdminHeader onMenuClick={() => setSide(true)} />
-        <main style={{ flex:1, overflowY:'auto', padding:'24px 20px' }}>
+        <main style={{ flex:1, overflowY:'auto', padding:'24px 20px' }} className="admin-main-content">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
