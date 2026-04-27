@@ -12,7 +12,7 @@ export default function SegmentsTab({ data, segments }) {
       style={{display:'flex',flexDirection:'column',gap:18}}
     >
       {/* Segment cards */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14}}>
+      <div className="dc-tab-grid--seg">
         {segments.map((s,i) => (
           <motion.div key={s.branch} variants={fadeUp}
             style={{background:'white',borderRadius:20,border:`1px solid ${SEG_COLORS[i]}30`,boxShadow:'0 2px 12px rgba(0,0,0,0.05)',overflow:'hidden',transition:'transform 0.2s,box-shadow 0.2s'}}
@@ -29,7 +29,7 @@ export default function SegmentsTab({ data, segments }) {
                   <p style={{fontSize:11,color:'#94a3b8',fontWeight:600}}>Branch Segment</p>
                 </div>
               </div>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8,marginBottom:14}}>
+              <div className="dc-grid-2" style={{marginBottom:14}}>
                 <div style={{background:'#f8fafc',borderRadius:12,padding:'10px 12px',border:'1px solid #e5e9f0'}}>
                   <p style={{fontSize:9,color:'#94a3b8',fontWeight:800,textTransform:'uppercase',letterSpacing:'0.12em',marginBottom:3}}>Top Driver</p>
                   <p style={{fontSize:14,fontWeight:900,color:SEG_COLORS[i]}}>{s.top}</p>

@@ -6,7 +6,7 @@ const fadeUp  = { hidden:{opacity:0,y:16}, show:{opacity:1,y:0,transition:{durat
 export default function EffectTab({ data }) {
   return (
     <motion.div variants={stagger} initial="hidden" animate="show"
-      style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:18}}
+      className="dc-tab-grid"
     >
       {/* Effect Size Bars */}
       <motion.div variants={fadeUp} className="dc-card">

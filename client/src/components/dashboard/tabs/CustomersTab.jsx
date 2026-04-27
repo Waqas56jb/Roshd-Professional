@@ -15,7 +15,7 @@ export default function CustomersTab({ filteredCustomers }) {
   return (
     <div style={{display:'flex',flexDirection:'column',gap:14}}>
       {/* Summary row */}
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10}}>
+      <div className="dc-cust-summary">
         {[
           {label:'Total Shown',    value:filteredCustomers.length, color:'#3b82f6', bg:'#eff6ff'},
           {label:'High Risk',      value:riskCounts.High,          color:'#ef4444', bg:'#fff1f2'},

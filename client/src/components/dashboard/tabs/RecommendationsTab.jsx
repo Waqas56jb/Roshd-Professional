@@ -31,9 +31,7 @@ export default function RecommendationsTab({ data }) {
       </motion.div>
 
       {/* Action cards */}
-      <motion.div variants={fadeUp}
-        style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:14}}
-      >
+      <motion.div variants={fadeUp} className="dc-rec-actions">
         {[
           {variant:'invest',   title:'🚀 Invest Now',           items:data.invest},
           {variant:'optimize', title:'⚡ Optimize Selectively', items:data.optimize},
@@ -61,9 +59,7 @@ export default function RecommendationsTab({ data }) {
       </motion.div>
 
       {/* Summary metrics */}
-      <motion.div variants={fadeUp}
-        style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12}}
-      >
+      <motion.div variants={fadeUp} className="dc-cust-summary" style={{ gap: 12 }}>
         {[
           {label:'Invest Actions',    value:data.invest.length,                  color:'#0f172a', bg:'#f1f5f9'},
           {label:'Optimize Actions',  value:data.optimize.length,                color:'#166534', bg:'#f0fdf4'},

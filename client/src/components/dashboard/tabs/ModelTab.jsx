@@ -14,19 +14,19 @@ const METRICS = [
 export default function ModelTab({ data }) {
   return (
     <motion.div variants={stagger} initial="hidden" animate="show"
-      style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:18}}
+      className="dc-tab-grid"
     >
       {/* Metrics */}
       <motion.div variants={fadeUp} className="dc-card">
         <p className="dc-card-title">Model Quality</p>
         <p className="dc-card-sub">Use this tab to build analytical credibility with stakeholders.</p>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:10}}>
+        <div className="dc-model-metrics">
           {METRICS.map((m,i) => (
             <motion.div key={m.label}
               initial={{opacity:0,scale:0.88}} animate={{opacity:1,scale:1}}
               transition={{delay:i*0.08,type:'spring',stiffness:200}}
-              style={{background:m.bg,borderRadius:14,padding:'14px 16px',border:`1px solid ${m.color}25`,
-                gridColumn:i===0?'span 2':'span 1'}}
+              className={i===0 ? 'dc-model-metric-hero' : undefined}
+              style={{background:m.bg,borderRadius:14,padding:'14px 16px',border:`1px solid ${m.color}25`}}
               whileHover={{y:-2,boxShadow:'0 6px 20px rgba(0,0,0,0.07)'}}
             >
               <p style={{fontSize:9,fontWeight:800,textTransform:'uppercase',letterSpacing:'0.12em',color:`${m.color}99`,marginBottom:4}}>{m.label}</p>

@@ -36,7 +36,7 @@ const FLOW = [
 export default function ExecutiveTab({ data }) {
   return (
     <motion.div variants={stagger} initial="hidden" animate="show"
-      style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:18}}
+      className="dc-tab-grid"
     >
       {/* Actions */}
       <motion.div variants={fadeUp} className="dc-card">

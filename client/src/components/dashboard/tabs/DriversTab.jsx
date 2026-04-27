@@ -13,13 +13,13 @@ const BADGE = {
 export default function DriversTab({ data }) {
   return (
     <motion.div variants={stagger} initial="hidden" animate="show"
-      style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:18}}
+      className="dc-tab-grid"
     >
       {/* Bubble map */}
       <motion.div variants={fadeUp} className="dc-card">
         <p className="dc-card-title">Driver Impact Map</p>
         <p className="dc-card-sub">X = path coefficient · Y = avg score · Size = effect size</p>
-        <div style={{position:'relative',height:300,background:'linear-gradient(135deg,#f8faff,#f0f4ff)',borderRadius:16,overflow:'hidden',border:'1px solid #e5e9f0'}}>
+        <div className="dc-driver-bubble-viz">
           {/* Grid lines */}
           {[25,50,75].map(p => (
             <div key={p} style={{position:'absolute',left:`${12+p*0.76}%`,top:0,bottom:36,width:1,background:'rgba(148,163,184,0.15)'}}/>

@@ -46,7 +46,7 @@ export default function SimulationTab({ data }) {
   const gaugeColor = expected>=4?'#10b981':expected>=3?'#f59e0b':'#ef4444'
 
   return (
-    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(300px,1fr))',gap:18}}>
+    <div className="dc-tab-grid">
 
       {/* Controls */}
       <div style={{background:'linear-gradient(135deg,#0f172a 0%,#1a2744 100%)',borderRadius:20,padding:26,boxShadow:'0 8px 32px rgba(0,0,0,0.2)'}}>
@@ -100,7 +100,7 @@ export default function SimulationTab({ data }) {
               <AnimNum value={expected} decimals={2}/>
             </p>
           </motion.div>
-          <div style={{display:'flex',alignItems:'center',gap:12,marginTop:8,marginBottom:16}}>
+          <div style={{display:'flex',alignItems:'center',flexWrap:'wrap',gap:12,marginTop:8,marginBottom:16}}>
             <span style={{fontSize:13,color:'#64748b'}}>Baseline: <strong style={{color:'#0f172a'}}>{data.score.toFixed(2)}</strong> / 5</span>
             <span style={{fontSize:13,fontWeight:900,color:lift>0?'#10b981':'#94a3b8'}}>
               {lift>0?'+':''}{lift.toFixed(2)} pts ({((lift/data.score)*100).toFixed(1)}%)

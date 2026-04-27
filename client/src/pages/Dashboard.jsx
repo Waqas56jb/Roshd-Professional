@@ -456,8 +456,8 @@ export default function Dashboard() {
         {/* Header */}
         <header className="dash-header">
           <div className="dash-header-left">
-            <button onClick={()=>setSide(true)} className="dash-menu-btn lg:hidden"><Menu size={18}/></button>
-            <div>
+            <button onClick={()=>setSide(true)} className="dash-menu-btn lg:hidden" type="button" aria-label="Open menu"><Menu size={18}/></button>
+            <div className="dash-header-text">
               <p className="dash-header-eyebrow">Decision System · Q2 2026</p>
               <h1 className="dash-header-title">Customer Satisfaction Intelligence Engine</h1>
             </div>
