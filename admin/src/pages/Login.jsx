@@ -32,7 +32,7 @@ export default function AdminLogin() {
   }
 
   return (
-    <div style={{ minHeight:'100vh', display:'grid', gridTemplateColumns:'1fr 1fr', background:'#020617' }}>
+    <div className="al-wrap" style={{ minHeight:'100vh', display:'grid', gridTemplateColumns:'1fr 1fr', background:'#020617' }}>
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
@@ -43,8 +43,14 @@ export default function AdminLogin() {
         .admin-input:-webkit-autofill,
         .admin-input:-webkit-autofill:focus { -webkit-text-fill-color:#ffffff !important; -webkit-box-shadow:0 0 0 1000px rgba(15,23,42,0.95) inset !important; caret-color:#ffffff !important; }
         @media (max-width: 900px) {
-          .al-left { display: none !important; }
-          .al-wrap { grid-template-columns: 1fr !important; }
+          .al-left        { display: none !important; }
+          .al-wrap        { grid-template-columns: 1fr !important; }
+          .al-right       { padding: 32px 20px !important; align-items: flex-start !important; padding-top: 48px !important; }
+          .al-form        { max-width: 100% !important; }
+          .al-mobile-brand{ display: flex !important; }
+        }
+        @media (max-width: 480px) {
+          .al-right { padding: 24px 16px !important; }
         }
       `}</style>
 
@@ -127,7 +133,7 @@ export default function AdminLogin() {
       </div>
 
       {/* ── Right panel: login form ── */}
-      <div className="al-wrap" style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 32px', position:'relative' }}>
+      <div className="al-right" style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 32px', position:'relative' }}>
         {/* Subtle background */}
         <div style={{ position:'absolute', inset:0, background:'#020617' }} />
         <div style={{ position:'absolute', top:'-5%', right:'-5%', width:400, height:400, background:'radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)', borderRadius:'50%' }} />
@@ -138,10 +144,10 @@ export default function AdminLogin() {
           initial={{ opacity:0, x:32 }} animate={{ opacity:1, x:0 }}
           transition={{ duration:0.55, ease:[0.22,1,0.36,1] }}
           style={{ position:'relative', zIndex:2, width:'100%', maxWidth:420 }}
+          className="al-form"
         >
-          {/* Mobile brand (hidden on desktop) */}
-          <div className="al-left" style={{ display:'none' }} />
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:36 }} className="lg:hidden">
+          {/* Mobile brand – visible only on mobile (<900px) */}
+          <div className="al-mobile-brand" style={{ display:'none', alignItems:'center', gap:12, marginBottom:32 }}>
             <div style={{ width:42, height:42, borderRadius:12, background:'linear-gradient(135deg,#f59e0b,#d97706)', display:'flex', alignItems:'center', justifyContent:'center' }}>
               <span style={{ fontSize:20, fontWeight:900, color:'#0f172a' }}>R</span>
             </div>
