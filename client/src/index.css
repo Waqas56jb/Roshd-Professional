@@ -122,14 +122,15 @@
   box-sizing: border-box;
 }
 
-/* ── Sidebar ── */
+/* ── Sidebar ──
+   Do NOT set display:flex here — it would override Tailwind `hidden` on mobile
+   (utilities load before this file; this rule wins the cascade and forced both
+   desktop rail + drawer to show). Use `lg:flex lg:flex-col` / `flex flex-col` in JSX. */
 .dash-sidebar {
   width: 252px;
   flex-shrink: 0;
   background: var(--dash-sidebar-bg);
   border-right: 1px solid rgba(255,255,255,0.055);
-  display: flex;
-  flex-direction: column;
   position: relative;
   overflow: hidden;
   overflow-y: auto;

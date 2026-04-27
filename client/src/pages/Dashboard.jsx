@@ -435,7 +435,7 @@ export default function Dashboard() {
   return (
     <div className="dash-root">
       {/* Desktop sidebar */}
-      <aside className="dash-sidebar hidden lg:flex">
+      <aside className="dash-sidebar hidden lg:flex lg:flex-col">
         <SidebarContent tab={tab} setTab={setTab} onClose={()=>{}} data={data} user={user} logout={logout} navigate={navigate}/>
       </aside>
 
@@ -463,7 +463,7 @@ export default function Dashboard() {
                 animate={{ x: 0 }}
                 exit={{ x: '-100%' }}
                 transition={{ type: 'spring', stiffness: 380, damping: 40 }}
-                className="dash-sidebar dash-sidebar--drawer"
+                className="dash-sidebar dash-sidebar--drawer flex flex-col"
               >
                 <SidebarContent tab={tab} setTab={setTab} onClose={() => setSide(false)} data={data} user={user} logout={logout} navigate={navigate}/>
               </motion.aside>
