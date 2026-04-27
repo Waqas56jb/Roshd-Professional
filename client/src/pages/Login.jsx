@@ -45,8 +45,8 @@ export default function Login() {
         onMouseEnter={e => e.currentTarget.style.color='rgba(255,255,255,0.95)'}
         onMouseLeave={e => e.currentTarget.style.color='rgba(255,255,255,0.6)'}
       >
-        <div style={{ width:32, height:32, background:'rgba(255,255,255,0.12)', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center', border:'1px solid rgba(255,255,255,0.2)', overflow:'hidden' }}>
-          <img src="/logo.png" alt="Roshd" style={{ width:26, height:26, objectFit:'contain' }} />
+        <div style={{ width:32, height:32, background:'linear-gradient(135deg,#f59e0b,#d97706)', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <span style={{ fontSize:14, fontWeight:900, color:'#0f172a' }}>R</span>
         </div>
         <span className="hidden sm:inline">Roshd Professional</span>
       </Link>

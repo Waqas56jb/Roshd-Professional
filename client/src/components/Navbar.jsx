@@ -57,10 +57,10 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 no-underline group flex-shrink-0">
-            <div className={`w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
-              light ? 'bg-slate-900 border border-slate-800' : 'bg-white/10 backdrop-blur-sm border border-white/20'
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
+              light ? 'bg-slate-900' : 'bg-amber-500'
             }`}>
-              <img src="/logo.png" alt="Roshd Professional" className="w-8 h-8 object-contain" />
+              <span style={{ fontSize:18, fontWeight:900, color: light ? '#f59e0b' : '#0f172a' }}>R</span>
             </div>
             <div className="hidden sm:block">
               <p className="text-[9px] font-black tracking-[0.28em] text-amber-500 uppercase leading-none">Roshd</p>
