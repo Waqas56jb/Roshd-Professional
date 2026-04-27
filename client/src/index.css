@@ -106,6 +106,7 @@
 .dash-root {
   display: flex;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background: var(--dash-page-bg);
 }
@@ -120,6 +121,8 @@
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .dash-sidebar::before {
   content: '';
@@ -411,7 +414,8 @@
 }
 .dash-kpi-label {
   font-size: 9px; font-weight: 900; text-transform: uppercase;
-  letter-spacing: 0.14em; color: rgba(0,0,0,0.4); line-height: 1.2;
+  letter-spacing: 0.1em; color: rgba(0,0,0,0.4); line-height: 1.3;
+  word-break: break-word; overflow-wrap: break-word;
 }
 .dash-kpi-value {
   font-size: 26px; font-weight: 900; color: #0f172a;
@@ -445,7 +449,7 @@
 
 /* Content */
 .dash-content {
-  flex: 1; overflow-y: auto; padding: 20px 22px;
+  flex: 1; overflow-y: auto; overflow-x: hidden; padding: 20px 22px;
 }
 
 /* ── Dashboard card (used in tabs) ── */
@@ -519,65 +523,79 @@
 }
 .count-anim { animation: countUp 0.5s ease-out forwards; }
 
-/* responsive */
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile / Tablet / iOS / Android  
+   ═══════════════════════════════════════════════════════════ */
+
+/* Tablet ≤1023px */
 @media (max-width: 1023px) {
-  .dash-kpi-strip { grid-template-columns: repeat(2,1fr); }
+  .dash-root          { height: 100dvh; overflow: hidden; }
+  .dash-kpi-strip     { grid-template-columns: repeat(2,1fr); gap:10px; padding:12px 16px; }
   .dash-tab-bar .dash-tab-pill { display: none; }
+  .dash-main          { overflow-y: auto; -webkit-overflow-scrolling: touch; overflow-x: hidden; }
+  .dash-content       { overflow: visible; overflow-x: hidden; padding: 16px; }
 }
+
+/* Mobile ≤640px */
 @media (max-width: 640px) {
-  .dash-kpi-strip { grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
-  .dash-content { padding: 12px; }
-  .dash-header { padding: 0 14px; height: auto; min-height: 56px; }
-  .dash-header-title { font-size: 13px !important; }
-  .dash-header-eyebrow { display: none; }
-  .dash-kpi-value { font-size: 22px !important; }
-  .dash-kpi-card { padding: 12px 14px !important; }
-  .dash-kpi-label { font-size: 10px !important; }
-  .dash-tab-bar { padding: 0 12px !important; min-height: 40px !important; }
-  .dash-tab-name { font-size: 12px !important; }
-  .dash-export-btn { padding: 7px 10px !important; font-size: 11px !important; }
-  .dash-mobile-filters { padding: 8px 12px; gap: 6px; }
-  .dash-filter-select { font-size: 11px !important; padding-right: 20px !important; }
-}
-@media (max-width: 400px) {
-  .dash-kpi-strip { grid-template-columns: 1fr !important; }
-  .dash-kpi-value { font-size: 20px !important; }
-  .dash-content { padding: 10px !important; }
-}
+  /* Header */
+  .dash-header        { padding: 0 12px; height: auto; min-height: 52px; flex-wrap: nowrap; gap: 6px; }
+  .dash-header-left   { gap: 6px; min-width: 0; flex: 1; overflow: hidden; }
+  .dash-header-right  { flex-shrink: 0; gap: 5px; }
+  .dash-header-eyebrow{ display: none; }
+  .dash-header-title  { font-size: 11px !important; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dash-menu-btn      { padding: 8px; min-width: 40px; min-height: 40px; flex-shrink: 0; }
+  .dash-export-btn    { padding: 6px 9px; font-size: 11px; gap: 4px; min-height: 36px; }
 
-/* ── iOS safe area insets ── */
-@supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .dash-root { padding-bottom: env(safe-area-inset-bottom); }
-  .dash-user-card { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
-}
+  /* Mobile filters */
+  .dash-mobile-filters{ padding: 8px 12px; gap: 6px; }
+  .dash-filter-select { font-size: 16px !important; height: 36px; }
 
-/* ── Tab content inner grids: mobile collapse ── */
-@media (max-width: 640px) {
-  /* All auto-fit grids: force 1 column on phones */
-  .dash-content [style*="repeat(auto-fit"] { grid-template-columns: 1fr !important; }
-  .dash-content [style*="repeat(auto-fill"] { grid-template-columns: 1fr !important; }
+  /* KPI strip */
+  .dash-kpi-strip     { grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 12px; }
+  .dash-kpi-card      { padding: 12px 10px !important; border-radius: 12px; }
+  .dash-kpi-top       { gap: 5px; margin-bottom: 6px; }
+  .dash-kpi-icon      { width: 24px; height: 24px; border-radius: 6px; flex-shrink: 0; }
+  .dash-kpi-label     { font-size: 7.5px !important; letter-spacing: 0.04em !important; line-height: 1.3; word-break: break-word; }
+  .dash-kpi-value     { font-size: 20px !important; margin-bottom: 2px; }
+  .dash-kpi-sub       { font-size: 9px; }
 
-  /* Simulation sliders - stack */
-  .dash-content [style*="repeat(auto-fill,minmax(120"] { grid-template-columns: 1fr 1fr !important; }
+  /* Tab bar */
+  .dash-tab-bar       { padding: 0 12px; min-height: 36px; }
+  .dash-tab-name      { font-size: 12px; }
 
-  /* Nav buttons: bigger touch target */
-  .dash-nav-item { padding: 10px 14px !important; min-height: 44px !important; }
-  .dash-close-btn { padding: 8px !important; min-width: 36px !important; min-height: 36px !important; }
-  .dash-logout-btn { min-width: 36px !important; min-height: 36px !important; }
-  .dash-menu-btn { padding: 8px 10px !important; min-height: 40px !important; }
-  .dash-export-btn { min-height: 36px !important; }
+  /* Content area */
+  .dash-content       { padding: 12px; overflow-x: hidden; }
 
-  /* Prevent iOS input zoom: font-size must be ≥ 16px */
-  .dash-filter-select,
+  /* Touch targets */
+  .dash-nav-item      { padding: 11px 14px !important; min-height: 44px !important; }
+  .dash-close-btn     { min-width: 36px; min-height: 36px; padding: 8px; }
+  .dash-logout-btn    { min-width: 36px; min-height: 36px; }
+
+  /* Tab grids → 1 column */
+  .dash-content [style*="repeat(auto-fit"],
+  .dash-content [style*="repeat(auto-fill"],
+  .dash-content [style*="minmax(300"] { grid-template-columns: 1fr !important; }
+
+  /* Prevent iOS input zoom */
   select, input, textarea { font-size: 16px !important; }
 }
 
-/* ── Scrollable content on mobile ── */
-@media (max-width: 1023px) {
-  .dash-root { height: 100dvh; }
-  .dash-main { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-  .dash-content { overflow: visible; }
+/* Very small ≤400px */
+@media (max-width: 400px) {
+  .dash-kpi-strip     { grid-template-columns: 1fr !important; }
+  .dash-kpi-value     { font-size: 18px !important; }
+  .dash-kpi-card      { padding: 10px !important; }
+  .dash-content       { padding: 10px !important; }
+  .dash-header-title  { max-width: 110px; }
 }
+
+/* iOS safe-area */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .dash-root          { padding-top: env(safe-area-inset-top); }
+  .dash-sidebar-inner { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+}
+
 .grid-pattern  {
   background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
   background-size: 28px 28px;

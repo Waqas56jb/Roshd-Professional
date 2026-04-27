@@ -24,22 +24,22 @@ export default function AdminHeader({ onMenuClick }) {
       style={{ boxShadow: '0 1px 0 #e2e8f0' }}
     >
       {/* Left */}
-      <div className="flex items-center gap-4 min-w-0">
+      <div className="flex items-center gap-3 min-w-0 flex-1 overflow-hidden">
         <button onClick={onMenuClick}
           className="lg:hidden p-2 rounded-xl hover:bg-slate-100 text-slate-500 transition-colors flex-shrink-0"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-sm">
+        {/* Breadcrumb — show only last crumb on mobile */}
+        <div className="flex items-center gap-1.5 text-sm min-w-0 overflow-hidden">
           {crumbs.map((c, i) => (
-            <span key={i} className="flex items-center gap-1.5">
-              {i > 0 && <span className="text-slate-300">/</span>}
-              <span className={i === crumbs.length - 1
-                ? 'font-black text-slate-900'
+            <span key={i} className={`flex items-center gap-1.5 ${i < crumbs.length - 1 ? 'hidden sm:flex' : ''}`}>
+              {i > 0 && <span className="text-slate-300 hidden sm:inline">/</span>}
+              <span className={`${i === crumbs.length - 1
+                ? 'font-black text-slate-900 truncate'
                 : 'font-semibold text-slate-400'
-              }>{c.label}</span>
+              }`}>{c.label}</span>
             </span>
           ))}
         </div>
@@ -52,7 +52,7 @@ export default function AdminHeader({ onMenuClick }) {
           {searchOpen ? (
             <motion.div
               initial={{ width: 40, opacity: 0 }}
-              animate={{ width: 220, opacity: 1 }}
+              animate={{ width: 'min(220px, 50vw)', opacity: 1 }}
               exit={{ width: 40, opacity: 0 }}
               className="relative"
             >
