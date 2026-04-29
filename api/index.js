@@ -1,7 +1,8 @@
 /**
- * Vercel serverless entry — delegates to the Express app in server/.
- * Rewrites route all paths here so static files + /api/auth/* work together.
+ * Vercel Node serverless adapter — plain `export default app` often crashes;
+ * serverless-http bridges Express ⇄ Lambda.
  */
+import serverless from "serverless-http";
 import app from "../server/server.js";
 
-export default app;
+export default serverless(app);
