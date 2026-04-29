@@ -15,6 +15,17 @@ const envPath = path.join(__dirname, '..', '.env');
 if (fs.existsSync(envPath)) dotenv.config({ path: envPath });
 else dotenv.config();
 
+/** Run HTTP server only when this file is launched directly (`node server/server.js`), not when imported by `api/index.js` (Vercel). */
+function isPrimaryServerEntry() {
+  const entry = process.argv[1];
+  if (!entry) return false;
+  try {
+    return path.resolve(entry) === path.resolve(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
 const PORT = Number(process.env.PORT) || 5000;
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
@@ -405,7 +416,19 @@ app.delete('/api/admin/customers/:id', requireAdmin(), async (req, res) => {
   }
 });
 
+/** Root & deep links — filesystem has no index.html; '/' must serve marketing site on Vercel + local */
+app.get('/', (_req, res) => res.sendFile(path.join(statRoot, 'customer.html')));
+app.get(['/dashboard', '/dashboard/'], (_req, res) => res.redirect(302, '/'));
+app.get(['/customer', '/customer/'], (_req, res) => res.redirect(302, '/customer.html'));
+
+const adminUi = path.join(statRoot, 'admin', 'admin.html');
+app.get(['/admin', '/admin/', '/admin.html'], (_req, res) =>
+  fs.existsSync(adminUi) ? res.sendFile(adminUi) : res.status(404).send('Admin UI not deployed')
+);
+
 app.use(express.static(statRoot));
+
+export default app;
 
 async function start() {
   await logDatabaseConnection();
@@ -414,7 +437,9 @@ async function start() {
   });
 }
 
-start().catch((err) => {
-  console.error('[roshd] Startup failed:', err);
-  process.exit(1);
-});
+if (process.env.VERCEL !== '1' && isPrimaryServerEntry()) {
+  start().catch((err) => {
+    console.error('[roshd] Startup failed:', err);
+    process.exit(1);
+  });
+}
