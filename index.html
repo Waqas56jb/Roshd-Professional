@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ROSHD Professional — Clarity. Insight. Impact.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --navy: #1a2952;
@@ -1427,6 +1427,366 @@ footer {
   transform: translateY(0);
 }
 
+/* ─── ABOUT BILINGUAL ─── */
+.about-strip .section-inner { grid-template-columns: 1fr !important; }
+
+.about-bilingual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  margin-top: 40px;
+  align-items: start;
+}
+
+.about-lang-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.about-lang-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-light);
+}
+
+.about-lang-block.about-arabic .about-lang-label {
+  flex-direction: row-reverse;
+  font-family: 'Cairo', sans-serif;
+}
+
+.about-lang-block.about-arabic .about-lang-label::after { display: none; }
+.about-lang-block.about-arabic .about-lang-label::before {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-light);
+}
+
+.about-body {
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+
+.about-bold { font-weight: 600; color: var(--navy); }
+
+.about-bullets {
+  list-style: none;
+  margin: 0 0 16px 0;
+  padding: 0;
+}
+
+.about-bullets li {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.7;
+  margin-bottom: 10px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.about-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 8px;
+  height: 2px;
+  background: var(--gold);
+}
+
+.about-lang-block.about-arabic {
+  font-family: 'Cairo', sans-serif;
+}
+
+.about-lang-block.about-arabic .about-bullets li {
+  padding-left: 0;
+  padding-right: 20px;
+}
+
+.about-lang-block.about-arabic .about-bullets li::before {
+  left: auto;
+  right: 0;
+}
+
+.about-principle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px;
+  font-style: italic;
+  color: var(--navy);
+  border-left: 3px solid var(--gold);
+  padding: 12px 16px;
+  margin-top: 24px;
+  background: var(--offwhite);
+  border-radius: 0 4px 4px 0;
+}
+
+.about-lang-block.about-arabic .about-principle {
+  border-left: none;
+  border-right: 3px solid var(--gold);
+  border-radius: 4px 0 0 4px;
+  font-family: 'Cairo', sans-serif;
+  font-style: normal;
+}
+
+/* ─── SERVICES BILINGUAL ─── */
+.service-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--gray-light);
+  margin: 20px 0;
+}
+
+.service-name-ar {
+  font-family: 'Cairo', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  text-align: right;
+  margin-bottom: 10px;
+  line-height: 1.3;
+  direction: rtl;
+}
+
+.service-desc-ar {
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+  color: var(--gray);
+  text-align: right;
+  line-height: 1.8;
+  direction: rtl;
+}
+
+.services-footer {
+  margin-top: 60px;
+  padding: 28px 40px;
+  background: var(--white);
+  border: 1px solid var(--gray-light);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  border-left: 4px solid var(--gold);
+}
+
+.services-footer-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--navy);
+  font-style: italic;
+  flex: 1;
+}
+
+.services-footer-text-ar {
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px;
+  color: var(--navy);
+  direction: rtl;
+  text-align: right;
+  flex: 1;
+  border-left: 1px solid var(--gray-light);
+  padding-left: 40px;
+}
+
+/* ─── PLATFORM TABS ─── */
+.platform-tabs-nav {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 56px;
+  flex-wrap: wrap;
+}
+
+.platform-tab-btn {
+  padding: 14px 28px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.platform-tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+.platform-tab-btn:hover:not(.active) { color: rgba(255,255,255,0.65); }
+
+.platform-panel { display: none; }
+
+.platform-panel.active {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.platform-en h3, .platform-ar h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 18px;
+  line-height: 1.3;
+}
+
+.platform-ar h3 { font-family: 'Cairo', sans-serif; text-align: right; }
+
+.platform-tagline {
+  font-size: 14.5px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+
+.platform-ar .platform-tagline { font-family: 'Cairo', sans-serif; text-align: right; }
+
+.platform-transition-label, .platform-section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.platform-ar .platform-transition-label,
+.platform-ar .platform-section-label { font-family: 'Cairo', sans-serif; text-align: right; }
+
+.platform-arrows {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 4px 0;
+}
+
+.platform-arrows li {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  padding: 7px 0 7px 22px;
+  position: relative;
+  line-height: 1.6;
+}
+
+.platform-arrows li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-size: 13px;
+}
+
+.platform-ar .platform-arrows li {
+  font-family: 'Cairo', sans-serif;
+  padding-left: 0;
+  padding-right: 24px;
+  text-align: right;
+}
+
+.platform-ar .platform-arrows li::before {
+  content: '←';
+  left: auto;
+  right: 0;
+}
+
+.platform-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.platform-bullets li {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.55);
+  padding: 9px 12px 9px 28px;
+  background: rgba(255,255,255,0.04);
+  border-left: 2px solid var(--gold);
+  border-radius: 0 4px 4px 0;
+  line-height: 1.6;
+  position: relative;
+}
+
+.platform-bullets li::before {
+  content: '✦';
+  position: absolute;
+  left: 9px;
+  color: var(--gold);
+  font-size: 7px;
+  top: 13px;
+}
+
+.platform-ar .platform-bullets li {
+  font-family: 'Cairo', sans-serif;
+  text-align: right;
+  padding-left: 12px;
+  padding-right: 28px;
+  border-left: none;
+  border-right: 2px solid var(--gold);
+  border-radius: 4px 0 0 4px;
+}
+
+.platform-ar .platform-bullets li::before {
+  left: auto;
+  right: 9px;
+}
+
+.platform-outcome {
+  margin-top: 24px;
+  padding: 20px 24px;
+  background: rgba(184,150,46,0.07);
+  border: 1px solid rgba(184,150,46,0.2);
+  border-radius: 8px;
+}
+
+.platform-outcome-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.platform-ar .platform-outcome-label { font-family: 'Cairo', sans-serif; text-align: right; }
+
+.platform-outcome-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.platform-outcome-bullets li {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.06);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.platform-ar .platform-outcome-bullets li { font-family: 'Cairo', sans-serif; }
+
 /* ─── RESPONSIVE ─── */
 @media (max-width: 1024px) {
   nav { padding: 0 24px; }
@@ -1434,9 +1794,12 @@ footer {
   .nav-links { display: none !important; }
   .hero-content { grid-template-columns: 1fr; gap: 48px; padding: 120px 24px 60px; }
   .hero-right { display: none; }
-  .about-strip .section-inner { grid-template-columns: 1fr; gap: 40px; }
+  .about-bilingual { grid-template-columns: 1fr; gap: 40px; }
   .services-grid { grid-template-columns: 1fr 1fr; }
-  .insight-feature .section-inner { grid-template-columns: 1fr; }
+  .platform-panel.active { grid-template-columns: 1fr; }
+  .services-footer { flex-direction: column; gap: 20px; }
+  .services-footer-text-ar { border-left: none; border-top: 1px solid var(--gray-light); padding-left: 0; padding-top: 20px; text-align: center; }
+  .services-footer-text { text-align: center; }
   .process-steps { grid-template-columns: 1fr 1fr; }
   .process-steps::before { display: none; }
   .cta-banner .section-inner { grid-template-columns: 1fr; }
@@ -1452,8 +1815,8 @@ footer {
   .footer-top { grid-template-columns: 1fr; }
   .hero-stats { flex-direction: column; gap: 20px; }
   .hero-actions { flex-direction: column; align-items: flex-start; }
-  .about-pillars { grid-template-columns: 1fr; }
-  .pillar { border-right: none; border-bottom: 1px solid var(--gray-light); }
+  .platform-tabs-nav { flex-wrap: wrap; }
+  .platform-tab-btn { padding: 10px 16px; }
   .form-row { grid-template-columns: 1fr; }
 }
 
@@ -1498,7 +1861,7 @@ footer {
 <!-- NAVBAR -->
 <nav id="navbar">
   <a href="#" class="nav-logo">
-    <img src="/logo.png" alt="ROSHD Professional">
+    <img src="logo.png" alt="ROSHD Professional">
   </a>
   <div class="nav-auth-compact" aria-label="Account">
     <a href="#" class="nav-signup-compact" onclick="openSignup(event)">Sign Up</a>
@@ -1618,31 +1981,45 @@ footer {
 <!-- ABOUT STRIP -->
 <section class="about-strip" id="about">
   <div class="section-inner">
-    <div>
-      <div class="section-tag reveal">
-        <div class="section-tag-line"></div>
-        <span>Who We Are</span>
-      </div>
-      <h2 class="section-title reveal">A new standard for <em>decision intelligence</em></h2>
-      <p class="section-lead reveal">
-        ROSHD Professional (تدريب واستشارات) is a consulting and training firm built on the belief that every business decision should be grounded in evidence, not assumptions. We combine rigorous analytical methodology with practical consulting to deliver clarity where it matters most.
-      </p>
+    <div class="section-tag reveal">
+      <div class="section-tag-line"></div>
+      <span>About Us</span>
     </div>
-    <div class="about-pillars reveal">
-      <div class="pillar">
-        <div class="pillar-gold-line"></div>
-        <div class="pillar-word">Clarity</div>
-        <div class="pillar-desc">We simplify complexity and surface what actually matters in your data.</div>
+    <h2 class="section-title reveal">We are an <em>Enablement Partner</em></h2>
+
+    <div class="about-bilingual reveal">
+      <!-- English -->
+      <div class="about-lang-block">
+        <div class="about-lang-label">English</div>
+        <p class="about-body">We are not a training company.<br>We are not a traditional consulting firm.<br><strong>We are an Enablement Partner.</strong></p>
+        <p class="about-body">Our role is simple: turn knowledge into execution, and execution into measurable results.</p>
+        <p class="about-body">Most organizations invest in training, systems, and consulting—but fail to translate them into real performance. The problem is not lack of knowledge. It is the absence of structured application.</p>
+        <p class="about-body about-bold">We close this gap.</p>
+        <p class="about-body">We design integrated solutions where:</p>
+        <ul class="about-bullets">
+          <li>Training is linked to real business outcomes</li>
+          <li>Consulting is translated into operating systems</li>
+          <li>Data is converted into clear decisions</li>
+        </ul>
+        <p class="about-body">We don't deliver courses or reports.<br>We build working systems that drive performance.</p>
+        <div class="about-principle">If it cannot be applied, it has no value.</div>
       </div>
-      <div class="pillar">
-        <div class="pillar-gold-line"></div>
-        <div class="pillar-word">Insight</div>
-        <div class="pillar-desc">Statistical rigor meets business judgment to reveal true drivers of performance.</div>
-      </div>
-      <div class="pillar">
-        <div class="pillar-gold-line"></div>
-        <div class="pillar-word">Impact</div>
-        <div class="pillar-desc">Every engagement ends with actionable recommendations, not just reports.</div>
+
+      <!-- Arabic -->
+      <div class="about-lang-block about-arabic" dir="rtl">
+        <div class="about-lang-label">العربية</div>
+        <p class="about-body">لسنا شركة تدريب تقليدية،<br>ولسنا شركة استشارات بالمعنى الكلاسيكي.<br><strong>نحن شريك تمكين</strong></p>
+        <p class="about-body">دورنا واضح: تحويل المعرفة إلى تطبيق، والتطبيق إلى نتائج قابلة للقياس.</p>
+        <p class="about-body">تعاني معظم الجهات من فجوة حقيقية: الاستثمار في التدريب والأنظمة والاستشارات دون تحقيق نتائج فعلية. المشكلة ليست في نقص المعرفة، بل في غياب التطبيق المنظم.</p>
+        <p class="about-body about-bold">هنا يأتي دورنا.</p>
+        <p class="about-body">نقوم بتصميم حلول متكاملة بحيث:</p>
+        <ul class="about-bullets">
+          <li>يرتبط التدريب بنتائج تشغيلية حقيقية</li>
+          <li>تتحول الاستشارات إلى أنظمة عمل</li>
+          <li>تتحول البيانات إلى قرارات واضحة</li>
+        </ul>
+        <p class="about-body">نحن لا نقدم دورات ولا تقارير،<br>بل نبني أنظمة تشغيل تحقق الأداء.</p>
+        <div class="about-principle">أي معرفة لا تُطبّق… لا قيمة لها.</div>
       </div>
     </div>
   </div>
@@ -1653,152 +2030,264 @@ footer {
   <div class="section-inner">
     <div class="section-tag reveal">
       <div class="section-tag-line"></div>
-      <span>What We Offer</span>
+      <span>Services</span>
     </div>
-    <h2 class="section-title reveal">Our Core <em>Services</em></h2>
-    <p class="section-lead reveal">From strategic consulting to advanced analytics training, we equip organizations with the tools and knowledge to lead through intelligence.</p>
+    <h2 class="section-title reveal">End-to-End <em>Enablement Solutions</em></h2>
+    <p class="section-lead reveal">We provide end-to-end enablement solutions, not fragmented services.</p>
 
     <div class="services-grid">
       <div class="service-card reveal">
         <div class="service-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
         <div class="service-num">01</div>
-        <div class="service-name">Customer Satisfaction Intelligence</div>
-        <div class="service-desc">Deploy our proprietary Insight Engine to identify the true drivers of satisfaction across your branches, segments, and service lines — powered by structural equation modeling.</div>
-        <a href="#platform" class="service-link">
-          Explore Platform
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
+        <div class="service-name">Training &amp; Capability Building</div>
+        <div class="service-desc">Practical, role-based training linked directly to real outcomes.</div>
+        <div class="service-divider"></div>
+        <div class="service-name-ar">التدريب وبناء القدرات</div>
+        <div class="service-desc-ar">تدريب عملي مرتبط مباشرة بنتائج واقعية.</div>
       </div>
 
       <div class="service-card reveal" style="transition-delay:0.1s">
         <div class="service-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
         </div>
         <div class="service-num">02</div>
-        <div class="service-name">Executive &amp; Leadership Training</div>
-        <div class="service-desc">Structured programs that build analytical thinking, data literacy, and strategic decision-making capabilities across management levels.</div>
-        <a href="#contact" class="service-link">
-          Learn More
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
+        <div class="service-name">Consulting &amp; Implementation</div>
+        <div class="service-desc">We don't advise—we design and implement working systems.</div>
+        <div class="service-divider"></div>
+        <div class="service-name-ar">الاستشارات والتنفيذ</div>
+        <div class="service-desc-ar">لا نقدم توصيات فقط، بل نصمم ونطبق أنظمة عمل فعلية.</div>
       </div>
 
       <div class="service-card reveal" style="transition-delay:0.2s">
         <div class="service-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/></svg>
+          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
         </div>
         <div class="service-num">03</div>
-        <div class="service-name">Strategic Research &amp; Analytics</div>
-        <div class="service-desc">Deep-dive market research, statistical modeling, and competitive analysis tailored to your industry — not generic benchmarks.</div>
-        <a href="#contact" class="service-link">
-          Get a Proposal
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
+        <div class="service-name">Performance &amp; Data Intelligence</div>
+        <div class="service-desc">Turning data into clear, measurable decisions.</div>
+        <div class="service-divider"></div>
+        <div class="service-name-ar">تحليل الأداء والبيانات</div>
+        <div class="service-desc-ar">تحويل البيانات إلى قرارات واضحة وقابلة للقياس.</div>
       </div>
+
+      <div class="service-card reveal" style="transition-delay:0.3s">
+        <div class="service-icon">
+          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="service-num">04</div>
+        <div class="service-name">System Enablement</div>
+        <div class="service-desc">Ensuring business systems are actually used—not just installed.</div>
+        <div class="service-divider"></div>
+        <div class="service-name-ar">تمكين الأنظمة</div>
+        <div class="service-desc-ar">ضمان استخدام الأنظمة فعلياً داخل التشغيل، وليس مجرد تركيبها.</div>
+      </div>
+
+      <div class="service-card reveal" style="transition-delay:0.4s">
+        <div class="service-icon">
+          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div class="service-num">05</div>
+        <div class="service-name">Research &amp; Knowledge Solutions</div>
+        <div class="service-desc">From academic frameworks to real-world application.</div>
+        <div class="service-divider"></div>
+        <div class="service-name-ar">حلول البحث والمعرفة</div>
+        <div class="service-desc-ar">ربط المنهج العلمي بالتطبيق العملي.</div>
+      </div>
+    </div>
+
+    <div class="services-footer reveal">
+      <div class="services-footer-text">Our engagement model focuses on one outcome: measurable business impact—not activity.</div>
+      <div class="services-footer-text-ar" dir="rtl">نموذج عملنا يركز على: الأثر الفعلي… وليس النشاط.</div>
     </div>
   </div>
 </section>
 
-<!-- INSIGHT PLATFORM FEATURE -->
+<!-- PLATFORM SECTION -->
 <section class="insight-feature" id="platform">
   <div class="hero-grid"></div>
-  <div class="section-inner">
-    <div class="insight-preview reveal">
-      <div class="insight-preview-top">
-        <div class="ip-dot"></div>
-        <div class="ip-dot"></div>
-        <div class="ip-dot"></div>
-        <div class="ip-url">roshd-professional.com/dashboard</div>
+  <div class="section-inner" style="display:block; position:relative; z-index:2;">
+    <div class="section-tag reveal">
+      <div class="section-tag-line"></div>
+      <span>The Platform</span>
+    </div>
+    <h2 class="section-title reveal" style="color:var(--white)">Our Intelligence <em>Platforms</em></h2>
+
+    <div class="platform-tabs-nav reveal">
+      <button class="platform-tab-btn active" onclick="switchPlatform(0)">CX Intelligence</button>
+      <button class="platform-tab-btn" onclick="switchPlatform(1)">Customer Loyalty</button>
+      <button class="platform-tab-btn" onclick="switchPlatform(2)">Performance Management</button>
+    </div>
+
+    <!-- Platform 1: CX -->
+    <div class="platform-panel active" id="plat-0">
+      <div class="platform-en">
+        <h3>Customer Experience Intelligence Platform</h3>
+        <p class="platform-tagline">Most companies measure satisfaction. Very few understand what drives it.</p>
+        <p class="platform-transition-label">We move you from:</p>
+        <ul class="platform-arrows">
+          <li>Scores → Drivers</li>
+          <li>Feedback → Decisions</li>
+          <li>Assumptions → Measurable impact</li>
+        </ul>
+        <p class="platform-section-label">What we deliver:</p>
+        <ul class="platform-bullets">
+          <li>Tailored CX measurement design</li>
+          <li>Data validation and quality control</li>
+          <li>Driver identification using advanced modeling</li>
+          <li>Impact quantification (what actually matters)</li>
+          <li>Clear action roadmap</li>
+        </ul>
+        <div class="platform-outcome">
+          <div class="platform-outcome-label">Outcome</div>
+          <ul class="platform-outcome-bullets">
+            <li>Focused investments</li>
+            <li>Faster improvements</li>
+            <li>Proven ROI on CX initiatives</li>
+          </ul>
+        </div>
       </div>
-      <div class="insight-preview-body">
-        <div class="mini-tabs">
-          <div class="mini-tab active">Executive</div>
-          <div class="mini-tab">Drivers</div>
-          <div class="mini-tab">Segments</div>
-          <div class="mini-tab">Simulation</div>
-          <div class="mini-tab">Model Quality</div>
-        </div>
-        <div class="mini-kpis">
-          <div class="mini-kpi">
-            <div class="mini-kpi-val">3.8</div>
-            <div class="mini-kpi-label">Satisfaction / 5</div>
-          </div>
-          <div class="mini-kpi">
-            <div class="mini-kpi-val">72%</div>
-            <div class="mini-kpi-label">Model Power</div>
-          </div>
-        </div>
-        <div class="mini-chart-bars">
-          <div class="mini-bar">
-            <span class="mini-bar-label">Quality</span>
-            <div class="mini-bar-track"><div class="mini-bar-fill"></div></div>
-            <span class="mini-bar-val">.34</span>
-          </div>
-          <div class="mini-bar">
-            <span class="mini-bar-label">Communication</span>
-            <div class="mini-bar-track"><div class="mini-bar-fill"></div></div>
-            <span class="mini-bar-val">.23</span>
-          </div>
-          <div class="mini-bar">
-            <span class="mini-bar-label">Price Fairness</span>
-            <div class="mini-bar-track"><div class="mini-bar-fill"></div></div>
-            <span class="mini-bar-val">.15</span>
-          </div>
-          <div class="mini-bar">
-            <span class="mini-bar-label">Speed</span>
-            <div class="mini-bar-track"><div class="mini-bar-fill"></div></div>
-            <span class="mini-bar-val">.01</span>
-          </div>
+      <div class="platform-ar" dir="rtl">
+        <h3>منصة تحليل تجربة العميل</h3>
+        <p class="platform-tagline">معظم الشركات تقيس الرضا، لكن القليل يفهم ما الذي يؤثر عليه فعلياً.</p>
+        <p class="platform-transition-label">نحن ننقلك من:</p>
+        <ul class="platform-arrows">
+          <li>درجات ← محركات</li>
+          <li>آراء ← قرارات</li>
+          <li>انطباعات ← أثر قابل للقياس</li>
+        </ul>
+        <p class="platform-section-label">ما نقدمه:</p>
+        <ul class="platform-bullets">
+          <li>تصميم قياس مخصص لتجربة العميل</li>
+          <li>ضبط جودة البيانات</li>
+          <li>تحديد المحركات الحقيقية</li>
+          <li>قياس الأثر الفعلي لكل عامل</li>
+          <li>خطة عمل واضحة</li>
+        </ul>
+        <div class="platform-outcome">
+          <div class="platform-outcome-label">النتيجة</div>
+          <ul class="platform-outcome-bullets">
+            <li>استثمار دقيق</li>
+            <li>تحسين أسرع</li>
+            <li>أثر مثبت على رضا العملاء</li>
+          </ul>
         </div>
       </div>
     </div>
 
-    <div class="insight-right">
-      <div class="section-tag reveal">
-        <div class="section-tag-line"></div>
-        <span>The Platform</span>
+    <!-- Platform 2: Customer Loyalty -->
+    <div class="platform-panel" id="plat-1">
+      <div class="platform-en">
+        <h3>Customer Loyalty Intelligence Platform</h3>
+        <p class="platform-tagline">Most companies measure retention and loyalty. Very few understand what actually drives it.</p>
+        <p class="platform-transition-label">We move you from:</p>
+        <ul class="platform-arrows">
+          <li>Tracking metrics → understanding drivers</li>
+          <li>General assumptions → decision clarity</li>
+          <li>Activities → measurable impact</li>
+        </ul>
+        <p class="platform-section-label">What we deliver:</p>
+        <ul class="platform-bullets">
+          <li>Tailored loyalty measurement aligned to customer lifecycle</li>
+          <li>Data validation and quality control</li>
+          <li>Driver identification (what truly influences retention)</li>
+          <li>Impact quantification (which factors matter most)</li>
+          <li>Clear, actionable insights</li>
+        </ul>
+        <div class="platform-outcome">
+          <div class="platform-outcome-label">Outcome</div>
+          <ul class="platform-outcome-bullets">
+            <li>Focused retention initiatives</li>
+            <li>Better allocation of loyalty investments</li>
+            <li>Measurable impact on customer retention</li>
+          </ul>
+        </div>
       </div>
-      <h2 class="section-title reveal" style="color:var(--white)">Customer Satisfaction <em>Insight Engine</em></h2>
-      <p class="section-lead reveal">Our analytics platform replaces gut-feel with evidence. Log in to view your organization's real-time satisfaction drivers, simulate improvement scenarios, and receive auto-generated executive recommendations.</p>
+      <div class="platform-ar" dir="rtl">
+        <h3>منصة تحليل الولاء والاحتفاظ بالعملاء</h3>
+        <p class="platform-tagline">معظم الشركات تقيس الولاء والاحتفاظ، لكن القليل يفهم ما الذي يؤثر عليه فعلياً.</p>
+        <p class="platform-transition-label">نحن ننقلك من:</p>
+        <ul class="platform-arrows">
+          <li>متابعة المؤشرات ← فهم المحركات</li>
+          <li>افتراضات عامة ← وضوح في القرار</li>
+          <li>أنشطة ← أثر قابل للقياس</li>
+        </ul>
+        <p class="platform-section-label">ما نقدمه:</p>
+        <ul class="platform-bullets">
+          <li>تصميم قياس مخصص للولاء مرتبط بدورة حياة العميل</li>
+          <li>ضبط جودة البيانات</li>
+          <li>تحديد المحركات الحقيقية للاحتفاظ</li>
+          <li>قياس الأثر لكل عامل</li>
+          <li>مخرجات واضحة قابلة للتنفيذ</li>
+        </ul>
+        <div class="platform-outcome">
+          <div class="platform-outcome-label">النتيجة</div>
+          <ul class="platform-outcome-bullets">
+            <li>مبادرات احتفاظ أكثر دقة</li>
+            <li>توجيه أفضل للاستثمار في الولاء</li>
+            <li>أثر قابل للقياس على الاحتفاظ بالعملاء</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-      <div class="feature-list">
-        <div class="feature-item reveal">
-          <div class="feature-check">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-          </div>
-          <div class="feature-text">
-            <strong>Executive Decision Summaries</strong>
-            <p>Invest, Optimize, or Avoid — clear directives for every segment and branch, backed by statistical evidence.</p>
-          </div>
+    <!-- Platform 3: Performance Management -->
+    <div class="platform-panel" id="plat-2">
+      <div class="platform-en">
+        <h3>Performance Management Platform</h3>
+        <p class="platform-tagline">Most organizations track KPIs. Very few measure performance at the role level.</p>
+        <p class="platform-transition-label">We move you from:</p>
+        <ul class="platform-arrows">
+          <li>Generic KPIs → role-based performance measurement</li>
+          <li>Subjective evaluation → structured assessment</li>
+          <li>Reviews → decision-driven performance management</li>
+        </ul>
+        <p class="platform-section-label">What we deliver:</p>
+        <ul class="platform-bullets">
+          <li>Role-based performance framework (objectives &amp; competencies per role)</li>
+          <li>Definition of performance weightings (goals vs. competencies)</li>
+          <li>Clear targets for each objective and competency</li>
+          <li>Measurement logic for each performance element</li>
+          <li>Calculation of overall performance score</li>
+          <li>Digital management of performance cycles through the platform</li>
+        </ul>
+        <div class="platform-outcome">
+          <div class="platform-outcome-label">Outcome</div>
+          <ul class="platform-outcome-bullets">
+            <li>Objective, role-specific evaluation</li>
+            <li>Consistent &amp; measurable scoring</li>
+            <li>Structured performance cycles</li>
+            <li>System-driven performance decisions</li>
+          </ul>
         </div>
-        <div class="feature-item reveal" style="transition-delay:0.1s">
-          <div class="feature-check">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-          </div>
-          <div class="feature-text">
-            <strong>Dynamic Driver Analysis</strong>
-            <p>All factors, branches, and segments are configurable by your admin team — not locked to any industry.</p>
-          </div>
-        </div>
-        <div class="feature-item reveal" style="transition-delay:0.2s">
-          <div class="feature-check">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-          </div>
-          <div class="feature-text">
-            <strong>Decision Simulation Lab</strong>
-            <p>Move improvement levers and instantly see the projected impact on satisfaction scores before committing resources.</p>
-          </div>
-        </div>
-        <div class="feature-item reveal" style="transition-delay:0.3s">
-          <div class="feature-check">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-          </div>
-          <div class="feature-text">
-            <strong>Export &amp; Print Ready</strong>
-            <p>Every view is formatted for executive presentations. Export to PDF for boardroom-ready reports instantly.</p>
-          </div>
+      </div>
+      <div class="platform-ar" dir="rtl">
+        <h3>منصة إدارة الأداء</h3>
+        <p class="platform-tagline">معظم الشركات تتابع مؤشرات عامة، لكن القليل يقيس الأداء على مستوى الوظيفة.</p>
+        <p class="platform-transition-label">نحن ننقلك من:</p>
+        <ul class="platform-arrows">
+          <li>مؤشرات عامة ← قياس أداء حسب كل وظيفة</li>
+          <li>تقييمات شخصية ← تقييمات منظمة</li>
+          <li>مراجعات شكلية ← إدارة أداء قائمة على القرار</li>
+        </ul>
+        <p class="platform-section-label">ما نقدمه:</p>
+        <ul class="platform-bullets">
+          <li>إطار أداء لكل وظيفة (الأهداف والكفاءات لكل دور)</li>
+          <li>تحديد أوزان الأداء (نسبة الأهداف مقابل الكفاءات)</li>
+          <li>تحديد مستهدفات واضحة لكل عنصر</li>
+          <li>تعريف آلية قياس لكل هدف وكفاءة</li>
+          <li>احتساب التقييم النهائي للأداء</li>
+          <li>إدارة دورة الأداء إلكترونياً عبر المنصة</li>
+        </ul>
+        <div class="platform-outcome">
+          <div class="platform-outcome-label">النتيجة</div>
+          <ul class="platform-outcome-bullets">
+            <li>تقييم موضوعي ودقيق لكل وظيفة</li>
+            <li>نتائج أداء قابلة للقياس والمقارنة</li>
+            <li>إدارة منظمة لدورات الأداء</li>
+            <li>توجيه قرارات الأداء بشكل منهجي</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -1926,7 +2415,7 @@ footer {
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <img src="/logo.png" alt="ROSHD Professional">
+        <img src="logo.png" alt="ROSHD Professional">
         <div class="footer-tagline">Clarity. Insight. Impact.</div>
         <div class="footer-desc">ROSHD Professional delivers consulting and training excellence, transforming data into decisions that matter.</div>
       </div>
@@ -1969,7 +2458,7 @@ footer {
   <div class="modal">
     <div class="modal-header">
       <div class="modal-logo-row">
-        <img src="/logo.png" alt="ROSHD">
+        <img src="logo.png" alt="ROSHD">
         <span class="modal-logo-text">ROSHD PROFESSIONAL</span>
       </div>
       <div class="modal-title">Welcome Back</div>
@@ -2011,7 +2500,7 @@ footer {
   <div class="modal">
     <div class="modal-header">
       <div class="modal-logo-row">
-        <img src="/logo.png" alt="ROSHD">
+        <img src="logo.png" alt="ROSHD">
         <span class="modal-logo-text">ROSHD PROFESSIONAL</span>
       </div>
       <div class="modal-title">Create Your Account</div>
@@ -2070,6 +2559,12 @@ footer {
 <div class="toast" id="toast"></div>
 
 <script>
+// Platform tab switcher
+function switchPlatform(idx) {
+  document.querySelectorAll('.platform-tab-btn').forEach((t, i) => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.platform-panel').forEach((p, i) => p.classList.toggle('active', i === idx));
+}
+
 // Navbar scroll effect
 window.addEventListener('scroll', () => {
   document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
