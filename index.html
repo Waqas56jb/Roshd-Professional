@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" data-lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ROSHD Professional — Clarity. Insight. Impact.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 :root {
   --navy: #1a2952;
@@ -247,7 +247,6 @@ nav.scrolled .nav-logo img { height: 48px; }
   align-items: center;
 }
 
-.hero-left { }
 
 .hero-eyebrow {
   display: inline-flex;
@@ -539,6 +538,7 @@ nav.scrolled .nav-logo img { height: 48px; }
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
+
 
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24px); }
@@ -1427,6 +1427,228 @@ footer {
   transform: translateY(0);
 }
 
+/* ─── GLOBAL LANGUAGE SWITCHING ─── */
+html[data-lang="en"] .ar { display: none !important; }
+html[data-lang="ar"] .en { display: none !important; }
+
+/* ═══════════════════════════════════════════════
+   ARABIC TYPOGRAPHY — COMPREHENSIVE SYSTEM
+   Font: Cairo | Direction: RTL
+   ═══════════════════════════════════════════════ */
+
+/* Base RTL + font */
+html[data-lang="ar"]              { direction: rtl; }
+html[data-lang="ar"] body         { font-family: 'Cairo', sans-serif; font-size: 16px; line-height: 1.8; }
+
+/* ── Headings: swap serif → Cairo, bump weight & line-height ── */
+html[data-lang="ar"] h1,
+html[data-lang="ar"] h2,
+html[data-lang="ar"] h3,
+html[data-lang="ar"] .hero-title,
+html[data-lang="ar"] .section-title {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+/* Hero title size tweak — Cairo needs slightly larger optical size */
+html[data-lang="ar"] .hero-title   { font-size: clamp(42px, 5vw, 70px); line-height: 1.3; }
+html[data-lang="ar"] .section-title { font-size: clamp(30px, 3.5vw, 50px); }
+
+/* ── Body & labels: Cairo medium weight, generous line-height ── */
+html[data-lang="ar"] .hero-subtitle,
+html[data-lang="ar"] .section-lead,
+html[data-lang="ar"] .about-body,
+html[data-lang="ar"] .service-desc,
+html[data-lang="ar"] .service-desc-ar,
+html[data-lang="ar"] .platform-desc,
+html[data-lang="ar"] .platform-outcome-body,
+html[data-lang="ar"] .process-step-desc,
+html[data-lang="ar"] .cta-sub,
+html[data-lang="ar"] .footer-desc {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 400;
+  line-height: 1.9;
+  letter-spacing: 0;
+}
+
+/* ── Small labels / eyebrows / tags ── */
+html[data-lang="ar"] .hero-eyebrow span,
+html[data-lang="ar"] .section-tag span,
+html[data-lang="ar"] .service-num,
+html[data-lang="ar"] .hero-stat-label,
+html[data-lang="ar"] .process-step-num,
+html[data-lang="ar"] .platform-section-label,
+html[data-lang="ar"] .platform-transition-label,
+html[data-lang="ar"] .platform-outcome-label {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ── Named elements that use serif / italic in English ── */
+html[data-lang="ar"] em                           { font-style: normal; }
+html[data-lang="ar"] .service-name,
+html[data-lang="ar"] .about-principle,
+html[data-lang="ar"] .services-footer-text,
+html[data-lang="ar"] .process-step-name,
+html[data-lang="ar"] .footer-tagline {
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+/* ── Interactive elements ── */
+html[data-lang="ar"] .nav-links a,
+html[data-lang="ar"] .nav-btn,
+html[data-lang="ar"] .nav-signup,
+html[data-lang="ar"] .btn-primary,
+html[data-lang="ar"] .btn-ghost,
+html[data-lang="ar"] .platform-tab-btn,
+html[data-lang="ar"] .service-link,
+html[data-lang="ar"] .lang-nav-btn,
+html[data-lang="ar"] .nav-auth-compact a {
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+}
+
+/* ── Dashboard card ── */
+html[data-lang="ar"] .dp-title     { letter-spacing: 0; font-family: 'Cairo', sans-serif; font-size: 10px; }
+html[data-lang="ar"] .dp-kpi-label { letter-spacing: 0; font-family: 'Cairo', sans-serif; }
+html[data-lang="ar"] .dp-badge     { letter-spacing: 0; font-family: 'Cairo', sans-serif; }
+html[data-lang="ar"] .dp-kpi-val.gold { font-family: 'Cairo', sans-serif; font-size: 18px; font-weight: 700; }
+html[data-lang="ar"] .dp-bar-label { font-family: 'Cairo', sans-serif; width: 110px; letter-spacing: 0; }
+
+/* ── Modal ── */
+html[data-lang="ar"] .modal-title,
+html[data-lang="ar"] .modal-subtitle,
+html[data-lang="ar"] .form-label,
+html[data-lang="ar"] .modal-btn,
+html[data-lang="ar"] .modal-switch {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+}
+html[data-lang="ar"] .modal-title   { font-weight: 700; line-height: 1.4; }
+html[data-lang="ar"] .form-label    { font-weight: 600; }
+
+/* ── Hero RTL layout ── */
+html[data-lang="ar"] .hero-actions  { flex-direction: row-reverse; }
+html[data-lang="ar"] .hero-stats    { flex-direction: row-reverse; }
+
+/* ── About RTL ── */
+html[data-lang="ar"] .about-principle            { border-left: none; border-right: 3px solid var(--gold); border-radius: 4px 0 0 4px; padding-left: 16px; padding-right: 20px; }
+html[data-lang="ar"] .about-bullets li           { padding-left: 0; padding-right: 20px; }
+html[data-lang="ar"] .about-bullets li::before   { left: auto; right: 0; }
+
+/* ── Services RTL ── */
+html[data-lang="ar"] .services-footer            { border-left: none; border-right: 4px solid var(--gold); }
+
+/* ── Platform RTL ── */
+html[data-lang="ar"] .platform-bullets li        { padding-left: 12px; padding-right: 28px; border-left: none; border-right: 2px solid var(--gold); border-radius: 4px 0 0 4px; }
+html[data-lang="ar"] .platform-bullets li::before { left: auto; right: 9px; }
+html[data-lang="ar"] .platform-arrows li         { padding-left: 0; padding-right: 22px; }
+html[data-lang="ar"] .platform-arrows li::before { content: '←'; left: auto; right: 0; }
+
+/* ── Contact RTL ── */
+html[data-lang="ar"] .form-input { text-align: right; }
+
+/* ── Modal RTL ── */
+
+/* Platform panels: single-column (one language at a time) */
+.platform-panel.active { display: block !important; }
+
+/* About single-lang layout */
+.about-single { max-width: 820px; }
+
+/* Navbar language toggle */
+.lang-toggle-nav { display: flex; align-items: center; gap: 4px; }
+
+.lang-nav-btn {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.45);
+  padding: 5px 13px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.lang-nav-btn.active { background: var(--gold); border-color: var(--gold); color: var(--navy-deep); }
+.lang-nav-btn:hover:not(.active) { border-color: rgba(184,150,46,0.5); color: var(--gold-light); }
+
+/* ─── HERO LANGUAGE TOGGLE ─── */
+.hero-lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  padding: 3px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 0.1s forwards;
+}
+
+.hero-lang-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  border-radius: 3px;
+  transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.hero-lang-btn.active {
+  background: var(--gold);
+  color: var(--navy-deep);
+}
+
+.hero-lang-btn:not(.active):hover { color: rgba(255,255,255,0.8); }
+
+.hero-ar {
+  display: none;
+  font-family: 'Cairo', sans-serif;
+}
+
+.hero-ar .hero-eyebrow span {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.hero-ar .hero-title {
+  font-family: 'Cairo', sans-serif;
+  font-size: clamp(42px, 5vw, 70px);
+}
+
+.hero-ar .hero-title em {
+  font-style: normal;
+  font-weight: 300;
+}
+
+.hero-ar .hero-title strong { font-weight: 700; }
+
+.hero-ar .hero-subtitle { font-family: 'Cairo', sans-serif; }
+
+.hero-ar .hero-stat-label { font-family: 'Cairo', sans-serif; }
+
+.hero-ar .hero-stat-num { font-family: 'Cairo', sans-serif; }
+
 /* ─── ABOUT BILINGUAL ─── */
 .about-strip .section-inner { grid-template-columns: 1fr !important; }
 
@@ -1820,6 +2042,12 @@ footer {
   .form-row { grid-template-columns: 1fr; }
 }
 
+/* Modal RTL for Arabic */
+html[data-lang="ar"] .modal { direction: rtl; }
+html[data-lang="ar"] .modal-error { border-left: none; border-right: 3px solid #e53e3e; }
+html[data-lang="ar"] .form-label { display: block; }
+html[data-lang="ar"] .modal-switch { text-align: center; }
+
 /* Modals / auth toast — tablets & phones */
 @media (max-width: 900px) {
   .modal-header {
@@ -1863,17 +2091,21 @@ footer {
   <a href="#" class="nav-logo">
     <img src="logo.png" alt="ROSHD Professional">
   </a>
+  <div class="lang-toggle-nav">
+    <button class="lang-nav-btn" id="btn-en" onclick="setLanguage('en')">EN</button>
+    <button class="lang-nav-btn active" id="btn-ar" onclick="setLanguage('ar')">عر</button>
+  </div>
   <div class="nav-auth-compact" aria-label="Account">
-    <a href="#" class="nav-signup-compact" onclick="openSignup(event)">Sign Up</a>
-    <a href="#" class="nav-login-compact" onclick="openLogin(event)">Login</a>
+    <a href="#" class="nav-signup-compact" onclick="openSignup(event)"><span class="en">Sign Up</span><span class="ar">إنشاء حساب</span></a>
+    <a href="#" class="nav-login-compact" onclick="openLogin(event)"><span class="en">Login</span><span class="ar">دخول</span></a>
   </div>
   <ul class="nav-links">
-    <li><a href="#about">About</a></li>
-    <li><a href="#services">Services</a></li>
-    <li><a href="#platform">Platform</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#" class="nav-signup" onclick="openSignup(event)">Sign Up</a></li>
-    <li><a href="#" class="nav-btn" onclick="openLogin(event)">Client Login</a></li>
+    <li><a href="#about"><span class="en">About</span><span class="ar">من نحن</span></a></li>
+    <li><a href="#services"><span class="en">Services</span><span class="ar">الخدمات</span></a></li>
+    <li><a href="#platform"><span class="en">Platform</span><span class="ar">المنصة</span></a></li>
+    <li><a href="#contact"><span class="en">Contact</span><span class="ar">تواصل</span></a></li>
+    <li><a href="#" class="nav-signup" onclick="openSignup(event)"><span class="en">Sign Up</span><span class="ar">إنشاء حساب</span></a></li>
+    <li><a href="#" class="nav-btn" onclick="openLogin(event)"><span class="en">Client Login</span><span class="ar">دخول العملاء</span></a></li>
   </ul>
 </nav>
 
@@ -1888,41 +2120,51 @@ footer {
 
   <div class="hero-content">
     <div class="hero-left">
-      <div class="hero-eyebrow">
-        <div class="hero-eyebrow-line"></div>
-        <span>Training &amp; Consulting</span>
-      </div>
-      <h1 class="hero-title">
-        <em>Clarity.</em>
-        <strong>Insight. Impact.</strong>
-      </h1>
-      <p class="hero-subtitle">
-        ROSHD Professional delivers data-driven consulting and executive training that transforms how organizations understand and act on customer intelligence.
-      </p>
-      <div class="hero-actions">
-        <a href="#services" class="btn-primary">
-          Explore Services
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        </a>
-        <a href="#" class="btn-ghost" onclick="openLogin(event)">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Client Portal
-        </a>
-      </div>
-      <div class="hero-stats">
-        <div>
-          <div class="hero-stat-num">200<span>+</span></div>
-          <div class="hero-stat-label">Projects Delivered</div>
+
+      <!-- English -->
+      <div class="en">
+        <div class="hero-eyebrow">
+          <div class="hero-eyebrow-line"></div>
+          <span>Training &amp; Consulting</span>
         </div>
-        <div>
-          <div class="hero-stat-num">15<span>+</span></div>
-          <div class="hero-stat-label">Industries Served</div>
+        <h1 class="hero-title">
+          <em>Clarity.</em>
+          <strong>Insight. Impact.</strong>
+        </h1>
+        <p class="hero-subtitle">ROSHD Professional delivers data-driven consulting and executive training that transforms how organizations understand and act on customer intelligence.</p>
+        <div class="hero-actions">
+          <a href="#services" class="btn-primary">Explore Services <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="#" class="btn-ghost" onclick="openLogin(event)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Client Portal</a>
         </div>
-        <div>
-          <div class="hero-stat-num">98<span>%</span></div>
-          <div class="hero-stat-label">Client Satisfaction</div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-num">200<span>+</span></div><div class="hero-stat-label">Projects Delivered</div></div>
+          <div><div class="hero-stat-num">15<span>+</span></div><div class="hero-stat-label">Industries Served</div></div>
+          <div><div class="hero-stat-num">98<span>%</span></div><div class="hero-stat-label">Client Satisfaction</div></div>
         </div>
       </div>
+
+      <!-- Arabic -->
+      <div class="ar">
+        <div class="hero-eyebrow">
+          <div class="hero-eyebrow-line"></div>
+          <span>التدريب والاستشارات</span>
+        </div>
+        <h1 class="hero-title">
+          <em>وضوح.</em>
+          <strong>رؤية. تأثير.</strong>
+        </h1>
+        <p class="hero-subtitle">تقدّم رُشد الاحتراف استشارات قائمة على البيانات وبرامج تدريب تنفيذي تُحوّل فهم المؤسسات لذكاء العملاء إلى قرارات واضحة ونتائج قابلة للقياس.</p>
+        <div class="hero-actions">
+          <a href="#services" class="btn-primary">استكشف الخدمات <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+          <a href="#" class="btn-ghost" onclick="openLogin(event)"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> بوابة العملاء</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-num"><span>+</span>200</div><div class="hero-stat-label">مشروع مُنجز</div></div>
+          <div><div class="hero-stat-num"><span>+</span>15</div><div class="hero-stat-label">قطاعًا مخدومًا</div></div>
+          <div><div class="hero-stat-num">98<span>%</span></div><div class="hero-stat-label">رضا العملاء</div></div>
+        </div>
+      </div>
+
     </div>
 
     <div class="hero-right">
@@ -1931,47 +2173,75 @@ footer {
           <div class="dp-dots">
             <span></span><span></span><span></span>
           </div>
-          <div class="dp-title">Insight Engine — Live Dashboard</div>
+          <div class="dp-title">
+            <span class="en">Insight Engine — Live Dashboard</span>
+            <span class="ar">محرك الرؤى — لوحة التحكم المباشرة</span>
+          </div>
         </div>
         <div class="dp-kpis">
           <div class="dp-kpi">
             <div class="dp-kpi-val gold">3.8</div>
-            <div class="dp-kpi-label">Satisfaction Score</div>
+            <div class="dp-kpi-label">
+              <span class="en">Satisfaction Score</span>
+              <span class="ar">درجة الرضا</span>
+            </div>
           </div>
           <div class="dp-kpi">
             <div class="dp-kpi-val">72%</div>
-            <div class="dp-kpi-label">Model Power</div>
+            <div class="dp-kpi-label">
+              <span class="en">Model Power</span>
+              <span class="ar">قوة النموذج</span>
+            </div>
           </div>
           <div class="dp-kpi">
-            <div class="dp-kpi-val gold">Quality</div>
-            <div class="dp-kpi-label">Top Driver</div>
+            <div class="dp-kpi-val gold">
+              <span class="en">Quality</span>
+              <span class="ar">الجودة</span>
+            </div>
+            <div class="dp-kpi-label">
+              <span class="en">Top Driver</span>
+              <span class="ar">المحرك الأول</span>
+            </div>
           </div>
         </div>
         <div class="dp-chart">
           <div class="dp-bar-row">
-            <span class="dp-bar-label">Quality</span>
+            <span class="dp-bar-label">
+              <span class="en">Quality</span>
+              <span class="ar">الجودة</span>
+            </span>
             <div class="dp-bar-track"><div class="dp-bar-fill"></div></div>
             <span class="dp-bar-val">.87</span>
           </div>
           <div class="dp-bar-row">
-            <span class="dp-bar-label">Communication</span>
+            <span class="dp-bar-label">
+              <span class="en">Communication</span>
+              <span class="ar">التواصل</span>
+            </span>
             <div class="dp-bar-track"><div class="dp-bar-fill"></div></div>
             <span class="dp-bar-val">.72</span>
           </div>
           <div class="dp-bar-row">
-            <span class="dp-bar-label">Price Fairness</span>
+            <span class="dp-bar-label">
+              <span class="en">Price Fairness</span>
+              <span class="ar">عدالة السعر</span>
+            </span>
             <div class="dp-bar-track"><div class="dp-bar-fill"></div></div>
             <span class="dp-bar-val">.58</span>
           </div>
           <div class="dp-bar-row">
-            <span class="dp-bar-label">Speed</span>
+            <span class="dp-bar-label">
+              <span class="en">Speed</span>
+              <span class="ar">السرعة</span>
+            </span>
             <div class="dp-bar-track"><div class="dp-bar-fill"></div></div>
             <span class="dp-bar-val">.04</span>
           </div>
         </div>
         <div class="dp-badge">
           <div class="dp-badge-dot"></div>
-          Live · Q2 2026 · All Branches
+          <span class="en">Live · Q2 2026 · All Branches</span>
+          <span class="ar">مباشر · الربع الثاني 2026 · جميع الفروع</span>
         </div>
       </div>
     </div>
@@ -1981,16 +2251,11 @@ footer {
 <!-- ABOUT STRIP -->
 <section class="about-strip" id="about">
   <div class="section-inner">
-    <div class="section-tag reveal">
-      <div class="section-tag-line"></div>
-      <span>About Us</span>
-    </div>
-    <h2 class="section-title reveal">We are an <em>Enablement Partner</em></h2>
-
-    <div class="about-bilingual reveal">
-      <!-- English -->
-      <div class="about-lang-block">
-        <div class="about-lang-label">English</div>
+    <!-- English -->
+    <div class="en about-single">
+      <div class="section-tag reveal"><div class="section-tag-line"></div><span>About Us</span></div>
+      <h2 class="section-title reveal">We are an <em>Enablement Partner</em></h2>
+      <div class="reveal">
         <p class="about-body">We are not a training company.<br>We are not a traditional consulting firm.<br><strong>We are an Enablement Partner.</strong></p>
         <p class="about-body">Our role is simple: turn knowledge into execution, and execution into measurable results.</p>
         <p class="about-body">Most organizations invest in training, systems, and consulting—but fail to translate them into real performance. The problem is not lack of knowledge. It is the absence of structured application.</p>
@@ -2004,10 +2269,12 @@ footer {
         <p class="about-body">We don't deliver courses or reports.<br>We build working systems that drive performance.</p>
         <div class="about-principle">If it cannot be applied, it has no value.</div>
       </div>
-
-      <!-- Arabic -->
-      <div class="about-lang-block about-arabic" dir="rtl">
-        <div class="about-lang-label">العربية</div>
+    </div>
+    <!-- Arabic -->
+    <div class="ar about-single">
+      <div class="section-tag reveal"><div class="section-tag-line"></div><span>من نحن</span></div>
+      <h2 class="section-title reveal">نحن <em>شريك تمكين</em></h2>
+      <div class="reveal">
         <p class="about-body">لسنا شركة تدريب تقليدية،<br>ولسنا شركة استشارات بالمعنى الكلاسيكي.<br><strong>نحن شريك تمكين</strong></p>
         <p class="about-body">دورنا واضح: تحويل المعرفة إلى تطبيق، والتطبيق إلى نتائج قابلة للقياس.</p>
         <p class="about-body">تعاني معظم الجهات من فجوة حقيقية: الاستثمار في التدريب والأنظمة والاستشارات دون تحقيق نتائج فعلية. المشكلة ليست في نقص المعرفة، بل في غياب التطبيق المنظم.</p>
@@ -2028,78 +2295,46 @@ footer {
 <!-- SERVICES -->
 <section class="services" id="services">
   <div class="section-inner">
-    <div class="section-tag reveal">
-      <div class="section-tag-line"></div>
-      <span>Services</span>
-    </div>
-    <h2 class="section-title reveal">End-to-End <em>Enablement Solutions</em></h2>
-    <p class="section-lead reveal">We provide end-to-end enablement solutions, not fragmented services.</p>
+    <div class="section-tag reveal"><div class="section-tag-line"></div><span class="en">Services</span><span class="ar">الخدمات</span></div>
+    <h2 class="section-title reveal"><span class="en">End-to-End <em>Enablement Solutions</em></span><span class="ar">حلول تمكين <em>متكاملة</em></span></h2>
+    <p class="section-lead reveal"><span class="en">We provide end-to-end enablement solutions, not fragmented services.</span><span class="ar">نقدم حلول تمكين متكاملة، وليس خدمات متفرقة.</span></p>
 
     <div class="services-grid">
       <div class="service-card reveal">
-        <div class="service-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-        </div>
+        <div class="service-icon"><svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
         <div class="service-num">01</div>
-        <div class="service-name">Training &amp; Capability Building</div>
-        <div class="service-desc">Practical, role-based training linked directly to real outcomes.</div>
-        <div class="service-divider"></div>
-        <div class="service-name-ar">التدريب وبناء القدرات</div>
-        <div class="service-desc-ar">تدريب عملي مرتبط مباشرة بنتائج واقعية.</div>
+        <div class="en"><div class="service-name">Training &amp; Capability Building</div><div class="service-desc">Practical, role-based training linked directly to real outcomes.</div></div>
+        <div class="ar"><div class="service-name">التدريب وبناء القدرات</div><div class="service-desc">تدريب عملي مرتبط مباشرة بنتائج واقعية.</div></div>
       </div>
-
       <div class="service-card reveal" style="transition-delay:0.1s">
-        <div class="service-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-        </div>
+        <div class="service-icon"><svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
         <div class="service-num">02</div>
-        <div class="service-name">Consulting &amp; Implementation</div>
-        <div class="service-desc">We don't advise—we design and implement working systems.</div>
-        <div class="service-divider"></div>
-        <div class="service-name-ar">الاستشارات والتنفيذ</div>
-        <div class="service-desc-ar">لا نقدم توصيات فقط، بل نصمم ونطبق أنظمة عمل فعلية.</div>
+        <div class="en"><div class="service-name">Consulting &amp; Implementation</div><div class="service-desc">We don't advise—we design and implement working systems.</div></div>
+        <div class="ar"><div class="service-name">الاستشارات والتنفيذ</div><div class="service-desc">لا نقدم توصيات فقط، بل نصمم ونطبق أنظمة عمل فعلية.</div></div>
       </div>
-
       <div class="service-card reveal" style="transition-delay:0.2s">
-        <div class="service-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-        </div>
+        <div class="service-icon"><svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg></div>
         <div class="service-num">03</div>
-        <div class="service-name">Performance &amp; Data Intelligence</div>
-        <div class="service-desc">Turning data into clear, measurable decisions.</div>
-        <div class="service-divider"></div>
-        <div class="service-name-ar">تحليل الأداء والبيانات</div>
-        <div class="service-desc-ar">تحويل البيانات إلى قرارات واضحة وقابلة للقياس.</div>
+        <div class="en"><div class="service-name">Performance &amp; Data Intelligence</div><div class="service-desc">Turning data into clear, measurable decisions.</div></div>
+        <div class="ar"><div class="service-name">تحليل الأداء والبيانات</div><div class="service-desc">تحويل البيانات إلى قرارات واضحة وقابلة للقياس.</div></div>
       </div>
-
       <div class="service-card reveal" style="transition-delay:0.3s">
-        <div class="service-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-        </div>
+        <div class="service-icon"><svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
         <div class="service-num">04</div>
-        <div class="service-name">System Enablement</div>
-        <div class="service-desc">Ensuring business systems are actually used—not just installed.</div>
-        <div class="service-divider"></div>
-        <div class="service-name-ar">تمكين الأنظمة</div>
-        <div class="service-desc-ar">ضمان استخدام الأنظمة فعلياً داخل التشغيل، وليس مجرد تركيبها.</div>
+        <div class="en"><div class="service-name">System Enablement</div><div class="service-desc">Ensuring business systems are actually used—not just installed.</div></div>
+        <div class="ar"><div class="service-name">تمكين الأنظمة</div><div class="service-desc">ضمان استخدام الأنظمة فعلياً داخل التشغيل، وليس مجرد تركيبها.</div></div>
       </div>
-
       <div class="service-card reveal" style="transition-delay:0.4s">
-        <div class="service-icon">
-          <svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        </div>
+        <div class="service-icon"><svg width="22" height="22" fill="none" stroke="white" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
         <div class="service-num">05</div>
-        <div class="service-name">Research &amp; Knowledge Solutions</div>
-        <div class="service-desc">From academic frameworks to real-world application.</div>
-        <div class="service-divider"></div>
-        <div class="service-name-ar">حلول البحث والمعرفة</div>
-        <div class="service-desc-ar">ربط المنهج العلمي بالتطبيق العملي.</div>
+        <div class="en"><div class="service-name">Research &amp; Knowledge Solutions</div><div class="service-desc">From academic frameworks to real-world application.</div></div>
+        <div class="ar"><div class="service-name">حلول البحث والمعرفة</div><div class="service-desc">ربط المنهج العلمي بالتطبيق العملي.</div></div>
       </div>
     </div>
 
     <div class="services-footer reveal">
-      <div class="services-footer-text">Our engagement model focuses on one outcome: measurable business impact—not activity.</div>
-      <div class="services-footer-text-ar" dir="rtl">نموذج عملنا يركز على: الأثر الفعلي… وليس النشاط.</div>
+      <div class="en services-footer-text">Our engagement model focuses on one outcome: measurable business impact—not activity.</div>
+      <div class="ar services-footer-text">نموذج عملنا يركز على: الأثر الفعلي… وليس النشاط.</div>
     </div>
   </div>
 </section>
@@ -2108,187 +2343,78 @@ footer {
 <section class="insight-feature" id="platform">
   <div class="hero-grid"></div>
   <div class="section-inner" style="display:block; position:relative; z-index:2;">
-    <div class="section-tag reveal">
-      <div class="section-tag-line"></div>
-      <span>The Platform</span>
-    </div>
-    <h2 class="section-title reveal" style="color:var(--white)">Our Intelligence <em>Platforms</em></h2>
+    <div class="section-tag reveal"><div class="section-tag-line"></div><span class="en">The Platform</span><span class="ar">المنصة</span></div>
+    <h2 class="section-title reveal" style="color:var(--white)"><span class="en">Our Intelligence <em>Platforms</em></span><span class="ar">منصاتنا <em>الذكية</em></span></h2>
 
     <div class="platform-tabs-nav reveal">
-      <button class="platform-tab-btn active" onclick="switchPlatform(0)">CX Intelligence</button>
-      <button class="platform-tab-btn" onclick="switchPlatform(1)">Customer Loyalty</button>
-      <button class="platform-tab-btn" onclick="switchPlatform(2)">Performance Management</button>
+      <button class="platform-tab-btn active" onclick="switchPlatform(0)"><span class="en">CX Intelligence</span><span class="ar">ذكاء تجربة العميل</span></button>
+      <button class="platform-tab-btn" onclick="switchPlatform(1)"><span class="en">Customer Loyalty</span><span class="ar">ولاء العملاء</span></button>
+      <button class="platform-tab-btn" onclick="switchPlatform(2)"><span class="en">Performance Management</span><span class="ar">إدارة الأداء</span></button>
     </div>
 
     <!-- Platform 1: CX -->
     <div class="platform-panel active" id="plat-0">
-      <div class="platform-en">
+      <div class="en">
         <h3>Customer Experience Intelligence Platform</h3>
         <p class="platform-tagline">Most companies measure satisfaction. Very few understand what drives it.</p>
         <p class="platform-transition-label">We move you from:</p>
-        <ul class="platform-arrows">
-          <li>Scores → Drivers</li>
-          <li>Feedback → Decisions</li>
-          <li>Assumptions → Measurable impact</li>
-        </ul>
+        <ul class="platform-arrows"><li>Scores → Drivers</li><li>Feedback → Decisions</li><li>Assumptions → Measurable impact</li></ul>
         <p class="platform-section-label">What we deliver:</p>
-        <ul class="platform-bullets">
-          <li>Tailored CX measurement design</li>
-          <li>Data validation and quality control</li>
-          <li>Driver identification using advanced modeling</li>
-          <li>Impact quantification (what actually matters)</li>
-          <li>Clear action roadmap</li>
-        </ul>
-        <div class="platform-outcome">
-          <div class="platform-outcome-label">Outcome</div>
-          <ul class="platform-outcome-bullets">
-            <li>Focused investments</li>
-            <li>Faster improvements</li>
-            <li>Proven ROI on CX initiatives</li>
-          </ul>
-        </div>
+        <ul class="platform-bullets"><li>Tailored CX measurement design</li><li>Data validation and quality control</li><li>Driver identification using advanced modeling</li><li>Impact quantification (what actually matters)</li><li>Clear action roadmap</li></ul>
+        <div class="platform-outcome"><div class="platform-outcome-label">Outcome</div><ul class="platform-outcome-bullets"><li>Focused investments</li><li>Faster improvements</li><li>Proven ROI on CX initiatives</li></ul></div>
       </div>
-      <div class="platform-ar" dir="rtl">
+      <div class="ar">
         <h3>منصة تحليل تجربة العميل</h3>
         <p class="platform-tagline">معظم الشركات تقيس الرضا، لكن القليل يفهم ما الذي يؤثر عليه فعلياً.</p>
         <p class="platform-transition-label">نحن ننقلك من:</p>
-        <ul class="platform-arrows">
-          <li>درجات ← محركات</li>
-          <li>آراء ← قرارات</li>
-          <li>انطباعات ← أثر قابل للقياس</li>
-        </ul>
+        <ul class="platform-arrows"><li>درجات ← محركات</li><li>آراء ← قرارات</li><li>انطباعات ← أثر قابل للقياس</li></ul>
         <p class="platform-section-label">ما نقدمه:</p>
-        <ul class="platform-bullets">
-          <li>تصميم قياس مخصص لتجربة العميل</li>
-          <li>ضبط جودة البيانات</li>
-          <li>تحديد المحركات الحقيقية</li>
-          <li>قياس الأثر الفعلي لكل عامل</li>
-          <li>خطة عمل واضحة</li>
-        </ul>
-        <div class="platform-outcome">
-          <div class="platform-outcome-label">النتيجة</div>
-          <ul class="platform-outcome-bullets">
-            <li>استثمار دقيق</li>
-            <li>تحسين أسرع</li>
-            <li>أثر مثبت على رضا العملاء</li>
-          </ul>
-        </div>
+        <ul class="platform-bullets"><li>تصميم قياس مخصص لتجربة العميل</li><li>ضبط جودة البيانات</li><li>تحديد المحركات الحقيقية</li><li>قياس الأثر الفعلي لكل عامل</li><li>خطة عمل واضحة</li></ul>
+        <div class="platform-outcome"><div class="platform-outcome-label">النتيجة</div><ul class="platform-outcome-bullets"><li>استثمار دقيق</li><li>تحسين أسرع</li><li>أثر مثبت على رضا العملاء</li></ul></div>
       </div>
     </div>
 
     <!-- Platform 2: Customer Loyalty -->
     <div class="platform-panel" id="plat-1">
-      <div class="platform-en">
+      <div class="en">
         <h3>Customer Loyalty Intelligence Platform</h3>
         <p class="platform-tagline">Most companies measure retention and loyalty. Very few understand what actually drives it.</p>
         <p class="platform-transition-label">We move you from:</p>
-        <ul class="platform-arrows">
-          <li>Tracking metrics → understanding drivers</li>
-          <li>General assumptions → decision clarity</li>
-          <li>Activities → measurable impact</li>
-        </ul>
+        <ul class="platform-arrows"><li>Tracking metrics → understanding drivers</li><li>General assumptions → decision clarity</li><li>Activities → measurable impact</li></ul>
         <p class="platform-section-label">What we deliver:</p>
-        <ul class="platform-bullets">
-          <li>Tailored loyalty measurement aligned to customer lifecycle</li>
-          <li>Data validation and quality control</li>
-          <li>Driver identification (what truly influences retention)</li>
-          <li>Impact quantification (which factors matter most)</li>
-          <li>Clear, actionable insights</li>
-        </ul>
-        <div class="platform-outcome">
-          <div class="platform-outcome-label">Outcome</div>
-          <ul class="platform-outcome-bullets">
-            <li>Focused retention initiatives</li>
-            <li>Better allocation of loyalty investments</li>
-            <li>Measurable impact on customer retention</li>
-          </ul>
-        </div>
+        <ul class="platform-bullets"><li>Tailored loyalty measurement aligned to customer lifecycle</li><li>Data validation and quality control</li><li>Driver identification (what truly influences retention)</li><li>Impact quantification (which factors matter most)</li><li>Clear, actionable insights</li></ul>
+        <div class="platform-outcome"><div class="platform-outcome-label">Outcome</div><ul class="platform-outcome-bullets"><li>Focused retention initiatives</li><li>Better allocation of loyalty investments</li><li>Measurable impact on customer retention</li></ul></div>
       </div>
-      <div class="platform-ar" dir="rtl">
+      <div class="ar">
         <h3>منصة تحليل الولاء والاحتفاظ بالعملاء</h3>
         <p class="platform-tagline">معظم الشركات تقيس الولاء والاحتفاظ، لكن القليل يفهم ما الذي يؤثر عليه فعلياً.</p>
         <p class="platform-transition-label">نحن ننقلك من:</p>
-        <ul class="platform-arrows">
-          <li>متابعة المؤشرات ← فهم المحركات</li>
-          <li>افتراضات عامة ← وضوح في القرار</li>
-          <li>أنشطة ← أثر قابل للقياس</li>
-        </ul>
+        <ul class="platform-arrows"><li>متابعة المؤشرات ← فهم المحركات</li><li>افتراضات عامة ← وضوح في القرار</li><li>أنشطة ← أثر قابل للقياس</li></ul>
         <p class="platform-section-label">ما نقدمه:</p>
-        <ul class="platform-bullets">
-          <li>تصميم قياس مخصص للولاء مرتبط بدورة حياة العميل</li>
-          <li>ضبط جودة البيانات</li>
-          <li>تحديد المحركات الحقيقية للاحتفاظ</li>
-          <li>قياس الأثر لكل عامل</li>
-          <li>مخرجات واضحة قابلة للتنفيذ</li>
-        </ul>
-        <div class="platform-outcome">
-          <div class="platform-outcome-label">النتيجة</div>
-          <ul class="platform-outcome-bullets">
-            <li>مبادرات احتفاظ أكثر دقة</li>
-            <li>توجيه أفضل للاستثمار في الولاء</li>
-            <li>أثر قابل للقياس على الاحتفاظ بالعملاء</li>
-          </ul>
-        </div>
+        <ul class="platform-bullets"><li>تصميم قياس مخصص للولاء مرتبط بدورة حياة العميل</li><li>ضبط جودة البيانات</li><li>تحديد المحركات الحقيقية للاحتفاظ</li><li>قياس الأثر لكل عامل</li><li>مخرجات واضحة قابلة للتنفيذ</li></ul>
+        <div class="platform-outcome"><div class="platform-outcome-label">النتيجة</div><ul class="platform-outcome-bullets"><li>مبادرات احتفاظ أكثر دقة</li><li>توجيه أفضل للاستثمار في الولاء</li><li>أثر قابل للقياس على الاحتفاظ بالعملاء</li></ul></div>
       </div>
     </div>
 
     <!-- Platform 3: Performance Management -->
     <div class="platform-panel" id="plat-2">
-      <div class="platform-en">
+      <div class="en">
         <h3>Performance Management Platform</h3>
         <p class="platform-tagline">Most organizations track KPIs. Very few measure performance at the role level.</p>
         <p class="platform-transition-label">We move you from:</p>
-        <ul class="platform-arrows">
-          <li>Generic KPIs → role-based performance measurement</li>
-          <li>Subjective evaluation → structured assessment</li>
-          <li>Reviews → decision-driven performance management</li>
-        </ul>
+        <ul class="platform-arrows"><li>Generic KPIs → role-based performance measurement</li><li>Subjective evaluation → structured assessment</li><li>Reviews → decision-driven performance management</li></ul>
         <p class="platform-section-label">What we deliver:</p>
-        <ul class="platform-bullets">
-          <li>Role-based performance framework (objectives &amp; competencies per role)</li>
-          <li>Definition of performance weightings (goals vs. competencies)</li>
-          <li>Clear targets for each objective and competency</li>
-          <li>Measurement logic for each performance element</li>
-          <li>Calculation of overall performance score</li>
-          <li>Digital management of performance cycles through the platform</li>
-        </ul>
-        <div class="platform-outcome">
-          <div class="platform-outcome-label">Outcome</div>
-          <ul class="platform-outcome-bullets">
-            <li>Objective, role-specific evaluation</li>
-            <li>Consistent &amp; measurable scoring</li>
-            <li>Structured performance cycles</li>
-            <li>System-driven performance decisions</li>
-          </ul>
-        </div>
+        <ul class="platform-bullets"><li>Role-based performance framework (objectives &amp; competencies per role)</li><li>Definition of performance weightings (goals vs. competencies)</li><li>Clear targets for each objective and competency</li><li>Measurement logic for each performance element</li><li>Calculation of overall performance score</li><li>Digital management of performance cycles through the platform</li></ul>
+        <div class="platform-outcome"><div class="platform-outcome-label">Outcome</div><ul class="platform-outcome-bullets"><li>Objective, role-specific evaluation</li><li>Consistent &amp; measurable scoring</li><li>Structured performance cycles</li><li>System-driven performance decisions</li></ul></div>
       </div>
-      <div class="platform-ar" dir="rtl">
+      <div class="ar">
         <h3>منصة إدارة الأداء</h3>
         <p class="platform-tagline">معظم الشركات تتابع مؤشرات عامة، لكن القليل يقيس الأداء على مستوى الوظيفة.</p>
         <p class="platform-transition-label">نحن ننقلك من:</p>
-        <ul class="platform-arrows">
-          <li>مؤشرات عامة ← قياس أداء حسب كل وظيفة</li>
-          <li>تقييمات شخصية ← تقييمات منظمة</li>
-          <li>مراجعات شكلية ← إدارة أداء قائمة على القرار</li>
-        </ul>
+        <ul class="platform-arrows"><li>مؤشرات عامة ← قياس أداء حسب كل وظيفة</li><li>تقييمات شخصية ← تقييمات منظمة</li><li>مراجعات شكلية ← إدارة أداء قائمة على القرار</li></ul>
         <p class="platform-section-label">ما نقدمه:</p>
-        <ul class="platform-bullets">
-          <li>إطار أداء لكل وظيفة (الأهداف والكفاءات لكل دور)</li>
-          <li>تحديد أوزان الأداء (نسبة الأهداف مقابل الكفاءات)</li>
-          <li>تحديد مستهدفات واضحة لكل عنصر</li>
-          <li>تعريف آلية قياس لكل هدف وكفاءة</li>
-          <li>احتساب التقييم النهائي للأداء</li>
-          <li>إدارة دورة الأداء إلكترونياً عبر المنصة</li>
-        </ul>
-        <div class="platform-outcome">
-          <div class="platform-outcome-label">النتيجة</div>
-          <ul class="platform-outcome-bullets">
-            <li>تقييم موضوعي ودقيق لكل وظيفة</li>
-            <li>نتائج أداء قابلة للقياس والمقارنة</li>
-            <li>إدارة منظمة لدورات الأداء</li>
-            <li>توجيه قرارات الأداء بشكل منهجي</li>
-          </ul>
-        </div>
+        <ul class="platform-bullets"><li>إطار أداء لكل وظيفة (الأهداف والكفاءات لكل دور)</li><li>تحديد أوزان الأداء (نسبة الأهداف مقابل الكفاءات)</li><li>تحديد مستهدفات واضحة لكل عنصر</li><li>تعريف آلية قياس لكل هدف وكفاءة</li><li>احتساب التقييم النهائي للأداء</li><li>إدارة دورة الأداء إلكترونياً عبر المنصة</li></ul>
+        <div class="platform-outcome"><div class="platform-outcome-label">النتيجة</div><ul class="platform-outcome-bullets"><li>تقييم موضوعي ودقيق لكل وظيفة</li><li>نتائج أداء قابلة للقياس والمقارنة</li><li>إدارة منظمة لدورات الأداء</li><li>توجيه قرارات الأداء بشكل منهجي</li></ul></div>
       </div>
     </div>
   </div>
@@ -2297,36 +2423,33 @@ footer {
 <!-- PROCESS -->
 <section class="process">
   <div class="section-inner">
-    <div class="section-tag reveal">
-      <div class="section-tag-line"></div>
-      <span>How It Works</span>
-    </div>
-    <h2 class="section-title reveal">From Data to <em>Decision</em></h2>
+    <div class="section-tag reveal"><div class="section-tag-line"></div><span class="en">How It Works</span><span class="ar">آلية العمل</span></div>
+    <h2 class="section-title reveal"><span class="en">From Data to <em>Decision</em></span><span class="ar">من البيانات إلى <em>القرار</em></span></h2>
     <div class="process-steps">
       <div class="process-step reveal">
         <div class="process-step-num">1</div>
-        <div class="process-step-name">Filter</div>
-        <div class="process-step-desc">Select branch, gender, or service segment to scope your analysis.</div>
+        <div class="process-step-name"><span class="en">Filter</span><span class="ar">الفلترة</span></div>
+        <div class="process-step-desc"><span class="en">Select branch, gender, or service segment to scope your analysis.</span><span class="ar">اختر الفرع أو الجنس أو شريحة الخدمة لتحديد نطاق التحليل.</span></div>
       </div>
       <div class="process-step reveal" style="transition-delay:0.1s">
         <div class="process-step-num">2</div>
-        <div class="process-step-name">Model</div>
-        <div class="process-step-desc">Structural equation model calculates explanatory power for selected data.</div>
+        <div class="process-step-name"><span class="en">Model</span><span class="ar">النمذجة</span></div>
+        <div class="process-step-desc"><span class="en">Structural equation model calculates explanatory power for selected data.</span><span class="ar">يحسب نموذج المعادلات الهيكلية القدرة التفسيرية للبيانات المختارة.</span></div>
       </div>
       <div class="process-step reveal" style="transition-delay:0.2s">
         <div class="process-step-num">3</div>
-        <div class="process-step-name">Drivers</div>
-        <div class="process-step-desc">Path coefficients and effect sizes rank each driver by true impact.</div>
+        <div class="process-step-name"><span class="en">Drivers</span><span class="ar">المحركات</span></div>
+        <div class="process-step-desc"><span class="en">Path coefficients and effect sizes rank each driver by true impact.</span><span class="ar">تُرتّب معاملات المسار وأحجام الأثر كل محرك وفق تأثيره الحقيقي.</span></div>
       </div>
       <div class="process-step reveal" style="transition-delay:0.3s">
         <div class="process-step-num">4</div>
-        <div class="process-step-name">Simulate</div>
-        <div class="process-step-desc">Model improvement scenarios and calculate expected satisfaction lift.</div>
+        <div class="process-step-name"><span class="en">Simulate</span><span class="ar">المحاكاة</span></div>
+        <div class="process-step-desc"><span class="en">Model improvement scenarios and calculate expected satisfaction lift.</span><span class="ar">نمذجة سيناريوهات التحسين وحساب التحسن المتوقع في الرضا.</span></div>
       </div>
       <div class="process-step reveal" style="transition-delay:0.4s">
         <div class="process-step-num">5</div>
-        <div class="process-step-name">Recommend</div>
-        <div class="process-step-desc">Auto-generated executive recommendations: Do, Optimize, or Avoid.</div>
+        <div class="process-step-name"><span class="en">Recommend</span><span class="ar">التوصيات</span></div>
+        <div class="process-step-desc"><span class="en">Auto-generated executive recommendations: Do, Optimize, or Avoid.</span><span class="ar">توصيات تنفيذية معتمدة: نفّذ، حسّن، أو تجنّب.</span></div>
       </div>
     </div>
   </div>
@@ -2336,19 +2459,16 @@ footer {
 <section class="cta-banner">
   <div class="section-inner">
     <div>
-      <div class="section-tag">
-        <div class="section-tag-line"></div>
-        <span>Get Started</span>
-      </div>
-      <h2 class="section-title">Ready to make decisions <em>with confidence?</em></h2>
-      <p class="section-lead">Access your personalized dashboard or contact us to learn how ROSHD Professional can serve your organization.</p>
+      <div class="section-tag"><div class="section-tag-line"></div><span class="en">Get Started</span><span class="ar">ابدأ الآن</span></div>
+      <h2 class="section-title"><span class="en">Ready to make decisions <em>with confidence?</em></span><span class="ar">هل أنت مستعد لاتخاذ قرارات <em>بثقة؟</em></span></h2>
+      <p class="section-lead"><span class="en">Access your personalized dashboard or contact us to learn how ROSHD Professional can serve your organization.</span><span class="ar">ادخل إلى لوحة التحكم الخاصة بك أو تواصل معنا لمعرفة كيف يمكن لرُشد الاحتراف خدمة مؤسستك.</span></p>
     </div>
     <div class="cta-actions">
       <button class="btn-primary" onclick="openLogin(event)">
-        Access Client Portal
+        <span class="en">Access Client Portal</span><span class="ar">ادخل بوابة العملاء</span>
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <a href="#contact" class="btn-ghost">Request a Demo</a>
+      <a href="#contact" class="btn-ghost"><span class="en">Request a Demo</span><span class="ar">اطلب عرضًا توضيحيًا</span></a>
     </div>
   </div>
 </section>
@@ -2357,53 +2477,47 @@ footer {
 <section class="contact" id="contact">
   <div class="section-inner">
     <div>
-      <div class="section-tag reveal">
-        <div class="section-tag-line"></div>
-        <span>Get In Touch</span>
-      </div>
-      <h2 class="section-title reveal">Let's build something <em>meaningful</em></h2>
-      <p class="section-lead reveal">Have a project in mind or want to learn more about our consulting and training services? We'd love to hear from you.</p>
+      <div class="section-tag reveal"><div class="section-tag-line"></div><span class="en">Get In Touch</span><span class="ar">تواصل معنا</span></div>
+      <h2 class="section-title reveal"><span class="en">Let's build something <em>meaningful</em></span><span class="ar">لنبنِ شيئًا <em>ذا قيمة</em></span></h2>
+      <p class="section-lead reveal"><span class="en">Have a project in mind or want to learn more about our consulting and training services? We'd love to hear from you.</span><span class="ar">هل لديك مشروع في ذهنك أو تريد معرفة المزيد عن خدماتنا الاستشارية والتدريبية؟ يسعدنا الاستماع إليك.</span></p>
       <div style="margin-top:48px; display:flex; flex-direction:column; gap:28px;">
         <div class="reveal">
-          <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px;">Email</div>
+          <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px;"><span class="en">Email</span><span class="ar">البريد الإلكتروني</span></div>
           <div style="font-size:16px;color:var(--navy);">info@roshd-professional.com</div>
         </div>
         <div class="reveal">
-          <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px;">Tagline</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--navy);">Clarity. Insight. Impact.</div>
-        </div>
-        <div class="reveal">
-          <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px;">تدريب واستشارات</div>
-          <div style="font-size:14px;color:var(--gray);">Training &amp; Consulting</div>
+          <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px;"><span class="en">Tagline</span><span class="ar">الشعار</span></div>
+          <div class="en" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--navy);">Clarity. Insight. Impact.</div>
+          <div class="ar" style="font-family:'Cairo',sans-serif;font-size:20px;color:var(--navy);">وضوح. رؤية. تأثير.</div>
         </div>
       </div>
     </div>
     <div class="contact-form reveal">
-      <h3 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--navy);margin-bottom:28px;">Send a Message</h3>
+      <h3 style="font-size:26px;font-weight:600;color:var(--navy);margin-bottom:28px;"><span class="en" style="font-family:'Cormorant Garamond',serif;font-style:italic;">Send a Message</span><span class="ar">أرسل رسالة</span></h3>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">First Name</label>
-          <input type="text" class="form-input" placeholder="Ahmed">
+          <label class="form-label"><span class="en">First Name</span><span class="ar">الاسم الأول</span></label>
+          <input type="text" class="form-input" data-ph-en="Ahmed" data-ph-ar="أحمد" placeholder="أحمد">
         </div>
         <div class="form-group">
-          <label class="form-label">Last Name</label>
-          <input type="text" class="form-input" placeholder="Al-Rashidi">
+          <label class="form-label"><span class="en">Last Name</span><span class="ar">اسم العائلة</span></label>
+          <input type="text" class="form-input" data-ph-en="Al-Rashidi" data-ph-ar="الرشيدي" placeholder="الرشيدي">
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input type="email" class="form-input" placeholder="ahmed@company.com">
+        <label class="form-label"><span class="en">Email Address</span><span class="ar">البريد الإلكتروني</span></label>
+        <input type="email" class="form-input" data-ph-en="ahmed@company.com" data-ph-ar="ahmed@company.com" placeholder="ahmed@company.com">
       </div>
       <div class="form-group">
-        <label class="form-label">Company</label>
-        <input type="text" class="form-input" placeholder="Your Organization">
+        <label class="form-label"><span class="en">Company</span><span class="ar">الشركة / المؤسسة</span></label>
+        <input type="text" class="form-input" data-ph-en="Your Organization" data-ph-ar="اسم المؤسسة" placeholder="اسم المؤسسة">
       </div>
       <div class="form-group">
-        <label class="form-label">Message</label>
-        <textarea class="form-input" placeholder="Tell us about your project or inquiry..."></textarea>
+        <label class="form-label"><span class="en">Message</span><span class="ar">الرسالة</span></label>
+        <textarea class="form-input" data-ph-en="Tell us about your project or inquiry..." data-ph-ar="أخبرنا عن مشروعك أو استفسارك..." placeholder="أخبرنا عن مشروعك أو استفسارك..."></textarea>
       </div>
       <button class="btn-primary" style="width:100%;justify-content:center;" onclick="handleContact(event)">
-        Send Message
+        <span class="en">Send Message</span><span class="ar">إرسال الرسالة</span>
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
       </button>
     </div>
@@ -2416,39 +2530,41 @@ footer {
     <div class="footer-top">
       <div class="footer-brand">
         <img src="logo.png" alt="ROSHD Professional">
-        <div class="footer-tagline">Clarity. Insight. Impact.</div>
-        <div class="footer-desc">ROSHD Professional delivers consulting and training excellence, transforming data into decisions that matter.</div>
+        <div class="footer-tagline en">Clarity. Insight. Impact.</div>
+        <div class="footer-tagline ar">وضوح. رؤية. تأثير.</div>
+        <div class="footer-desc en">ROSHD Professional delivers consulting and training excellence, transforming data into decisions that matter.</div>
+        <div class="footer-desc ar">تقدّم رُشد الاحتراف استشارات وتدريبًا متميزًا، يحوّل البيانات إلى قرارات حقيقية.</div>
       </div>
       <div>
-        <div class="footer-col-title">Company</div>
+        <div class="footer-col-title"><span class="en">Company</span><span class="ar">الشركة</span></div>
         <ul class="footer-links">
-          <li><a href="#about">About Us</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#platform">Platform</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="#about"><span class="en">About Us</span><span class="ar">من نحن</span></a></li>
+          <li><a href="#services"><span class="en">Services</span><span class="ar">الخدمات</span></a></li>
+          <li><a href="#platform"><span class="en">Platform</span><span class="ar">المنصة</span></a></li>
+          <li><a href="#contact"><span class="en">Contact</span><span class="ar">تواصل</span></a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-col-title">Platform</div>
+        <div class="footer-col-title"><span class="en">Platform</span><span class="ar">المنصة</span></div>
         <ul class="footer-links">
-          <li><a href="#" onclick="openLogin(event)">Client Login</a></li>
-          <li><a href="#" onclick="openSignup(event)">Create Account</a></li>
-          <li><a href="#">Executive Dashboard</a></li>
-          <li><a href="#">Insight Engine</a></li>
-          <li><a href="#">Simulation Lab</a></li>
+          <li><a href="#" onclick="openLogin(event)"><span class="en">Client Login</span><span class="ar">تسجيل الدخول</span></a></li>
+          <li><a href="#" onclick="openSignup(event)"><span class="en">Create Account</span><span class="ar">إنشاء حساب</span></a></li>
+          <li><a href="#"><span class="en">Executive Dashboard</span><span class="ar">لوحة التحكم التنفيذية</span></a></li>
+          <li><a href="#"><span class="en">Insight Engine</span><span class="ar">محرك الرؤى</span></a></li>
+          <li><a href="#"><span class="en">Simulation Lab</span><span class="ar">مختبر المحاكاة</span></a></li>
         </ul>
       </div>
       <div>
-        <div class="footer-col-title">Contact</div>
+        <div class="footer-col-title"><span class="en">Contact</span><span class="ar">التواصل</span></div>
         <ul class="footer-links">
           <li><a href="mailto:info@roshd-professional.com">info@roshd-professional.com</a></li>
-          <li><a href="#">تدريب واستشارات</a></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2026 <span>ROSHD Professional</span>. All rights reserved.</div>
-      <div class="footer-copy">Built with <span>Clarity. Insight. Impact.</span></div>
+      <div class="footer-copy">© 2026 <span>ROSHD Professional</span>. <span class="en">All rights reserved.</span><span class="ar">جميع الحقوق محفوظة.</span></div>
+      <div class="footer-copy en">Built with <span>Clarity. Insight. Impact.</span></div>
+      <div class="footer-copy ar">بُني بـ <span>وضوح. رؤية. تأثير.</span></div>
     </div>
   </div>
 </footer>
@@ -2461,36 +2577,33 @@ footer {
         <img src="logo.png" alt="ROSHD">
         <span class="modal-logo-text">ROSHD PROFESSIONAL</span>
       </div>
-      <div class="modal-title">Welcome Back</div>
-      <div class="modal-subtitle">Sign in to access your analytics dashboard</div>
+      <div class="modal-title"><span class="en">Welcome Back</span><span class="ar">مرحبًا بعودتك</span></div>
+      <div class="modal-subtitle"><span class="en">Sign in to access your analytics dashboard</span><span class="ar">سجّل دخولك للوصول إلى لوحة التحليلات</span></div>
       <button type="button" class="modal-close" onclick="closeLogin()">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="modal-error" id="loginError">Invalid email or password. Please try again.</div>
+      <div class="modal-error" id="loginError"></div>
       <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input type="email" class="form-input" id="loginEmail" placeholder="your@email.com">
+        <label class="form-label"><span class="en">Email Address</span><span class="ar">البريد الإلكتروني</span></label>
+        <input type="email" class="form-input" id="loginEmail"
+          data-ph-en="your@email.com" data-ph-ar="بريدك@email.com" placeholder="بريدك@email.com">
       </div>
       <div class="form-group">
-        <label class="form-label">Password</label>
+        <label class="form-label"><span class="en">Password</span><span class="ar">كلمة المرور</span></label>
         <div class="pw-field">
           <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
           <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePwVisibility('loginPassword', this)">
-            <span class="pw-eye-open" aria-hidden="true">
-              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </span>
-            <span class="pw-eye-off" hidden aria-hidden="true">
-              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
-            </span>
+            <span class="pw-eye-open" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <span class="pw-eye-off" hidden aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg></span>
           </button>
         </div>
       </div>
       <button class="btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="handleLogin()">
-        Sign In to Dashboard
+        <span class="en">Sign In to Dashboard</span><span class="ar">دخول إلى لوحة التحكم</span>
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <div class="modal-switch">New client? <a href="#" onclick="switchToSignup(event)">Create an account</a></div>
-      <div class="modal-footer-text">Access may be invitation-based. Contact your ROSHD administrator to request enterprise access.</div>
+      <div class="modal-switch"><span class="en">New client? <a href="#" onclick="switchToSignup(event)">Create an account</a></span><span class="ar">عميل جديد؟ <a href="#" onclick="switchToSignup(event)">إنشاء حساب</a></span></div>
+      <div class="modal-footer-text"><span class="en">Access may be invitation-based. Contact your ROSHD administrator to request enterprise access.</span><span class="ar">قد يكون الوصول بالدعوة. تواصل مع مسؤول رُشد للحصول على صلاحية الدخول.</span></div>
     </div>
   </div>
 </div>
@@ -2503,54 +2616,48 @@ footer {
         <img src="logo.png" alt="ROSHD">
         <span class="modal-logo-text">ROSHD PROFESSIONAL</span>
       </div>
-      <div class="modal-title">Create Your Account</div>
-      <div class="modal-subtitle">Enter your credentials to join the client portal</div>
+      <div class="modal-title"><span class="en">Create Your Account</span><span class="ar">إنشاء حسابك</span></div>
+      <div class="modal-subtitle"><span class="en">Enter your credentials to join the client portal</span><span class="ar">أدخل بياناتك للانضمام إلى بوابة العملاء</span></div>
       <button type="button" class="modal-close" onclick="closeSignup()">&times;</button>
     </div>
     <div class="modal-body">
-      <div class="modal-error" id="signupError">Unable to register. Please check your details.</div>
+      <div class="modal-error" id="signupError"></div>
       <div class="form-group">
-        <label class="form-label">Username</label>
-        <input type="text" class="form-input" id="signupUsername" autocomplete="username" placeholder="jdoe">
+        <label class="form-label"><span class="en">Username</span><span class="ar">اسم المستخدم</span></label>
+        <input type="text" class="form-input" id="signupUsername" autocomplete="username"
+          data-ph-en="jdoe" data-ph-ar="اسم_المستخدم" placeholder="اسم_المستخدم">
       </div>
       <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input type="email" class="form-input" id="signupEmail" autocomplete="email" placeholder="your@email.com">
+        <label class="form-label"><span class="en">Email Address</span><span class="ar">البريد الإلكتروني</span></label>
+        <input type="email" class="form-input" id="signupEmail" autocomplete="email"
+          data-ph-en="your@email.com" data-ph-ar="بريدك@email.com" placeholder="بريدك@email.com">
       </div>
       <div class="form-group">
-        <label class="form-label">Password</label>
+        <label class="form-label"><span class="en">Password</span><span class="ar">كلمة المرور</span></label>
         <div class="pw-field">
           <input type="password" class="form-input" id="signupPassword" autocomplete="new-password" placeholder="••••••••">
           <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePwVisibility('signupPassword', this)">
-            <span class="pw-eye-open" aria-hidden="true">
-              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </span>
-            <span class="pw-eye-off" hidden aria-hidden="true">
-              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
-            </span>
+            <span class="pw-eye-open" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <span class="pw-eye-off" hidden aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg></span>
           </button>
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Confirm Password</label>
+        <label class="form-label"><span class="en">Confirm Password</span><span class="ar">تأكيد كلمة المرور</span></label>
         <div class="pw-field">
           <input type="password" class="form-input" id="signupPasswordConfirm" autocomplete="new-password" placeholder="••••••••">
           <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePwVisibility('signupPasswordConfirm', this)">
-            <span class="pw-eye-open" aria-hidden="true">
-              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            </span>
-            <span class="pw-eye-off" hidden aria-hidden="true">
-              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
-            </span>
+            <span class="pw-eye-open" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <span class="pw-eye-off" hidden aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg></span>
           </button>
         </div>
       </div>
       <button type="button" class="btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="handleSignup()">
-        Create Account
+        <span class="en">Create Account</span><span class="ar">إنشاء الحساب</span>
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <div class="modal-switch">Already registered? <a href="#" onclick="switchToLogin(event)">Sign in</a></div>
-      <div class="modal-footer-text">Passwords must be at least six characters where your policy allows.</div>
+      <div class="modal-switch"><span class="en">Already registered? <a href="#" onclick="switchToLogin(event)">Sign in</a></span><span class="ar">لديك حساب بالفعل؟ <a href="#" onclick="switchToLogin(event)">تسجيل الدخول</a></span></div>
+      <div class="modal-footer-text"><span class="en">Passwords must be at least six characters where your policy allows.</span><span class="ar">يجب أن تحتوي كلمة المرور على ستة أحرف على الأقل.</span></div>
     </div>
   </div>
 </div>
@@ -2559,6 +2666,32 @@ footer {
 <div class="toast" id="toast"></div>
 
 <script>
+// Global language switcher
+function setLanguage(lang) {
+  const isAr = lang === 'ar';
+  document.documentElement.setAttribute('data-lang', lang);
+  document.documentElement.setAttribute('lang', lang);
+  document.getElementById('btn-ar').classList.toggle('active', isAr);
+  document.getElementById('btn-en').classList.toggle('active', !isAr);
+  // Update all placeholders that have bilingual data attributes
+  document.querySelectorAll('[data-ph-en]').forEach(el => {
+    el.placeholder = isAr ? (el.dataset.phAr || '') : (el.dataset.phEn || '');
+  });
+  try { localStorage.setItem('roshd-lang', lang); } catch(e) {}
+}
+
+// Bilingual helper: pick text based on current lang
+function t(en, ar) {
+  return document.documentElement.getAttribute('data-lang') === 'ar' ? ar : en;
+}
+
+// Restore saved language on load (default: Arabic)
+(function() {
+  var saved = null;
+  try { saved = localStorage.getItem('roshd-lang'); } catch(e) {}
+  setLanguage(saved || 'ar');
+})();
+
 // Platform tab switcher
 function switchPlatform(idx) {
   document.querySelectorAll('.platform-tab-btn').forEach((t, i) => t.classList.toggle('active', i === idx));
@@ -2648,7 +2781,7 @@ async function handleLogin() {
   errorEl.classList.remove('show');
 
   if (!email || !password) {
-    errorEl.textContent = 'Please enter your email and password.';
+    errorEl.textContent = t('Please enter your email and password.', 'يرجى إدخال البريد الإلكتروني وكلمة المرور.');
     errorEl.classList.add('show');
     return;
   }
@@ -2666,16 +2799,16 @@ async function handleLogin() {
       data = {};
     }
     if (data.success) {
-      showToast('Login successful! Redirecting...');
+      showToast(t('Login successful! Redirecting...', 'تم تسجيل الدخول بنجاح! جارٍ التحويل...'));
       setTimeout(() => { window.location.href = data.redirect || '/dashboard'; }, 1000);
       return;
     }
     errorEl.textContent = data.message || (res.status === 429
-      ? 'Too many attempts — wait a few minutes and try again.'
-      : 'Invalid credentials.');
+      ? t('Too many attempts — wait a few minutes and try again.', 'محاولات كثيرة جداً — انتظر بضع دقائق وحاول مجدداً.')
+      : t('Invalid credentials.', 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'));
     errorEl.classList.add('show');
   } catch (_) {
-    errorEl.textContent = 'Could not reach the server. Open this page via your app URL (same host as the API).';
+    errorEl.textContent = t('Could not reach the server. Open this page via your app URL.', 'تعذّر الاتصال بالخادم. افتح الصفحة عبر رابط التطبيق.');
     errorEl.classList.add('show');
   }
 }
@@ -2689,17 +2822,17 @@ async function handleSignup() {
   errorEl.classList.remove('show');
 
   if (!username || !email || !password || !confirm) {
-    errorEl.textContent = 'Please fill in all fields.';
+    errorEl.textContent = t('Please fill in all fields.', 'يرجى ملء جميع الحقول.');
     errorEl.classList.add('show');
     return;
   }
   if (password !== confirm) {
-    errorEl.textContent = 'Passwords do not match.';
+    errorEl.textContent = t('Passwords do not match.', 'كلمتا المرور غير متطابقتين.');
     errorEl.classList.add('show');
     return;
   }
   if (password.length < 6) {
-    errorEl.textContent = 'Password must be at least 6 characters.';
+    errorEl.textContent = t('Password must be at least 6 characters.', 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.');
     errorEl.classList.add('show');
     return;
   }
@@ -2717,7 +2850,7 @@ async function handleSignup() {
       data = {};
     }
     if (data.success) {
-      showToast(data.message || 'Account created! You can sign in now.');
+      showToast(data.message || t('Account created! You can sign in now.', 'تم إنشاء الحساب! يمكنك تسجيل الدخول الآن.'));
       closeSignup();
       document.getElementById('loginEmail').value = email;
       setTimeout(() => openLogin(), 400);
@@ -2728,11 +2861,11 @@ async function handleSignup() {
       return;
     }
     errorEl.textContent = data.message || (res.status === 429
-      ? 'Too many requests. Wait a minute and try again.'
-      : 'Registration failed.');
+      ? t('Too many requests. Wait a minute and try again.', 'طلبات كثيرة جداً. انتظر دقيقة وحاول مجدداً.')
+      : t('Registration failed.', 'فشل إنشاء الحساب.'));
     errorEl.classList.add('show');
   } catch (err) {
-    errorEl.textContent = 'Unable to reach the server. Try again later.';
+    errorEl.textContent = t('Unable to reach the server. Try again later.', 'تعذّر الاتصال بالخادم. حاول مجدداً لاحقاً.');
     errorEl.classList.add('show');
   }
 }
