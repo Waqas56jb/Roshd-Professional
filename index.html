@@ -601,10 +601,7 @@ section { position: relative; }
 }
 
 .about-strip .section-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 80px;
-  align-items: center;
+  display: block;
 }
 
 .about-pillars {
@@ -2009,37 +2006,207 @@ html[data-lang="ar"] .form-input { text-align: right; }
 
 .platform-ar .platform-outcome-bullets li { font-family: 'Cairo', sans-serif; }
 
+/* ─── HAMBURGER BUTTON ─── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px 8px;
+  margin-left: auto;
+  z-index: 960;
+  flex-shrink: 0;
+}
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 2px;
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  transform-origin: center;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ─── MOBILE NAV OVERLAY ─── */
+.mobile-nav-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 940;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.mobile-nav-overlay.open {
+  opacity: 1;
+}
+
+/* Nav divider inside mobile menu */
+.nav-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 8px 0; list-style: none; }
+
 /* ─── RESPONSIVE ─── */
+
+/* ── 1200px: large tablets ── */
+@media (max-width: 1200px) {
+  .hero-content { gap: 56px; }
+  .section-inner { padding: 0 32px; }
+}
+
+/* ── 1024px: tablets + hamburger activates ── */
 @media (max-width: 1024px) {
+  /* Navbar */
   nav { padding: 0 24px; }
-  .nav-auth-compact { display: flex; margin-left: auto; }
-  .nav-links { display: none !important; }
+  .hamburger { display: flex; }
+  .nav-auth-compact { display: none; }
+
+  /* Mobile nav drawer — slides from right (LTR) */
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    height: 100dvh;
+    background: var(--navy-deep);
+    border-left: 1px solid rgba(184,150,46,0.25);
+    flex-direction: column;
+    padding: 90px 0 40px;
+    gap: 0;
+    display: flex !important;
+    list-style: none;
+    z-index: 950;
+    transition: right 0.35s cubic-bezier(0.4,0,0.2,1);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav-links.open { right: 0; }
+
+  /* Arabic/RTL: slide from left */
+  html[data-lang="ar"] .nav-links {
+    right: auto;
+    left: -320px;
+    border-left: none;
+    border-right: 1px solid rgba(184,150,46,0.25);
+  }
+  html[data-lang="ar"] .nav-links.open { left: 0; }
+
+  .nav-links li { width: 100%; }
+  .nav-links a {
+    display: block;
+    padding: 15px 28px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 15px;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.82);
+  }
+  .nav-links a:hover { background: rgba(184,150,46,0.08); color: var(--white); }
+  .nav-links a::after { display: none !important; }
+  .nav-links .nav-btn {
+    display: block;
+    margin: 20px 28px 0;
+    padding: 14px 24px !important;
+    text-align: center;
+    border-radius: 2px;
+    width: calc(100% - 56px);
+    letter-spacing: 0.06em;
+  }
+  html[data-lang="ar"] .nav-links .nav-btn { letter-spacing: 0; }
+  .mobile-nav-overlay { display: block; }
+
+  /* Layout */
   .hero-content { grid-template-columns: 1fr; gap: 48px; padding: 120px 24px 60px; }
   .hero-right { display: none; }
-  .about-bilingual { grid-template-columns: 1fr; gap: 40px; }
   .services-grid { grid-template-columns: 1fr 1fr; }
-  .platform-panel.active { grid-template-columns: 1fr; }
-  .services-footer { flex-direction: column; gap: 20px; }
-  .services-footer-text-ar { border-left: none; border-top: 1px solid var(--gray-light); padding-left: 0; padding-top: 20px; text-align: center; }
+  .platform-panel.active { display: block !important; }
+  .services-footer { flex-direction: column; gap: 20px; text-align: center; }
   .services-footer-text { text-align: center; }
   .process-steps { grid-template-columns: 1fr 1fr; }
   .process-steps::before { display: none; }
-  .cta-banner .section-inner { grid-template-columns: 1fr; }
+  .cta-banner .section-inner { grid-template-columns: 1fr; text-align: center; }
+  .cta-actions { justify-content: center; }
   .contact .section-inner { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
   .section-inner { padding: 0 24px; }
   .services, .process, .contact, .insight-feature { padding: 80px 0; }
+  .about-strip { padding: 72px 0; }
 }
 
+/* ── 768px: small tablets ── */
+@media (max-width: 768px) {
+  .nav-logo img { height: 50px; }
+  .hero-content { padding: 108px 20px 56px; }
+  .section-title { font-size: clamp(28px, 5.5vw, 44px); }
+  .hero-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-ghost { width: 100%; justify-content: center; }
+  .hero-stats { gap: 28px; }
+  .cta-actions { flex-direction: column; align-items: stretch; gap: 12px; }
+  .cta-actions .btn-primary,
+  .cta-actions .btn-ghost { width: 100%; justify-content: center; }
+  .platform-tabs-nav { gap: 6px; }
+  .platform-tab-btn { font-size: 12px; padding: 10px 14px; }
+  .services, .process, .contact, .insight-feature { padding: 64px 0; }
+  .footer-inner { padding: 56px 24px 28px; }
+}
+
+/* ── 640px: phones ── */
 @media (max-width: 640px) {
+  nav { padding: 0 16px; height: 68px; }
+  nav.scrolled { height: 60px; }
+  .nav-logo img { height: 44px; }
+  .hero-content { padding: 88px 16px 48px; }
+  .hero-title { font-size: clamp(32px, 9vw, 50px); }
+  .hero-subtitle { font-size: 15px; }
+  .hero-stats { flex-direction: column; gap: 18px; padding-top: 28px; margin-top: 32px; }
+  .hero-stat-num { font-size: 36px; }
   .services-grid { grid-template-columns: 1fr; }
   .process-steps { grid-template-columns: 1fr; }
-  .footer-top { grid-template-columns: 1fr; }
-  .hero-stats { flex-direction: column; gap: 20px; }
-  .hero-actions { flex-direction: column; align-items: flex-start; }
-  .platform-tabs-nav { flex-wrap: wrap; }
-  .platform-tab-btn { padding: 10px 16px; }
+  .footer-top { grid-template-columns: 1fr; gap: 36px; }
+  .platform-tabs-nav { flex-wrap: wrap; gap: 6px; }
+  .platform-tab-btn { flex: 1 1 calc(50% - 6px); text-align: center; font-size: 12px; padding: 10px 8px; }
   .form-row { grid-template-columns: 1fr; }
+  .section-inner { padding: 0 16px; }
+  .services, .process, .contact, .insight-feature { padding: 56px 0; }
+  .about-strip, .cta-banner { padding: 56px 0; }
+  .section-title { font-size: clamp(26px, 7.5vw, 38px); }
+  .footer-inner { padding: 48px 16px 24px; }
+  .contact-form { margin-top: 40px; }
+  .btn-primary, .btn-ghost { padding: 14px 24px; font-size: 13px; }
+  .service-card { padding: 24px 20px; }
+  .process-step { padding: 24px 20px; }
+  .hero-eyebrow { margin-bottom: 20px; }
+}
+
+/* ── 480px: small phones ── */
+@media (max-width: 480px) {
+  nav { padding: 0 12px; }
+  .nav-logo img { height: 40px; }
+  .hero-content { padding: 80px 12px 40px; }
+  .hero-title { font-size: clamp(28px, 9.5vw, 42px); line-height: 1.2; }
+  .hero-subtitle { font-size: 14px; line-height: 1.7; }
+  .hero-stat-num { font-size: 32px; }
+  .section-title { font-size: clamp(24px, 8vw, 34px); }
+  .section-lead { font-size: 14px; }
+  .platform-tab-btn { font-size: 11px; padding: 9px 8px; }
+  .dp-kpis { grid-template-columns: 1fr 1fr; }
+  .dp-kpi-val { font-size: 22px; }
+  .btn-primary, .btn-ghost { padding: 13px 20px; font-size: 13px; }
+  .about-body { font-size: 15px; }
+  .footer-col-title { font-size: 12px; }
+}
+
+/* ── 375px: very small phones (iPhone SE) ── */
+@media (max-width: 375px) {
+  .hero-title { font-size: 26px; }
+  .platform-tab-btn { font-size: 10px; padding: 8px 6px; }
+  .nav-logo img { height: 36px; }
+  .section-inner { padding: 0 12px; }
+  .btn-primary { padding: 12px 16px; }
 }
 
 /* Modal RTL for Arabic */
@@ -2095,19 +2262,19 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
     <button class="lang-nav-btn" id="btn-en" onclick="setLanguage('en')">EN</button>
     <button class="lang-nav-btn active" id="btn-ar" onclick="setLanguage('ar')">عر</button>
   </div>
-  <div class="nav-auth-compact" aria-label="Account">
-    <a href="#" class="nav-signup-compact" onclick="openSignup(event)"><span class="en">Sign Up</span><span class="ar">إنشاء حساب</span></a>
-    <a href="#" class="nav-login-compact" onclick="openLogin(event)"><span class="en">Login</span><span class="ar">دخول</span></a>
-  </div>
-  <ul class="nav-links">
-    <li><a href="#about"><span class="en">About</span><span class="ar">من نحن</span></a></li>
-    <li><a href="#services"><span class="en">Services</span><span class="ar">الخدمات</span></a></li>
-    <li><a href="#platform"><span class="en">Platform</span><span class="ar">المنصة</span></a></li>
-    <li><a href="#contact"><span class="en">Contact</span><span class="ar">تواصل</span></a></li>
-    <li><a href="#" class="nav-signup" onclick="openSignup(event)"><span class="en">Sign Up</span><span class="ar">إنشاء حساب</span></a></li>
-    <li><a href="#" class="nav-btn" onclick="openLogin(event)"><span class="en">Client Login</span><span class="ar">دخول العملاء</span></a></li>
+  <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about" onclick="closeMobileMenu()"><span class="en">About</span><span class="ar">من نحن</span></a></li>
+    <li><a href="#services" onclick="closeMobileMenu()"><span class="en">Solutions</span><span class="ar">الحلول</span></a></li>
+    <li><a href="#platform" onclick="closeMobileMenu()"><span class="en">Platform</span><span class="ar">المنصة</span></a></li>
+    <li><a href="#contact" onclick="closeMobileMenu()"><span class="en">Contact</span><span class="ar">تواصل معنا</span></a></li>
+    <li class="nav-divider"></li>
+    <li><a href="#" class="nav-btn" onclick="openLogin(event);closeMobileMenu()"><span class="en">Client Login</span><span class="ar">دخول العملاء</span></a></li>
   </ul>
 </nav>
+<div class="mobile-nav-overlay" id="mobileNavOverlay" onclick="closeMobileMenu()"></div>
 
 <!-- HERO -->
 <section class="hero">
@@ -2273,7 +2440,7 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
     <!-- Arabic -->
     <div class="ar about-single">
       <div class="section-tag reveal"><div class="section-tag-line"></div><span>من نحن</span></div>
-      <h2 class="section-title reveal">نحن <em>شريك تمكين</em></h2>
+      <h2 class="section-title reveal">شريككم في <em>تمكين الأداء وتحقيق النتائج</em></h2>
       <div class="reveal">
         <p class="about-body">لسنا شركة تدريب تقليدية،<br>ولسنا شركة استشارات بالمعنى الكلاسيكي.<br><strong>نحن شريك تمكين</strong></p>
         <p class="about-body">دورنا واضح: تحويل المعرفة إلى تطبيق، والتطبيق إلى نتائج قابلة للقياس.</p>
@@ -2296,8 +2463,8 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
 <section class="services" id="services">
   <div class="section-inner">
     <div class="section-tag reveal"><div class="section-tag-line"></div><span class="en">Services</span><span class="ar">الخدمات</span></div>
-    <h2 class="section-title reveal"><span class="en">End-to-End <em>Enablement Solutions</em></span><span class="ar">حلول تمكين <em>متكاملة</em></span></h2>
-    <p class="section-lead reveal"><span class="en">We provide end-to-end enablement solutions, not fragmented services.</span><span class="ar">نقدم حلول تمكين متكاملة، وليس خدمات متفرقة.</span></p>
+    <h2 class="section-title reveal"><span class="en">End-to-End <em>Enablement Solutions</em></span><span class="ar">حلول تمكين <em>شاملة ومتكاملة</em></span></h2>
+    <p class="section-lead reveal"><span class="en">We provide end-to-end enablement solutions, not fragmented services.</span><span class="ar">نُصمّم وننفّذ حلولًا مترابطة تُغلق الفجوات، بدل تقديم خدمات متفرقة.</span></p>
 
     <div class="services-grid">
       <div class="service-card reveal">
@@ -2334,7 +2501,7 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
 
     <div class="services-footer reveal">
       <div class="en services-footer-text">Our engagement model focuses on one outcome: measurable business impact—not activity.</div>
-      <div class="ar services-footer-text">نموذج عملنا يركز على: الأثر الفعلي… وليس النشاط.</div>
+      <div class="ar services-footer-text">نُصمّم نموذج عملنا لتحقيق نتائج قابلة للقياس—بعيدًا عن مؤشرات النشاط الشكلية.</div>
     </div>
   </div>
 </section>
@@ -2423,33 +2590,33 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
 <!-- PROCESS -->
 <section class="process">
   <div class="section-inner">
-    <div class="section-tag reveal"><div class="section-tag-line"></div><span class="en">How It Works</span><span class="ar">آلية العمل</span></div>
-    <h2 class="section-title reveal"><span class="en">From Data to <em>Decision</em></span><span class="ar">من البيانات إلى <em>القرار</em></span></h2>
+    <div class="section-tag reveal"><div class="section-tag-line"></div><span class="en">How It Works</span><span class="ar">كيف نعمل</span></div>
+    <h2 class="section-title reveal"><span class="en">From Data to <em>Decisions</em></span><span class="ar">من البيانات إلى <em>قرارات</em></span></h2>
     <div class="process-steps">
       <div class="process-step reveal">
         <div class="process-step-num">1</div>
-        <div class="process-step-name"><span class="en">Filter</span><span class="ar">الفلترة</span></div>
-        <div class="process-step-desc"><span class="en">Select branch, gender, or service segment to scope your analysis.</span><span class="ar">اختر الفرع أو الجنس أو شريحة الخدمة لتحديد نطاق التحليل.</span></div>
+        <div class="process-step-name"><span class="en">Scope</span><span class="ar">تحديد النطاق</span></div>
+        <div class="process-step-desc"><span class="en">Define the branch, segment, or service to focus the analysis.</span><span class="ar">نحدّد الفرع أو الشريحة أو الخدمة لتركيز التحليل.</span></div>
       </div>
       <div class="process-step reveal" style="transition-delay:0.1s">
         <div class="process-step-num">2</div>
         <div class="process-step-name"><span class="en">Model</span><span class="ar">النمذجة</span></div>
-        <div class="process-step-desc"><span class="en">Structural equation model calculates explanatory power for selected data.</span><span class="ar">يحسب نموذج المعادلات الهيكلية القدرة التفسيرية للبيانات المختارة.</span></div>
+        <div class="process-step-desc"><span class="en">We build a robust analytical model to explain what drives outcomes—not just describe them.</span><span class="ar">نبني نموذجًا تحليليًا يفسّر النتائج ويكشف ما يقودها فعليًا.</span></div>
       </div>
       <div class="process-step reveal" style="transition-delay:0.2s">
         <div class="process-step-num">3</div>
-        <div class="process-step-name"><span class="en">Drivers</span><span class="ar">المحركات</span></div>
-        <div class="process-step-desc"><span class="en">Path coefficients and effect sizes rank each driver by true impact.</span><span class="ar">تُرتّب معاملات المسار وأحجام الأثر كل محرك وفق تأثيره الحقيقي.</span></div>
+        <div class="process-step-name"><span class="en">Identify Drivers</span><span class="ar">تحديد المحركات</span></div>
+        <div class="process-step-desc"><span class="en">Quantify impact and rank the key drivers based on their real influence.</span><span class="ar">نقيس حجم التأثير ونرتّب العوامل حسب تأثيرها الحقيقي.</span></div>
       </div>
       <div class="process-step reveal" style="transition-delay:0.3s">
         <div class="process-step-num">4</div>
         <div class="process-step-name"><span class="en">Simulate</span><span class="ar">المحاكاة</span></div>
-        <div class="process-step-desc"><span class="en">Model improvement scenarios and calculate expected satisfaction lift.</span><span class="ar">نمذجة سيناريوهات التحسين وحساب التحسن المتوقع في الرضا.</span></div>
+        <div class="process-step-desc"><span class="en">Test improvement scenarios and estimate the expected uplift before acting.</span><span class="ar">نختبر سيناريوهات التحسين ونقدّر الأثر المتوقع قبل التنفيذ.</span></div>
       </div>
       <div class="process-step reveal" style="transition-delay:0.4s">
         <div class="process-step-num">5</div>
-        <div class="process-step-name"><span class="en">Recommend</span><span class="ar">التوصيات</span></div>
-        <div class="process-step-desc"><span class="en">Auto-generated executive recommendations: Do, Optimize, or Avoid.</span><span class="ar">توصيات تنفيذية معتمدة: نفّذ، حسّن، أو تجنّب.</span></div>
+        <div class="process-step-name"><span class="en">Decide</span><span class="ar">اتخاذ القرار</span></div>
+        <div class="process-step-desc"><span class="en">Translate insights into clear actions: Do, Optimize, or Stop.</span><span class="ar">قرارات واضحة: نفّذ، حسّن، أو أعِد النظر.</span></div>
       </div>
     </div>
   </div>
@@ -2460,15 +2627,15 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
   <div class="section-inner">
     <div>
       <div class="section-tag"><div class="section-tag-line"></div><span class="en">Get Started</span><span class="ar">ابدأ الآن</span></div>
-      <h2 class="section-title"><span class="en">Ready to make decisions <em>with confidence?</em></span><span class="ar">هل أنت مستعد لاتخاذ قرارات <em>بثقة؟</em></span></h2>
-      <p class="section-lead"><span class="en">Access your personalized dashboard or contact us to learn how ROSHD Professional can serve your organization.</span><span class="ar">ادخل إلى لوحة التحكم الخاصة بك أو تواصل معنا لمعرفة كيف يمكن لرُشد الاحتراف خدمة مؤسستك.</span></p>
+      <h2 class="section-title"><span class="en">Ready to make decisions <em>with confidence?</em></span><span class="ar">هل أنت جاهز لاتخاذ قرارات <em>بثقة؟</em></span></h2>
+      <p class="section-lead"><span class="en">Access your personalized dashboard or contact us to learn how ROSHD Professional can serve your organization.</span><span class="ar">ادخل إلى المنصة المخصصة أو تواصل معنا لتكتشف كيف يمكن لـ رُشد الاحتراف دعم مؤسستك.</span></p>
     </div>
     <div class="cta-actions">
       <button class="btn-primary" onclick="openLogin(event)">
-        <span class="en">Access Client Portal</span><span class="ar">ادخل بوابة العملاء</span>
+        <span class="en">Access Client Portal</span><span class="ar">الدخول إلى بوابة العملاء</span>
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <a href="#contact" class="btn-ghost"><span class="en">Request a Demo</span><span class="ar">اطلب عرضًا توضيحيًا</span></a>
+      <a href="#contact" class="btn-ghost"><span class="en">Request a Demo</span><span class="ar">طلب عرض توضيحي</span></a>
     </div>
   </div>
 </section>
@@ -2478,30 +2645,30 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
   <div class="section-inner">
     <div>
       <div class="section-tag reveal"><div class="section-tag-line"></div><span class="en">Get In Touch</span><span class="ar">تواصل معنا</span></div>
-      <h2 class="section-title reveal"><span class="en">Let's build something <em>meaningful</em></span><span class="ar">لنبنِ شيئًا <em>ذا قيمة</em></span></h2>
-      <p class="section-lead reveal"><span class="en">Have a project in mind or want to learn more about our consulting and training services? We'd love to hear from you.</span><span class="ar">هل لديك مشروع في ذهنك أو تريد معرفة المزيد عن خدماتنا الاستشارية والتدريبية؟ يسعدنا الاستماع إليك.</span></p>
+      <h2 class="section-title reveal"><span class="en">Let's turn your idea into <em>measurable results</em></span><span class="ar">لنحوّل فكرتك إلى <em>نتائج قابلة للقياس</em></span></h2>
+      <p class="section-lead reveal"><span class="en">Have an initiative or operational challenge? We'll work with you to turn data into clear decisions and actionable steps.</span><span class="ar">لديك مبادرة أو تحدٍ تشغيلي؟ سنعمل معك لتحويل البيانات إلى قرارات واضحة وخطوات قابلة للتنفيذ.</span></p>
       <div style="margin-top:48px; display:flex; flex-direction:column; gap:28px;">
         <div class="reveal">
           <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px;"><span class="en">Email</span><span class="ar">البريد الإلكتروني</span></div>
           <div style="font-size:16px;color:var(--navy);">info@roshd-professional.com</div>
         </div>
         <div class="reveal">
-          <div style="font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:6px;"><span class="en">Tagline</span><span class="ar">الشعار</span></div>
           <div class="en" style="font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--navy);">Clarity. Insight. Impact.</div>
-          <div class="ar" style="font-family:'Cairo',sans-serif;font-size:20px;color:var(--navy);">وضوح. رؤية. تأثير.</div>
+          <div class="ar" style="font-family:'Cairo',sans-serif;font-size:20px;font-weight:600;color:var(--navy);">وضوح. رؤية. تأثير.</div>
+          <div style="font-size:13px;color:var(--gray);margin-top:6px;"><span class="en">Training &amp; Consulting</span><span class="ar">تدريب واستشارات</span></div>
         </div>
       </div>
     </div>
     <div class="contact-form reveal">
-      <h3 style="font-size:26px;font-weight:600;color:var(--navy);margin-bottom:28px;"><span class="en" style="font-family:'Cormorant Garamond',serif;font-style:italic;">Send a Message</span><span class="ar">أرسل رسالة</span></h3>
+      <h3 style="font-size:26px;font-weight:600;color:var(--navy);margin-bottom:28px;"><span class="en" style="font-family:'Cormorant Garamond',serif;font-style:italic;">Send a Message</span><span class="ar">إرسال الرسالة</span></h3>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label"><span class="en">First Name</span><span class="ar">الاسم الأول</span></label>
-          <input type="text" class="form-input" data-ph-en="Ahmed" data-ph-ar="أحمد" placeholder="أحمد">
+          <input type="text" class="form-input" data-ph-en="Ahmed" data-ph-ar="الاسم الأول" placeholder="الاسم الأول">
         </div>
         <div class="form-group">
           <label class="form-label"><span class="en">Last Name</span><span class="ar">اسم العائلة</span></label>
-          <input type="text" class="form-input" data-ph-en="Al-Rashidi" data-ph-ar="الرشيدي" placeholder="الرشيدي">
+          <input type="text" class="form-input" data-ph-en="Al-Rashidi" data-ph-ar="اسم العائلة" placeholder="اسم العائلة">
         </div>
       </div>
       <div class="form-group">
@@ -2509,16 +2676,16 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
         <input type="email" class="form-input" data-ph-en="ahmed@company.com" data-ph-ar="ahmed@company.com" placeholder="ahmed@company.com">
       </div>
       <div class="form-group">
-        <label class="form-label"><span class="en">Company</span><span class="ar">الشركة / المؤسسة</span></label>
-        <input type="text" class="form-input" data-ph-en="Your Organization" data-ph-ar="اسم المؤسسة" placeholder="اسم المؤسسة">
+        <label class="form-label"><span class="en">Organization / Company</span><span class="ar">الجهة / الشركة</span></label>
+        <input type="text" class="form-input" data-ph-en="Your Organization" data-ph-ar="الجهة / الشركة" placeholder="الجهة / الشركة">
       </div>
       <div class="form-group">
-        <label class="form-label"><span class="en">Message</span><span class="ar">الرسالة</span></label>
-        <textarea class="form-input" data-ph-en="Tell us about your project or inquiry..." data-ph-ar="أخبرنا عن مشروعك أو استفسارك..." placeholder="أخبرنا عن مشروعك أو استفسارك..."></textarea>
+        <label class="form-label"><span class="en">Message</span><span class="ar">رسالتك</span></label>
+        <textarea class="form-input" data-ph-en="Tell us about your initiative or challenge..." data-ph-ar="اكتب بإيجاز عن التحدي أو الهدف" placeholder="اكتب بإيجاز عن التحدي أو الهدف"></textarea>
       </div>
       <button class="btn-primary" style="width:100%;justify-content:center;" onclick="handleContact(event)">
         <span class="en">Send Message</span><span class="ar">إرسال الرسالة</span>
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
     </div>
   </div>
@@ -2532,8 +2699,8 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
         <img src="logo.png" alt="ROSHD Professional">
         <div class="footer-tagline en">Clarity. Insight. Impact.</div>
         <div class="footer-tagline ar">وضوح. رؤية. تأثير.</div>
-        <div class="footer-desc en">ROSHD Professional delivers consulting and training excellence, transforming data into decisions that matter.</div>
-        <div class="footer-desc ar">تقدّم رُشد الاحتراف استشارات وتدريبًا متميزًا، يحوّل البيانات إلى قرارات حقيقية.</div>
+        <div class="footer-desc en">ROSHD Professional delivers data-driven consulting and executive training that transforms data into clear decisions and measurable results.</div>
+        <div class="footer-desc ar">تقدّم رُشد الاحتراف استشارات قائمة على البيانات وبرامج تدريب تنفيذي تُحوّل البيانات إلى قرارات واضحة ونتائج قابلة للقياس.</div>
       </div>
       <div>
         <div class="footer-col-title"><span class="en">Company</span><span class="ar">الشركة</span></div>
@@ -2541,16 +2708,15 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
           <li><a href="#about"><span class="en">About Us</span><span class="ar">من نحن</span></a></li>
           <li><a href="#services"><span class="en">Services</span><span class="ar">الخدمات</span></a></li>
           <li><a href="#platform"><span class="en">Platform</span><span class="ar">المنصة</span></a></li>
-          <li><a href="#contact"><span class="en">Contact</span><span class="ar">تواصل</span></a></li>
+          <li><a href="#contact"><span class="en">Contact</span><span class="ar">تواصل معنا</span></a></li>
         </ul>
       </div>
       <div>
         <div class="footer-col-title"><span class="en">Platform</span><span class="ar">المنصة</span></div>
         <ul class="footer-links">
-          <li><a href="#" onclick="openLogin(event)"><span class="en">Client Login</span><span class="ar">تسجيل الدخول</span></a></li>
-          <li><a href="#" onclick="openSignup(event)"><span class="en">Create Account</span><span class="ar">إنشاء حساب</span></a></li>
-          <li><a href="#"><span class="en">Executive Dashboard</span><span class="ar">لوحة التحكم التنفيذية</span></a></li>
-          <li><a href="#"><span class="en">Insight Engine</span><span class="ar">محرك الرؤى</span></a></li>
+          <li><a href="#" onclick="openLogin(event)"><span class="en">Client Login</span><span class="ar">دخول العملاء</span></a></li>
+          <li><a href="#"><span class="en">Executive Dashboard</span><span class="ar">لوحة القيادة التنفيذية</span></a></li>
+          <li><a href="#"><span class="en">Analytics Engine</span><span class="ar">محرك التحليلات</span></a></li>
           <li><a href="#"><span class="en">Simulation Lab</span><span class="ar">مختبر المحاكاة</span></a></li>
         </ul>
       </div>
@@ -2578,7 +2744,7 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
         <span class="modal-logo-text">ROSHD PROFESSIONAL</span>
       </div>
       <div class="modal-title"><span class="en">Welcome Back</span><span class="ar">مرحبًا بعودتك</span></div>
-      <div class="modal-subtitle"><span class="en">Sign in to access your analytics dashboard</span><span class="ar">سجّل دخولك للوصول إلى لوحة التحليلات</span></div>
+      <div class="modal-subtitle"><span class="en">Sign in to access your analytics dashboard and make data-driven decisions.</span><span class="ar">سجّل الدخول للوصول إلى لوحة التحليلات واتخاذ قرارات مبنية على البيانات.</span></div>
       <button type="button" class="modal-close" onclick="closeLogin()">&times;</button>
     </div>
     <div class="modal-body">
@@ -2586,7 +2752,7 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
       <div class="form-group">
         <label class="form-label"><span class="en">Email Address</span><span class="ar">البريد الإلكتروني</span></label>
         <input type="email" class="form-input" id="loginEmail"
-          data-ph-en="your@email.com" data-ph-ar="بريدك@email.com" placeholder="بريدك@email.com">
+          data-ph-en="your@email.com" data-ph-ar="your@email.com" placeholder="your@email.com">
       </div>
       <div class="form-group">
         <label class="form-label"><span class="en">Password</span><span class="ar">كلمة المرور</span></label>
@@ -2599,65 +2765,10 @@ html[data-lang="ar"] .modal-switch { text-align: center; }
         </div>
       </div>
       <button class="btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="handleLogin()">
-        <span class="en">Sign In to Dashboard</span><span class="ar">دخول إلى لوحة التحكم</span>
+        <span class="en">Sign In to Dashboard</span><span class="ar">الدخول إلى لوحة التحكم</span>
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
-      <div class="modal-switch"><span class="en">New client? <a href="#" onclick="switchToSignup(event)">Create an account</a></span><span class="ar">عميل جديد؟ <a href="#" onclick="switchToSignup(event)">إنشاء حساب</a></span></div>
-      <div class="modal-footer-text"><span class="en">Access may be invitation-based. Contact your ROSHD administrator to request enterprise access.</span><span class="ar">قد يكون الوصول بالدعوة. تواصل مع مسؤول رُشد للحصول على صلاحية الدخول.</span></div>
-    </div>
-  </div>
-</div>
-
-<!-- SIGN UP MODAL -->
-<div class="modal-overlay" id="signupModal" onclick="closeSignupOnOverlay(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-logo-row">
-        <img src="logo.png" alt="ROSHD">
-        <span class="modal-logo-text">ROSHD PROFESSIONAL</span>
-      </div>
-      <div class="modal-title"><span class="en">Create Your Account</span><span class="ar">إنشاء حسابك</span></div>
-      <div class="modal-subtitle"><span class="en">Enter your credentials to join the client portal</span><span class="ar">أدخل بياناتك للانضمام إلى بوابة العملاء</span></div>
-      <button type="button" class="modal-close" onclick="closeSignup()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-error" id="signupError"></div>
-      <div class="form-group">
-        <label class="form-label"><span class="en">Username</span><span class="ar">اسم المستخدم</span></label>
-        <input type="text" class="form-input" id="signupUsername" autocomplete="username"
-          data-ph-en="jdoe" data-ph-ar="اسم_المستخدم" placeholder="اسم_المستخدم">
-      </div>
-      <div class="form-group">
-        <label class="form-label"><span class="en">Email Address</span><span class="ar">البريد الإلكتروني</span></label>
-        <input type="email" class="form-input" id="signupEmail" autocomplete="email"
-          data-ph-en="your@email.com" data-ph-ar="بريدك@email.com" placeholder="بريدك@email.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label"><span class="en">Password</span><span class="ar">كلمة المرور</span></label>
-        <div class="pw-field">
-          <input type="password" class="form-input" id="signupPassword" autocomplete="new-password" placeholder="••••••••">
-          <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePwVisibility('signupPassword', this)">
-            <span class="pw-eye-open" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
-            <span class="pw-eye-off" hidden aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg></span>
-          </button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label"><span class="en">Confirm Password</span><span class="ar">تأكيد كلمة المرور</span></label>
-        <div class="pw-field">
-          <input type="password" class="form-input" id="signupPasswordConfirm" autocomplete="new-password" placeholder="••••••••">
-          <button type="button" class="pw-toggle" aria-label="Show password" onclick="togglePwVisibility('signupPasswordConfirm', this)">
-            <span class="pw-eye-open" aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
-            <span class="pw-eye-off" hidden aria-hidden="true"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg></span>
-          </button>
-        </div>
-      </div>
-      <button type="button" class="btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="handleSignup()">
-        <span class="en">Create Account</span><span class="ar">إنشاء الحساب</span>
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </button>
-      <div class="modal-switch"><span class="en">Already registered? <a href="#" onclick="switchToLogin(event)">Sign in</a></span><span class="ar">لديك حساب بالفعل؟ <a href="#" onclick="switchToLogin(event)">تسجيل الدخول</a></span></div>
-      <div class="modal-footer-text"><span class="en">Passwords must be at least six characters where your policy allows.</span><span class="ar">يجب أن تحتوي كلمة المرور على ستة أحرف على الأقل.</span></div>
+      <div class="modal-footer-text"><span class="en">Access is by invitation only. Contact your ROSHD Professional system administrator to request access.</span><span class="ar">الدخول متاح بدعوة فقط. تواصل مع مسؤول النظام في رُشد الاحتراف لطلب الوصول.</span></div>
     </div>
   </div>
 </div>
@@ -2673,10 +2784,11 @@ function setLanguage(lang) {
   document.documentElement.setAttribute('lang', lang);
   document.getElementById('btn-ar').classList.toggle('active', isAr);
   document.getElementById('btn-en').classList.toggle('active', !isAr);
-  // Update all placeholders that have bilingual data attributes
   document.querySelectorAll('[data-ph-en]').forEach(el => {
     el.placeholder = isAr ? (el.dataset.phAr || '') : (el.dataset.phEn || '');
   });
+  // Close mobile nav when language switches (nav drawer may be open)
+  if (document.getElementById('hamburger').classList.contains('open')) closeMobileMenu();
   try { localStorage.setItem('roshd-lang', lang); } catch(e) {}
 }
 
@@ -2724,7 +2836,44 @@ function togglePwVisibility(inputId, btn) {
   btn.setAttribute('aria-label', masked ? 'Show password' : 'Hide password');
 }
 
-// Login & Sign up modals
+// Hamburger / mobile menu
+function toggleMobileMenu() {
+  const hamburger = document.getElementById('hamburger');
+  const navLinks  = document.getElementById('navLinks');
+  const overlay   = document.getElementById('mobileNavOverlay');
+  const isOpen    = hamburger.classList.contains('open');
+  if (isOpen) {
+    closeMobileMenu();
+  } else {
+    hamburger.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    navLinks.classList.add('open');
+    overlay.classList.add('open');
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function closeMobileMenu() {
+  const hamburger = document.getElementById('hamburger');
+  const navLinks  = document.getElementById('navLinks');
+  const overlay   = document.getElementById('mobileNavOverlay');
+  hamburger.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', 'false');
+  navLinks.classList.remove('open');
+  overlay.classList.remove('open');
+  setTimeout(() => { overlay.style.display = ''; }, 320);
+  if (!document.getElementById('loginModal').classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+}
+
+// Close mobile menu on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeMobileMenu(); closeLogin(); }
+});
+
+// Login modal
 function openLogin(e) {
   e && e.preventDefault();
   document.getElementById('loginModal').classList.add('open');
@@ -2733,46 +2882,13 @@ function openLogin(e) {
 
 function closeLogin() {
   document.getElementById('loginModal').classList.remove('open');
-  if (!document.getElementById('signupModal').classList.contains('open')) document.body.style.overflow = '';
+  document.body.style.overflow = '';
 }
 
 function closeOnOverlay(e) {
   if (e.target === document.getElementById('loginModal')) closeLogin();
 }
 
-function closeSignupOnOverlay(e) {
-  if (e.target === document.getElementById('signupModal')) closeSignup();
-}
-
-function openSignup(e) {
-  e && e.preventDefault();
-  closeLogin();
-  document.getElementById('signupModal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function closeSignup() {
-  document.getElementById('signupModal').classList.remove('open');
-  if (!document.getElementById('loginModal').classList.contains('open')) document.body.style.overflow = '';
-}
-
-function switchToSignup(e) {
-  e && e.preventDefault();
-  document.getElementById('loginModal').classList.remove('open');
-  openSignup();
-}
-
-function switchToLogin(e) {
-  e && e.preventDefault();
-  closeSignup();
-  openLogin();
-}
-
-document.addEventListener('keydown', e => {
-  if (e.key !== 'Escape') return;
-  closeSignup();
-  closeLogin();
-});
 
 async function handleLogin() {
   const email = document.getElementById('loginEmail').value;
@@ -2813,62 +2929,6 @@ async function handleLogin() {
   }
 }
 
-async function handleSignup() {
-  const username = document.getElementById('signupUsername').value.trim();
-  const email = document.getElementById('signupEmail').value.trim();
-  const password = document.getElementById('signupPassword').value;
-  const confirm = document.getElementById('signupPasswordConfirm').value;
-  const errorEl = document.getElementById('signupError');
-  errorEl.classList.remove('show');
-
-  if (!username || !email || !password || !confirm) {
-    errorEl.textContent = t('Please fill in all fields.', 'يرجى ملء جميع الحقول.');
-    errorEl.classList.add('show');
-    return;
-  }
-  if (password !== confirm) {
-    errorEl.textContent = t('Passwords do not match.', 'كلمتا المرور غير متطابقتين.');
-    errorEl.classList.add('show');
-    return;
-  }
-  if (password.length < 6) {
-    errorEl.textContent = t('Password must be at least 6 characters.', 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.');
-    errorEl.classList.add('show');
-    return;
-  }
-
-  try {
-    const res = await fetch('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password, username })
-    });
-    let data = {};
-    try {
-      data = await res.json();
-    } catch (_) {
-      data = {};
-    }
-    if (data.success) {
-      showToast(data.message || t('Account created! You can sign in now.', 'تم إنشاء الحساب! يمكنك تسجيل الدخول الآن.'));
-      closeSignup();
-      document.getElementById('loginEmail').value = email;
-      setTimeout(() => openLogin(), 400);
-      document.getElementById('signupUsername').value = '';
-      document.getElementById('signupEmail').value = '';
-      document.getElementById('signupPassword').value = '';
-      document.getElementById('signupPasswordConfirm').value = '';
-      return;
-    }
-    errorEl.textContent = data.message || (res.status === 429
-      ? t('Too many requests. Wait a minute and try again.', 'طلبات كثيرة جداً. انتظر دقيقة وحاول مجدداً.')
-      : t('Registration failed.', 'فشل إنشاء الحساب.'));
-    errorEl.classList.add('show');
-  } catch (err) {
-    errorEl.textContent = t('Unable to reach the server. Try again later.', 'تعذّر الاتصال بالخادم. حاول مجدداً لاحقاً.');
-    errorEl.classList.add('show');
-  }
-}
 
 function handleContact(e) {
   showToast('Message sent! We\'ll get back to you shortly.');
