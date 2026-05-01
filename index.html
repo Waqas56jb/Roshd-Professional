@@ -972,7 +972,7 @@ html[data-lang="ar"] .db-export-btn { font-family: 'Cairo', sans-serif; }
 @keyframes panelIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── KPI Grid ── */
-.db-kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.db-kpi-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
 
 #dbKpiStrip { margin-bottom: 20px; }
 
@@ -1000,6 +1000,65 @@ html[data-lang="ar"] .db-export-btn { font-family: 'Cairo', sans-serif; }
 html[data-lang="ar"] .db-kpi-val { font-family: 'Cairo', sans-serif; font-size: clamp(18px, 1.8vw, 28px); }
 .db-kpi-label { font-size: 11px; color: var(--db-muted); letter-spacing: 0.06em; }
 html[data-lang="ar"] .db-kpi-label { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
+.db-kpi-sublabel { font-size: 11px; color: var(--db-muted); margin-top: 6px; line-height: 1.35; }
+html[data-lang="ar"] .db-kpi-sublabel { font-family: 'Cairo', sans-serif; }
+
+/* ── Driver bubble map ── */
+.db-bubble-map {
+  height: 400px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--db-border-subtle);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.db-bubble-axis-x { position: absolute; left: 48px; right: 20px; bottom: 44px; height: 1px; background: rgba(184,150,46,0.25); }
+.db-bubble-axis-y { position: absolute; left: 48px; top: 20px; bottom: 44px; width: 1px; background: rgba(184,150,46,0.25); }
+.db-bubble-layer { position: absolute; inset: 20px 20px 44px 48px; }
+.db-bubble {
+  position: absolute;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  border: 2px solid var(--db-border);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--db-text);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  transform: translate(-50%, 50%);
+  padding: 6px;
+  line-height: 1.25;
+}
+html[data-lang="ar"] .db-bubble { font-family: 'Cairo', sans-serif; }
+.db-bubble.low { background: rgba(220,38,38,0.12); border-color: rgba(248,113,113,0.45); color: #fca5a5; }
+
+/* ── Demographics mini-charts ── */
+.db-demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .db-demo-grid { grid-template-columns: 1fr; } }
+.db-mini-chart { border: 1px solid var(--db-border-subtle); border-radius: 12px; padding: 16px 18px; background: rgba(255,255,255,0.02); }
+.db-mini-title { font-weight: 700; font-size: 13px; color: var(--white); margin: 0 0 12px; }
+html[data-lang="ar"] .db-mini-title { font-family: 'Cairo', sans-serif; }
+.db-demo-chart { display: flex; flex-direction: column; gap: 10px; }
+.db-demo-row { display: grid; grid-template-columns: 120px 1fr 40px; gap: 10px; align-items: center; font-size: 12px; font-weight: 600; }
+html[data-lang="ar"] .db-demo-row { grid-template-columns: 100px 1fr 36px; font-family: 'Cairo', sans-serif; }
+.db-demo-track { height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+.db-demo-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+
+/* ── Questionnaire blocks ── */
+.db-q-item {
+  border: 1px solid var(--db-border-subtle);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,0.02);
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.82);
+}
+html[data-lang="ar"] .db-q-item { font-family: 'Cairo', sans-serif; text-align: right; }
+.db-q-item b { display: block; margin-bottom: 8px; color: var(--gold-light); font-size: 14px; }
 
 /* ── Cards ── */
 .db-card {
@@ -1164,7 +1223,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 @media (max-width: 1200px) {
   .hero-content { gap: 56px; }
   .section-inner { padding: 0 32px; }
-  .db-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .db-kpi-grid { grid-template-columns: repeat(3, 1fr); }
   .db-model-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
@@ -1869,6 +1928,18 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         <span class="en">Model Quality</span><span class="ar">جودة النموذج</span>
       </button>
+      <button class="db-nav-item" data-panel="questionnaire" onclick="dbShowPanel('questionnaire', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        <span class="en">Questionnaire</span><span class="ar">عناصر الاستبيان</span>
+      </button>
+      <button class="db-nav-item" data-panel="pilot" onclick="dbShowPanel('pilot', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><circle cx="12" cy="12" r="10"/></svg>
+        <span class="en">Pilot Analysis</span><span class="ar">تحليل تجريبي</span>
+      </button>
+      <button class="db-nav-item" data-panel="demographics" onclick="dbShowPanel('demographics', this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+        <span class="en">Demographics</span><span class="ar">البيانات الديموغرافية</span>
+      </button>
     </nav>
 
     <div class="db-sidebar-footer">
@@ -1923,6 +1994,19 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
         <option value="Mechanical"   data-en="Mechanical"   data-ar="ميكانيكي">Mechanical</option>
         <option value="Bodyshop"     data-en="Bodyshop"     data-ar="هيكل السيارة">Bodyshop</option>
       </select>
+      <select class="db-select" id="dbFrequency" onchange="dbRender()">
+        <option value="All Frequencies" data-en="All Frequencies" data-ar="كل التكرارات">All Frequencies</option>
+        <option value="1 Visit"       data-en="1 Visit"       data-ar="زيارة واحدة">1 Visit</option>
+        <option value="2–3 Visits"    data-en="2–3 Visits"    data-ar="2–3 زيارات">2–3 Visits</option>
+        <option value="4+ Visits"     data-en="4+ Visits"     data-ar="4+ زيارات">4+ Visits</option>
+      </select>
+      <select class="db-select" id="dbAge" onchange="dbRender()">
+        <option value="All Ages" data-en="All Ages" data-ar="كل الأعمار">All Ages</option>
+        <option value="&lt;25"   data-en="&lt;25"   data-ar="أقل من 25">&lt;25</option>
+        <option value="25–34"   data-en="25–34"   data-ar="25–34">25–34</option>
+        <option value="35–44"   data-en="35–44"   data-ar="35–44">35–44</option>
+        <option value="45+"     data-en="45+"     data-ar="45+">45+</option>
+      </select>
       <span class="db-filter-label" style="margin-inline-start:8px;">Q2 2026</span>
       <button class="db-export-btn" onclick="window.print()">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1968,6 +2052,15 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
           <div class="db-kpi-val" id="kpiRisk"><span class="en">Speed</span><span class="ar">السرعة</span></div>
           <div class="db-kpi-label"><span class="en">Waste Risk</span><span class="ar">خطر الهدر</span></div>
         </div>
+        <div class="db-kpi-card" style="--kpi-color:var(--gold-light);--kpi-bg:rgba(255,255,255,0.06)">
+          <div class="db-kpi-header">
+            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <span class="db-kpi-trend neutral">N</span>
+          </div>
+          <div class="db-kpi-val" id="kpiSampleN">300</div>
+          <div class="db-kpi-label"><span class="en">Segment sample</span><span class="ar">عيّنة الشريحة</span></div>
+          <div class="db-kpi-sublabel" id="kpiSampleShare"><span class="en">100% of full sample</span><span class="ar">100% من العينة الكاملة</span></div>
+        </div>
       </div>
     </div>
 
@@ -1983,11 +2076,11 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               <div style="display:flex;gap:10px;flex-wrap:wrap">
                 <div style="flex:1;min-width:100px;background:rgba(255,255,255,0.04);border:1px solid var(--db-border-subtle);border-radius:8px;padding:14px;text-align:center">
                   <div style="font-weight:700;color:var(--gold-light);margin-bottom:4px;font-size:13px"><span class="en">1. Filter</span><span class="ar">١. التصفية</span></div>
-                  <div style="font-size:11px;color:var(--db-muted)"><span class="en">Branch / gender / service</span><span class="ar">الفرع / الجنس / الخدمة</span></div>
+                  <div style="font-size:11px;color:var(--db-muted)"><span class="en">Branch / gender / service / visits / age</span><span class="ar">الفرع / الجنس / الخدمة / الزيارات / العمر</span></div>
                 </div>
                 <div style="flex:1;min-width:100px;background:rgba(255,255,255,0.04);border:1px solid var(--db-border-subtle);border-radius:8px;padding:14px;text-align:center">
-                  <div style="font-weight:700;color:var(--gold-light);margin-bottom:4px;font-size:13px"><span class="en">2. Model</span><span class="ar">٢. النمذجة</span></div>
-                  <div style="font-size:11px;color:var(--db-muted)"><span class="en">Explanatory Power</span><span class="ar">القوة التفسيرية</span></div>
+                  <div style="font-weight:700;color:var(--gold-light);margin-bottom:4px;font-size:13px"><span class="en">2. Sample</span><span class="ar">٢. العيّنة</span></div>
+                  <div style="font-size:11px;color:var(--db-muted)"><span class="en">Segment N &amp; share</span><span class="ar">الحجم ونسبة الشريحة</span></div>
                 </div>
                 <div style="flex:1;min-width:100px;background:rgba(255,255,255,0.04);border:1px solid var(--db-border-subtle);border-radius:8px;padding:14px;text-align:center">
                   <div style="font-weight:700;color:var(--gold-light);margin-bottom:4px;font-size:13px"><span class="en">3. Drivers</span><span class="ar">٣. المحركات</span></div>
@@ -2004,8 +2097,9 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               </div>
               <div class="db-info-box gold" style="margin-top:16px">
                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                <span><span class="en"><b>Core rule:</b> A low average score is not a priority unless it has meaningful effect size. Speed consistently has low impact — do not overinvest.</span><span class="ar"><b>القاعدة الأساسية:</b> انخفاض متوسط الدرجة ليس أولوية ما لم يكن حجم تأثيره مهمًا. السرعة دائمًا منخفضة التأثير — لا تُبالغ في الاستثمار فيها.</span></span>
+                <span><span class="en"><b>Core rule:</b> A low average score is not a priority unless it has meaningful effect size and enough segment sample.</span><span class="ar"><b>القاعدة الأساسية:</b> انخفاض متوسط الدرجة ليس أولوية ما لم يكن لتأثيره حجم مهم وحجم شريحة كافٍ.</span></span>
               </div>
+              <div class="db-info-box warning" id="dbSegmentWarning" style="margin-top:14px"></div>
             </div>
           </div>
           <div class="db-card">
@@ -2013,11 +2107,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               <div><div class="db-card-title"><span class="en">Branch Performance</span><span class="ar">أداء الفروع</span></div><div class="db-card-subtitle"><span class="en">Average satisfaction by branch</span><span class="ar">متوسط الرضا حسب الفرع</span></div></div>
             </div>
             <div class="db-card-body">
-              <div class="db-bar-list">
-                <div class="db-bar-row"><span class="db-bar-label"><span class="en">Riyadh</span><span class="ar">الرياض</span></span><div class="db-bar-track"><div class="db-bar-fill" style="width:74%"></div></div><span class="db-bar-val">3.7</span></div>
-                <div class="db-bar-row"><span class="db-bar-label"><span class="en">Jeddah</span><span class="ar">جدة</span></span><div class="db-bar-track"><div class="db-bar-fill" style="width:68%"></div></div><span class="db-bar-val">3.4</span></div>
-                <div class="db-bar-row"><span class="db-bar-label"><span class="en">Dammam</span><span class="ar">الدمام</span></span><div class="db-bar-track"><div class="db-bar-fill" style="width:64%"></div></div><span class="db-bar-val">3.2</span></div>
-              </div>
+              <div class="db-bar-list" id="dbBranchPerfBars"></div>
             </div>
           </div>
         </div>
@@ -2025,24 +2115,34 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 
       <!-- ── DRIVERS PANEL ── -->
       <div class="db-panel" id="db-panel-drivers">
-        <div class="db-card" style="margin-bottom:20px">
-          <div class="db-card-header">
-            <div><div class="db-card-title"><span class="en">Driver Impact Map</span><span class="ar">خريطة تأثير المحركات</span></div><div class="db-card-subtitle"><span class="en">Priority is based on effect size (Impact), not average score</span><span class="ar">الأولوية مبنية على حجم التأثير، وليس على متوسط الدرجة</span></div></div>
+        <div class="db-grid-2">
+          <div class="db-card">
+            <div class="db-card-header">
+              <div><div class="db-card-title"><span class="en">Driver Impact Map</span><span class="ar">خريطة تأثير المحركات</span></div><div class="db-card-subtitle"><span class="en">X = path · Y = average · Bubble size = Impact</span><span class="ar">X = المسار · Y = المتوسط · حجم الفقاعة = الأثر</span></div></div>
+            </div>
+            <div class="db-card-body" style="padding:16px 18px 22px">
+              <div class="db-bubble-map"><div class="db-bubble-axis-x"></div><div class="db-bubble-axis-y"></div><div class="db-bubble-layer" id="dbBubbleContainer"></div></div>
+            </div>
           </div>
-          <div class="db-table-wrap">
-            <table class="db-table">
-              <thead>
-                <tr>
-                  <th><span class="en">Rank</span><span class="ar">الترتيب</span></th>
-                  <th><span class="en">Driver</span><span class="ar">المحرك</span></th>
-                  <th><span class="en">Avg Score</span><span class="ar">المتوسط</span></th>
-                  <th><span class="en">Path Coeff.</span><span class="ar">معامل المسار</span></th>
-                  <th><span class="en">Effect Size (Impact)</span><span class="ar">حجم التأثير</span></th>
-                  <th><span class="en">Decision</span><span class="ar">القرار</span></th>
-                </tr>
-              </thead>
-              <tbody id="dbDriversTable"></tbody>
-            </table>
+          <div class="db-card">
+            <div class="db-card-header">
+              <div><div class="db-card-title"><span class="en">Driver Ranking</span><span class="ar">ترتيب المحركات</span></div><div class="db-card-subtitle"><span class="en">Priority follows Impact effect size</span><span class="ar">الأولوية تتبع حجم الأثر</span></div></div>
+            </div>
+            <div class="db-table-wrap">
+              <table class="db-table">
+                <thead>
+                  <tr>
+                    <th><span class="en">Rank</span><span class="ar">الترتيب</span></th>
+                    <th><span class="en">Driver</span><span class="ar">المحرك</span></th>
+                    <th><span class="en">Avg Score</span><span class="ar">المتوسط</span></th>
+                    <th><span class="en">Path Coeff.</span><span class="ar">معامل المسار</span></th>
+                    <th><span class="en">Effect Size (Impact)</span><span class="ar">حجم التأثير</span></th>
+                    <th><span class="en">Decision</span><span class="ar">القرار</span></th>
+                  </tr>
+                </thead>
+                <tbody id="dbDriversTable"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -2120,7 +2220,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
       <div class="db-panel" id="db-panel-customers">
         <div class="db-card">
           <div class="db-card-header">
-            <div><div class="db-card-title"><span class="en">Customer Pattern View</span><span class="ar">عرض أنماط العملاء</span></div><div class="db-card-subtitle"><span class="en">Operational view — customer-level signals behind the model</span><span class="ar">الإشارات على مستوى العميل خلف النموذج</span></div></div>
+            <div><div class="db-card-title"><span class="en">Customer Pattern View</span><span class="ar">عرض أنماط العملاء</span></div><div class="db-card-subtitle"><span class="en">Follows all demographic filters</span><span class="ar">يتبع كل مرشّحات الديموغرافيا</span></div></div>
           </div>
           <div class="db-table-wrap">
             <table class="db-table">
@@ -2130,10 +2230,13 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                   <th><span class="en">Branch</span><span class="ar">الفرع</span></th>
                   <th><span class="en">Gender</span><span class="ar">الجنس</span></th>
                   <th><span class="en">Service</span><span class="ar">الخدمة</span></th>
+                  <th><span class="en">Visits</span><span class="ar">الزيارات</span></th>
+                  <th><span class="en">Age</span><span class="ar">العمر</span></th>
                   <th><span class="en">Quality</span><span class="ar">الجودة</span></th>
                   <th><span class="en">Comm.</span><span class="ar">التواصل</span></th>
                   <th><span class="en">Price</span><span class="ar">السعر</span></th>
                   <th><span class="en">Speed</span><span class="ar">السرعة</span></th>
+                  <th><span class="en">Satisfaction</span><span class="ar">الرضا</span></th>
                   <th><span class="en">Risk</span><span class="ar">الخطر</span></th>
                 </tr>
               </thead>
@@ -2200,6 +2303,137 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 <span class="en">Explanatory Power tells us how much of satisfaction is explained by the full model. It does NOT tell us which factor matters most. Factor priority comes from path coefficients and effect size. Therefore, a low-scoring factor like Speed can be low priority if its Impact is weak.</span>
                 <span class="ar">القوة التفسيرية تُخبرنا بمقدار ما يفسره النموذج الكامل من الرضا. لا تُخبرنا بالعامل الأهم. أولوية العامل تأتي من معاملات المسار وحجم التأثير. لذلك، عامل منخفض الدرجة كالسرعة قد يكون أولوية منخفضة إذا كان تأثيره ضعيفًا.</span>
               </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── QUESTIONNAIRE PANEL ── -->
+      <div class="db-panel" id="db-panel-questionnaire">
+        <div class="db-grid-2">
+          <div class="db-card">
+            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Questionnaire Items</span><span class="ar">عناصر الاستبيان</span></div><div class="db-card-subtitle"><span class="en">Neutral mapping — no accept/reject classification</span><span class="ar">ربط محايد دون تصنيف قبول/رفض</span></div></div></div>
+            <div class="db-card-body">
+              <div class="db-q-item"><b><span class="en">Quality</span><span class="ar">الجودة</span></b>
+                <span class="en">Q1: The repair/service was completed correctly the first time.<br>Q2: The delivered work met my expectations.<br>Q3: The vehicle was returned in good condition.<br>Q4: The quality of work increased my confidence in the service center.</span>
+                <span class="ar">Q1: تم إكمال الإصلاح من أول مرة بشكل صحيح.<br>Q2: العمل المُسلَّم كان بمستوى توقّعاتي.<br>Q3: عُادت المركبة بحالة جيدة.<br>Q4: الجودة زادت ثقتي بالمركز.</span>
+              </div>
+              <div class="db-q-item"><b><span class="en">Communication</span><span class="ar">التواصل</span></b>
+                <span class="en">C1: I received clear updates during the service process.<br>C2: The advisor explained the required work clearly.<br>C3: I was informed before any major change or delay.<br>C4: Communication was easy to understand.</span>
+                <span class="ar">C1: تلقيت تحديثات واضحة أثناء الخدمة.<br>C2: أوضح المستشار العمل المطلوب بوضوح.<br>C3: أُبلِغت قبل أي تغيير كبير أو تأخير.<br>C4: التواصل كان سهل الفهم.</span>
+              </div>
+              <div class="db-q-item"><b><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></b>
+                <span class="en">P1: The price was fair compared with the service.<br>P2: The estimate was clear before approval.<br>P3: The final invoice matched what was explained.<br>P4: The value justified the amount paid.</span>
+                <span class="ar">P1: السعر كان عادلًا مقارنة بالخدمة.<br>P2: التقدير كان واضحًا قبل الموافقة.<br>P3: الفاتورة النهائية طابقت الشرح.<br>P4: القيمة برّرت المبلغ المدفوع.</span>
+              </div>
+              <div class="db-q-item"><b><span class="en">Speed</span><span class="ar">السرعة</span></b>
+                <span class="en">S1: The service was completed within a reasonable time.<br>S2: Waiting time was acceptable.<br>S3: Delivery matched the promised timing.<br>S4: Total process time was convenient.</span>
+                <span class="ar">S1: أُنجزت الخدمة في وقت معقول.<br>S2: وقت الانتظار مقبول.<br>S3: التسليم طابق الموعد المُعلَن.<br>S4: وقت العملية كان مناسبًا.</span>
+              </div>
+              <div class="db-q-item"><b><span class="en">Overall Satisfaction</span><span class="ar">الرضا العام</span></b>
+                <span class="en">OS1: Overall I am satisfied with the service experience.<br>OS2: The experience met my expectations.<br>OS3: I would consider returning.</span>
+                <span class="ar">OS1: بشكل عام راضٍ عن تجربة الخدمة.<br>OS2: التجربة نالت توقّعاتي.<br>OS3: قد أعود لنفس المركز.</span>
+              </div>
+            </div>
+          </div>
+          <div class="db-card">
+            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Questionnaire Structure</span><span class="ar">هيكل الاستبيان</span></div><div class="db-card-subtitle"><span class="en">Instrument map before pilot / SEM</span><span class="ar">خريطة الأداة قبل التجريب ونمذجة المعادلات</span></div></div></div>
+            <div class="db-card-body">
+              <div class="db-table-wrap">
+                <table class="db-table">
+                  <thead><tr><th><span class="en">Variable</span><span class="ar">المتغيّر</span></th><th><span class="en">Items</span><span class="ar">البنود</span></th><th><span class="en">Measurement focus</span><span class="ar">التركيز القياسي</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="en">Quality</span><span class="ar">الجودة</span></td><td>4</td><td><span class="en">Repair correctness, expectations, condition, confidence</span><span class="ar">صحة الإصلاح، التوقعات، الحالة، الثقة</span></td></tr>
+                    <tr><td><span class="en">Communication</span><span class="ar">التواصل</span></td><td>4</td><td><span class="en">Updates, explanation, delay notification, clarity</span><span class="ar">تحديثات، شرح، إشعار التأخير، الوضوح</span></td></tr>
+                    <tr><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td>4</td><td><span class="en">Fairness, estimate, invoice, value</span><span class="ar">العدالة، التقدير، الفاتورة، القيمة</span></td></tr>
+                    <tr><td><span class="en">Speed</span><span class="ar">السرعة</span></td><td>4</td><td><span class="en">Completion time, waiting, promised timing, convenience</span><span class="ar">الإنجاز، الانتظار، الموعد، الملاءمة</span></td></tr>
+                    <tr><td><span class="en">Overall Satisfaction</span><span class="ar">الرضا العام</span></td><td>3</td><td><span class="en">Overall evaluation, expectations, return intention</span><span class="ar">تقييم شامل، التوقعات، نية العودة</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="db-info-box info" style="margin-top:14px">
+                <span><span class="en"><b>Governance:</b> Item removal is documented only under Pilot Test Analysis.</span><span class="ar"><b>الحوكمة:</b> حذف البنود موثّق فقط في تحليل الاختبار التجريبي.</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PILOT PANEL ── -->
+      <div class="db-panel" id="db-panel-pilot">
+        <div class="db-grid-2">
+          <div class="db-card">
+            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Pilot Test Analysis</span><span class="ar">تحليل الاختبار التجريبي</span></div><div class="db-card-subtitle"><span class="en">Reliability + governance — not the final SEM model</span><span class="ar">الموثوقية والحوكمة — وليس نموذج SEM النهائي</span></div></div></div>
+            <div class="db-card-body">
+              <div class="db-model-grid" style="margin-bottom:20px">
+                <div class="db-model-metric"><div class="db-model-metric-val">30</div><div class="db-model-metric-label"><span class="en">Pilot sample</span><span class="ar">عينة تجريبية</span></div><div class="db-model-metric-desc"><span class="en">Valid responses</span><span class="ar">استجابات صالحة</span></div></div>
+                <div class="db-model-metric"><div class="db-model-metric-val">5</div><div class="db-model-metric-label"><span class="en">Constructs</span><span class="ar">المُستحدَثات</span></div><div class="db-model-metric-desc"><span class="en">Variables tested</span><span class="ar">متغيّرات</span></div></div>
+                <div class="db-model-metric"><div class="db-model-metric-val">19</div><div class="db-model-metric-label"><span class="en">Items (before)</span><span class="ar">بنود قبل الحذف</span></div></div>
+                <div class="db-model-metric"><div class="db-model-metric-val">4</div><div class="db-model-metric-label"><span class="en">Items removed</span><span class="ar">بنود مُزالة</span></div></div>
+                <div class="db-model-metric"><div class="db-model-metric-val">15</div><div class="db-model-metric-label"><span class="en">Items retained</span><span class="ar">بنود محتفَظ بها</span></div></div>
+              </div>
+              <div class="db-table-wrap">
+                <table class="db-table">
+                  <thead><tr><th><span class="en">Variable</span><span class="ar">المتغيّر</span></th><th><span class="en">Items after</span><span class="ar">بعد الحذف</span></th><th>α</th><th><span class="en">Reading</span><span class="ar">القراءة</span></th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="en">Quality</span><span class="ar">الجودة</span></td><td>3</td><td>0.86</td><td><span class="en">Good</span><span class="ar">جيد</span></td></tr>
+                    <tr><td><span class="en">Communication</span><span class="ar">التواصل</span></td><td>3</td><td>0.84</td><td><span class="en">Good</span><span class="ar">جيد</span></td></tr>
+                    <tr><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td>3</td><td>0.81</td><td><span class="en">Good</span><span class="ar">جيد</span></td></tr>
+                    <tr><td><span class="en">Speed</span><span class="ar">السرعة</span></td><td>3</td><td>0.78</td><td><span class="en">Acceptable</span><span class="ar">مقبول</span></td></tr>
+                    <tr><td><span class="en">Overall Sat.</span><span class="ar">الرضا العام</span></td><td>3</td><td>0.88</td><td><span class="en">Good</span><span class="ar">جيد</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="db-card">
+            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Removed Items — Governance Trail</span><span class="ar">البنود المُزالة — مسار الحوكمة</span></div><div class="db-card-subtitle"><span class="en">Each removal needs a clear reason</span><span class="ar">لكل إزالة سبب واضح</span></div></div></div>
+            <div class="db-card-body">
+              <div class="db-table-wrap">
+                <table class="db-table">
+                  <thead><tr><th><span class="en">Item</span><span class="ar">البند</span></th><th><span class="en">Variable</span><span class="ar">المتغيّر</span></th><th><span class="en">Why removed</span><span class="ar">سبب الإزالة</span></th></tr></thead>
+                  <tbody>
+                    <tr><td>Q4</td><td><span class="en">Quality</span><span class="ar">الجودة</span></td><td><span class="en">Overlapped with overall satisfaction; weakened construct purity.</span><span class="ar">تداخل مع الرضا العام؛ أضعف نقاء المُستحدَث.</span></td></tr>
+                    <tr><td>C4</td><td><span class="en">Communication</span><span class="ar">التواصل</span></td><td><span class="en">Duplicate meaning with advisor clarity; weaker item-total.</span><span class="ar">تكرار المعنى مع وضوح المستشار؛ مساهمة أضعف في البند–الكلي.</span></td></tr>
+                    <tr><td>P4</td><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td><span class="en">Mixed value with fairness; risk of cross-loading on satisfaction.</span><span class="ar">اختلاط القيمة بالعدالة؛ خطر تحميل متقاطع مع الرضا.</span></td></tr>
+                    <tr><td>S4</td><td><span class="en">Speed</span><span class="ar">السرعة</span></td><td><span class="en">Broad “convenience” overlapped waiting &amp; process wording.</span><span class="ar">صياغة «الملاءمة» تتداخل مع الانتظار وتجربة العملية.</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="db-info-box warning" style="margin-top:16px">
+                <span><span class="en"><b>Transparency:</b> Documented removals strengthen credibility with stakeholders.</span><span class="ar"><b>الشفافية:</b> الإزالات الموثَّقة ترفع المصداقية لدى المعنيين.</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DEMOGRAPHICS PANEL ── -->
+      <div class="db-panel" id="db-panel-demographics">
+        <div class="db-grid-2">
+          <div class="db-card">
+            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Demographics &amp; Sample Engine</span><span class="ar">الديموغرافيا وحجم العيّنة</span></div><div class="db-card-subtitle"><span class="en">Live profile for the current filter selection</span><span class="ar">ملف حي وفق المرشّح الحالي</span></div></div></div>
+            <div class="db-card-body">
+              <div class="db-model-grid" style="margin-bottom:18px">
+                <div class="db-model-metric"><div class="db-model-metric-val" id="dbDemoTotal">300</div><div class="db-model-metric-label"><span class="en">Full sample</span><span class="ar">العينة الكاملة</span></div><div class="db-model-metric-desc"><span class="en">Valid responses</span><span class="ar">استجابات صالحة</span></div></div>
+                <div class="db-model-metric"><div class="db-model-metric-val" id="dbDemoCurrent">300</div><div class="db-model-metric-label"><span class="en">Current segment</span><span class="ar">الشريحة الحالية</span></div></div>
+                <div class="db-model-metric"><div class="db-model-metric-val" id="dbDemoShare">100%</div><div class="db-model-metric-label"><span class="en">Share</span><span class="ar">النسبة</span></div><div class="db-model-metric-desc"><span class="en">Of full sample</span><span class="ar">من العينة الكاملة</span></div></div>
+                <div class="db-model-metric"><div class="db-model-metric-val" id="dbDemoFlag">OK</div><div class="db-model-metric-label"><span class="en">Confidence</span><span class="ar">الثقة</span></div><div class="db-model-metric-desc"><span class="en">By N threshold</span><span class="ar">بحسب الحجم</span></div></div>
+              </div>
+              <div class="db-info-box info" id="dbDemoInsight"></div>
+            </div>
+          </div>
+          <div class="db-card">
+            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Demographic Diagrams</span><span class="ar">مخططات ديموغرافية</span></div><div class="db-card-subtitle"><span class="en">Composition within filtered segment</span><span class="ar">التكوين داخل الشريحة المرشَّحة</span></div></div></div>
+            <div class="db-card-body">
+              <div class="db-demo-grid">
+                <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Branches</span><span class="ar">الفروع</span></div><div id="dbBranchDemoChart" class="db-demo-chart"></div></div>
+                <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Gender</span><span class="ar">الجنس</span></div><div id="dbGenderDemoChart" class="db-demo-chart"></div></div>
+                <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Service</span><span class="ar">الخدمة</span></div><div id="dbServiceDemoChart" class="db-demo-chart"></div></div>
+                <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Visit frequency</span><span class="ar">تكرار الزيارات</span></div><div id="dbFrequencyDemoChart" class="db-demo-chart"></div></div>
+                <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Age bands</span><span class="ar">شرائح العمر</span></div><div id="dbAgeDemoChart" class="db-demo-chart"></div></div>
+                <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Decision signals</span><span class="ar">إشارات قرار</span></div><div class="db-table-wrap"><table class="db-table"><thead><tr><th><span class="en">Signal</span><span class="ar">الإشارة</span></th><th><span class="en">Value</span><span class="ar">القيمة</span></th></tr></thead><tbody id="dbSignalRows"></tbody></table></div></div>
+              </div>
             </div>
           </div>
         </div>
@@ -2536,17 +2770,80 @@ const DB_DATA = {
   }
 };
 
-const DB_CUSTOMERS = [
-  ["C-001","Riyadh","Male","Mechanical",4,2,3,1,"Medium"],
-  ["C-002","Jeddah","Female","Bodyshop",2,5,2,1,"High"],
-  ["C-003","Riyadh","Male","Bodyshop",5,4,3,1,"Low"],
-  ["C-004","Dammam","Female","Mechanical",1,2,5,1,"High"],
-  ["C-005","Jeddah","Male","Mechanical",3,2,2,1,"Medium"],
-  ["C-006","Riyadh","Female","Bodyshop",2,3,3,1,"High"],
-  ["C-007","Dammam","Male","Mechanical",3,3,2,1,"Medium"]
-];
+const DB_SAMPLE_TOTAL = 300;
+const DB_BR_LIST = ["Riyadh", "Jeddah", "Dammam"];
+const DB_GENDER_LIST = ["Male", "Female"];
+const DB_SVC_LIST = ["Mechanical", "Bodyshop"];
+const DB_FREQ_LIST = ["1 Visit", "2–3 Visits", "4+ Visits"];
+const DB_AGE_LIST = ["<25", "25–34", "35–44", "45+"];
+
+/** @type {Array<[string,string,string,string,string,string,number,number,number,number,number,string]>} */
+const DB_CUSTOMERS = [];
+(function dbGenerateCustomers() {
+  const branches = DB_BR_LIST, genders = DB_GENDER_LIST, services = DB_SVC_LIST, freqs = DB_FREQ_LIST, ages = DB_AGE_LIST;
+  for (let i = 1; i <= DB_SAMPLE_TOTAL; i++) {
+    let branch = branches[i % 3];
+    let gender = i % 10 < 6 ? "Male" : "Female";
+    let service = i % 5 < 3 ? "Mechanical" : "Bodyshop";
+    let frequency = i % 10 < 3 ? "1 Visit" : i % 10 < 8 ? "2–3 Visits" : "4+ Visits";
+    let age = i % 12 < 2 ? "<25" : i % 12 < 6 ? "25–34" : i % 12 < 10 ? "35–44" : "45+";
+    if (branch === "Riyadh" && i % 4 === 0) service = "Bodyshop";
+    if (branch === "Dammam" && i % 5 === 0) frequency = "4+ Visits";
+    let q = branch === "Riyadh" ? 3.7 : branch === "Jeddah" ? 3.3 : 3.1;
+    let c = branch === "Jeddah" ? 2.8 : 3.2;
+    let p = branch === "Dammam" ? 2.5 : 2.9;
+    let s = 1.2 + (i % 4) * 0.15;
+    if (frequency === "4+ Visits") q += 0.25;
+    if (age === "<25") p -= 0.25;
+    if (gender === "Female") c -= 0.1;
+    const sat = Math.max(1, Math.min(5, q * 0.38 + c * 0.27 + p * 0.22 + s * 0.05 + 1.0));
+    const risk = sat < 3 ? "High" : sat < 3.6 ? "Medium" : "Low";
+    DB_CUSTOMERS.push(["C-" + String(i).padStart(3, "0"), branch, gender, service, frequency, age, +q.toFixed(1), +c.toFixed(1), +p.toFixed(1), +s.toFixed(1), +sat.toFixed(1), risk]);
+  }
+})();
+
+function dbDedupeDrivers(arr) {
+  const seen = new Set();
+  return arr.filter(dr => {
+    if (seen.has(dr.name)) return false;
+    seen.add(dr.name);
+    return true;
+  });
+}
+
+function dbFilteredCustomers() {
+  const branch = document.getElementById("dbBranch")?.value || "All Branches";
+  const gender = document.getElementById("dbGender")?.value || "All Genders";
+  const service = document.getElementById("dbService")?.value || "All Services";
+  const frequency = document.getElementById("dbFrequency")?.value || "All Frequencies";
+  const age = document.getElementById("dbAge")?.value || "All Ages";
+  return DB_CUSTOMERS.filter(
+    c =>
+      (branch === "All Branches" || c[1] === branch) &&
+      (gender === "All Genders" || c[2] === gender) &&
+      (service === "All Services" || c[3] === service) &&
+      (frequency === "All Frequencies" || c[4] === frequency) &&
+      (age === "All Ages" || c[5] === age)
+  );
+}
 
 let dbSimValues = {};
+
+function dbSimSpanId(name) {
+  let s = '';
+  for (let i = 0; i < name.length; i++) s += '_' + name.charCodeAt(i);
+  return 'dbSimV' + s;
+}
+
+function dbSimSliderInput(inp) {
+  const name = decodeURIComponent(inp.getAttribute('data-driver') || '');
+  if (!name) return;
+  dbSimValues[name] = +inp.value || 0;
+  const lid = inp.getAttribute('data-lab');
+  const labEl = lid ? document.getElementById(lid) : null;
+  if (labEl) labEl.textContent = inp.value + '%';
+  dbUpdateSimulation();
+}
 
 /* ── Dashboard: Show/Hide ── */
 function showDashboard(user) {
@@ -2573,6 +2870,10 @@ function showDashboard(user) {
       if (branchEl  && filters.branch)  branchEl.value  = filters.branch;
       if (genderEl  && filters.gender)  genderEl.value  = filters.gender;
       if (serviceEl && filters.service) serviceEl.value = filters.service;
+      const freqEl = document.getElementById("dbFrequency");
+      const ageEl = document.getElementById("dbAge");
+      if (freqEl && filters.frequency) freqEl.value = filters.frequency;
+      if (ageEl && filters.age) ageEl.value = filters.age;
     }
   } catch(_) {}
 
@@ -2595,27 +2896,120 @@ function hideDashboard() {
 
 /* ── Dashboard: Get Data ── */
 function dbGetData() {
-  const branch  = document.getElementById('dbBranch')?.value  || 'All Branches';
-  const gender  = document.getElementById('dbGender')?.value  || 'All Genders';
-  const service = document.getElementById('dbService')?.value || 'All Services';
-  let d = DB_DATA[branch] || DB_DATA['All Branches'];
-  d = JSON.parse(JSON.stringify(d)); // deep clone
+  const branch = document.getElementById("dbBranch")?.value || "All Branches";
+  const gender = document.getElementById("dbGender")?.value || "All Genders";
+  const service = document.getElementById("dbService")?.value || "All Services";
+  const freq = document.getElementById("dbFrequency")?.value || "All Frequencies";
+  const ageSel = document.getElementById("dbAge")?.value || 'All Ages';
 
-  if (gender === 'Female' && branch === 'All Branches') {
-    d.score = 3.5; d.explanatory = 73; d.top = 'Communication'; d.topAr = 'التواصل';
+  let d = JSON.parse(JSON.stringify(DB_DATA[branch] || DB_DATA["All Branches"]));
+
+  if (gender === "Female") {
+    d.top = "Communication";
+    d.topAr = "التواصل";
     d.drivers = [
-      {name:"Communication",nameAr:"التواصل",avg:2.9,path:.59,impact:.25,decision:"Invest",decisionAr:"استثمر",cls:"navy"},
-      {name:"Quality",nameAr:"الجودة",avg:3.4,path:.46,impact:.19,decision:"Optimize",decisionAr:"حسّن",cls:"warning"},
-      {name:"Advisor Behavior",nameAr:"سلوك المستشار",avg:3.5,path:.34,impact:.13,decision:"Selective",decisionAr:"انتقائي",cls:"info"},
-      {name:"Price Fairness",nameAr:"عدالة السعر",avg:2.8,path:.25,impact:.08,decision:"Monitor",decisionAr:"راقب",cls:""},
-      {name:"Speed",nameAr:"السرعة",avg:1.3,path:.05,impact:.01,decision:"Do not overinvest",decisionAr:"لا تُبالغ",cls:"danger"}
+      { name: "Communication", nameAr: "التواصل", avg: 2.9, path: 0.59, impact: 0.25, decision: "Invest", decisionAr: "استثمر", cls: "navy" },
+      { name: "Quality", nameAr: "الجودة", avg: 3.4, path: 0.46, impact: 0.19, decision: "Optimize", decisionAr: "حسّن", cls: "warning" },
+      { name: "Advisor Behavior", nameAr: "سلوك المستشار", avg: 3.5, path: 0.34, impact: 0.13, decision: "Selective", decisionAr: "انتقائي", cls: "info" },
+      { name: "Price Fairness", nameAr: "عدالة السعر", avg: 2.8, path: 0.25, impact: 0.08, decision: "Monitor", decisionAr: "راقب", cls: "" },
+      { name: "Speed", nameAr: "السرعة", avg: 1.3, path: 0.05, impact: 0.01, decision: "Do not overinvest", decisionAr: "لا تُبالغ في الاستثمار", cls: "danger" }
     ];
+    d.invest = ["Female segment: communication is the strongest driver.", "Improve proactive updates and clarity.", "Standardize advisor explanation before and after service."];
+    d.investAr = ["شريحة الإناث: التواصل أقوى محرّك للرضا.", "حسّن التحديثات الاستباقية والوضوح.", "وحّد شرح المستشار قبل وبعد الخدمة."];
   }
-  if (service === 'Bodyshop') {
+
+  if (gender === "Male" && branch === "All Branches") {
+    d.top = "Quality";
+    d.topAr = "الجودة";
+    if (d.drivers[0]) d.drivers[0].impact = 0.29;
+    if (d.drivers.length > 1) {
+      d.drivers[1] = {
+        name: "Price Fairness",
+        nameAr: "عدالة السعر",
+        avg: 3.0,
+        path: 0.38,
+        impact: 0.16,
+        decision: "Optimize",
+        decisionAr: "حسّن",
+        cls: "warning"
+      };
+    }
+  }
+
+  if (service === "Bodyshop") {
     d.score = Math.max(1, d.score - 0.2);
     d.explanatory = Math.max(55, d.explanatory - 3);
-    if (d.drivers[0]) d.drivers[0].impact = Math.min(.38, d.drivers[0].impact + .03);
+    if (d.drivers[0]) d.drivers[0].impact = Math.min(0.38, d.drivers[0].impact + 0.03);
   }
+
+  if (freq === "4+ Visits") {
+    d.top = "Quality";
+    d.topAr = "الجودة";
+    d.drivers.unshift({
+      name: "Quality",
+      nameAr: "الجودة",
+      avg: 3.8,
+      path: 0.72,
+      impact: 0.35,
+      decision: "Invest",
+      decisionAr: "استثمر",
+      cls: "navy"
+    });
+    d.drivers = dbDedupeDrivers(d.drivers);
+    const tail = (d.invest || []).slice(0, 2);
+    const tailAr = (d.investAr || d.invest || []).slice(0, 2);
+    d.invest = ["High-frequency customers are quality-sensitive; protect retention through first-time-right discipline.", ...tail];
+    d.investAr = ["عملاء الزيارات المتكررة أكثر حساسية للجودة؛ حافظ على الاحتفاظ عبر الانضباط في الإصلاح من أول مرة.", ...tailAr];
+  }
+
+  if (freq === "1 Visit") {
+    d.top = "Communication";
+    d.topAr = "التواصل";
+    d.drivers.unshift({
+      name: "Communication",
+      nameAr: "التواصل",
+      avg: 2.9,
+      path: 0.55,
+      impact: 0.24,
+      decision: "Invest",
+      decisionAr: "استثمر",
+      cls: "navy"
+    });
+    d.drivers = dbDedupeDrivers(d.drivers);
+  }
+
+  if (ageSel === "<25") {
+    d.top = "Price Fairness";
+    d.topAr = "عدالة السعر";
+    d.drivers.unshift({
+      name: "Price Fairness",
+      nameAr: "عدالة السعر",
+      avg: 2.6,
+      path: 0.57,
+      impact: 0.25,
+      decision: "Invest",
+      decisionAr: "استثمر",
+      cls: "navy"
+    });
+    d.drivers = dbDedupeDrivers(d.drivers);
+    const tail = (d.invest || []).slice(0, 2);
+    const tailAr = (d.investAr || d.invest || []).slice(0, 2);
+    d.invest = ["Younger customers show stronger price sensitivity; improve estimate transparency and value explanation.", ...tail];
+    d.investAr = ["العملاء الأصغر سناً أكثر حساسية للسعر؛ حسّن شفافية التقدير وشرح القيمة.", ...tailAr];
+  }
+
+  const fc = dbFilteredCustomers();
+  if (fc.length) {
+    d.score = fc.reduce((acc, row) => acc + row[10], 0) / fc.length;
+    let adj = 0;
+    if (fc.length < 30) adj = 7;
+    else if (fc.length < 60) adj = 3;
+    d.explanatory = Math.max(52, Math.min(78, Math.round(d.explanatory - adj)));
+  }
+
+  d.drivers = d.drivers.slice(0, 5);
+  d.risk = "Speed";
+  d.riskAr = "السرعة";
   return d;
 }
 
@@ -2632,14 +3026,17 @@ function dbShowPanel(id, btn) {
   try { localStorage.setItem('roshd_panel', id); } catch(_) {}
 
   const titles = {
-    executive:       { en:'Executive View',     ar:'العرض التنفيذي' },
-    drivers:         { en:'Driver Analysis',    ar:'تحليل المحركات' },
-    effect:          { en:'Effect Size',        ar:'حجم التأثير' },
-    segments:        { en:'Segments',           ar:'الشرائح' },
-    simulation:      { en:'Simulation Lab',     ar:'مختبر المحاكاة' },
-    customers:       { en:'Customer Patterns',  ar:'أنماط العملاء' },
-    recommendations: { en:'Recommendations',   ar:'التوصيات' },
-    model:           { en:'Model Quality',      ar:'جودة النموذج' }
+    executive:       { en:'Executive View',       ar:'العرض التنفيذي' },
+    drivers:         { en:'Driver Analysis',      ar:'تحليل المحركات' },
+    effect:          { en:'Effect Size',          ar:'حجم التأثير' },
+    segments:        { en:'Segments',             ar:'الشرائح' },
+    simulation:      { en:'Simulation Lab',       ar:'مختبر المحاكاة' },
+    customers:       { en:'Customer Patterns',    ar:'أنماط العملاء' },
+    recommendations: { en:'Recommendations',      ar:'التوصيات' },
+    model:           { en:'Model Quality',        ar:'جودة النموذج' },
+    questionnaire:   { en:'Questionnaire Items', ar:'عناصر الاستبيان' },
+    pilot:           { en:'Pilot Test Analysis',  ar:'تحليل الاختبار التجريبي' },
+    demographics:    { en:'Demographics Engine',  ar:'محرك البيانات الديموغرافية' }
   };
   const info = titles[id] || { en: id, ar: id };
   document.getElementById('dbPageTitle').innerHTML     = `<span class="en">${info.en}</span><span class="ar">${info.ar}</span>`;
@@ -2651,34 +3048,168 @@ function dbShowPanel(id, btn) {
   closeDashboardSidebar();
 }
 
+function dbFillDemoBars(containerId, fieldIdx, labelPairs) {
+  const rows = dbFilteredCustomers();
+  const total = rows.length || 1;
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  box.innerHTML = labelPairs.map(([value, htmlLabel]) => {
+    const n = rows.filter(r => r[fieldIdx] === value).length;
+    const p = Math.round((n / total) * 100);
+    return `<div class="db-demo-row"><span>${htmlLabel}</span><div class="db-demo-track"><div class="db-demo-fill" style="width:${p}%"></div></div><span>${p}%</span></div>`;
+  }).join('');
+}
+
+function dbRenderDemographics(d, segmentN, sharePct, freqVal, ageSel) {
+  const demoTotal = document.getElementById('dbDemoTotal');
+  const demoCurr = document.getElementById('dbDemoCurrent');
+  const demoShare = document.getElementById('dbDemoShare');
+  const demoFlag = document.getElementById('dbDemoFlag');
+  const demoInsight = document.getElementById('dbDemoInsight');
+
+  if (demoTotal) demoTotal.textContent = String(DB_SAMPLE_TOTAL);
+  if (demoCurr) demoCurr.textContent = String(segmentN);
+  if (demoShare) demoShare.innerHTML = `<span class="en">${sharePct}%</span><span class="ar">${sharePct}%</span>`;
+
+  if (demoFlag) {
+    if (segmentN < 30)
+      demoFlag.innerHTML = `<span class="en">LOW N</span><span class="ar">حجم منخفض</span>`;
+    else if (segmentN < 60)
+      demoFlag.innerHTML = `<span class="en">CAUTION</span><span class="ar">انتباه</span>`;
+    else
+      demoFlag.innerHTML = `<span class="en">OK</span><span class="ar">مقبول</span>`;
+  }
+
+  if (demoInsight) {
+    const extraFreqEn =
+      freqVal === '4+ Visits'
+        ? 'High-frequency customers are retention assets — quality failures are costly.'
+        : freqVal === '1 Visit'
+          ? 'First visits need communication clarity to build trust quickly.'
+          : 'Use visit frequency to separate acquisition gaps from retention issues.';
+    const extraFreqAr =
+      freqVal === '4+ Visits'
+        ? 'عملاء الزيارات العالية أصول احتفاظ؛ تعثر الجودة يكلف.'
+        : freqVal === '1 Visit'
+          ? 'الزيارات الأولى تحتاج وضوح تواصل لبناء الثقة.'
+          : 'استخدم تكرار الزيارة لفصل مشاكل الجذب عن الاحتفاظ.';
+    const ageEn =
+      ageSel === '<25'
+        ? 'Younger respondents show higher price sensitivity — prioritize estimate transparency.'
+        : 'Review age mix before assuming price-led priorities.';
+    const ageAr =
+      ageSel === '<25'
+        ? 'الأصغر حساسية أعلى للسعر؛ أولِ شفافية التقديرات.'
+        : 'راجع مزيج العمر قبل افتراض أولوية السعر.';
+    demoInsight.innerHTML =
+      `<span><span class="en"><b>Insight:</b> <b>${segmentN}</b> filtered responses. Strongest lever: <b>${d.top}</b>. ${extraFreqEn} ${ageEn}</span>` +
+      `<span class="ar"><b>ملخص:</b> <b>${segmentN}</b> استجابة بعد التصفية. أقوى رافعة: <b>${d.topAr || d.top}</b>. ${extraFreqAr} ${ageAr}</span></span>`;
+  }
+
+  dbFillDemoBars('dbBranchDemoChart', 1, [
+    ['Riyadh', '<span class="en">Riyadh</span><span class="ar">الرياض</span>'],
+    ['Jeddah', '<span class="en">Jeddah</span><span class="ar">جدة</span>'],
+    ['Dammam', '<span class="en">Dammam</span><span class="ar">الدمام</span>']
+  ]);
+  dbFillDemoBars('dbGenderDemoChart', 2, [
+    ['Male', '<span class="en">Male</span><span class="ar">ذكر</span>'],
+    ['Female', '<span class="en">Female</span><span class="ar">أنثى</span>']
+  ]);
+  dbFillDemoBars('dbServiceDemoChart', 3, [
+    ['Mechanical', '<span class="en">Mechanical</span><span class="ar">ميكانيكي</span>'],
+    ['Bodyshop', '<span class="en">Bodyshop</span><span class="ar">هيكل السيارة</span>']
+  ]);
+  dbFillDemoBars('dbFrequencyDemoChart', 4, [
+    ['1 Visit', '<span class="en">1 Visit</span><span class="ar">زيارة واحدة</span>'],
+    ['2–3 Visits', '<span class="en">2–3 Visits</span><span class="ar">2–3 زيارات</span>'],
+    ['4+ Visits', '<span class="en">4+ Visits</span><span class="ar">4+ زيارات</span>']
+  ]);
+  dbFillDemoBars('dbAgeDemoChart', 5, [
+    ['<25', '<span class="en">&lt;25</span><span class="ar">أقل من 25</span>'],
+    ['25–34', '<span class="en">25–34</span><span class="ar">25–34</span>'],
+    ['35–44', '<span class="en">35–44</span><span class="ar">35–44</span>'],
+    ['45+', '<span class="en">45+</span><span class="ar">45+</span>']
+  ]);
+
+  const sig = document.getElementById('dbSignalRows');
+  if (sig) {
+    const sampEn = segmentN < 30 ? 'Directional only' : segmentN < 60 ? 'Use with caution' : 'Decision-ready';
+    const sampAr = segmentN < 30 ? 'اتجاهات فقط' : segmentN < 60 ? 'مع تحفّظ' : 'جاهزة للقرار';
+    sig.innerHTML =
+      `<tr><td><span class="en">Segment top driver</span><span class="ar">المحرك الأعلى</span></td><td><span class="en">${d.top}</span><span class="ar">${d.topAr || d.top}</span></td></tr>` +
+      `<tr><td><span class="en">Low-impact driver</span><span class="ar">محرك ضعيف الأثر</span></td><td><span class="en">${d.risk}</span><span class="ar">${d.riskAr || d.risk}</span></td></tr>` +
+      `<tr><td><span class="en">Sample decision use</span><span class="ar">استخدام القرار</span></td><td><span class="en">${sampEn}</span><span class="ar">${sampAr}</span></td></tr>`;
+  }
+}
+
 /* ── Dashboard: Main Render ── */
 function dbRender() {
   // Persist current filter state so it survives refresh / reopen
   try {
     localStorage.setItem('roshd_filters', JSON.stringify({
-      branch:  document.getElementById('dbBranch')?.value  || 'All Branches',
-      gender:  document.getElementById('dbGender')?.value  || 'All Genders',
-      service: document.getElementById('dbService')?.value || 'All Services'
+      branch:    document.getElementById('dbBranch')?.value    || 'All Branches',
+      gender:    document.getElementById('dbGender')?.value    || 'All Genders',
+      service:   document.getElementById('dbService')?.value   || 'All Services',
+      frequency: document.getElementById('dbFrequency')?.value || 'All Frequencies',
+      age:       document.getElementById('dbAge')?.value       || 'All Ages'
     }));
   } catch(_) {}
 
+  const fc = dbFilteredCustomers();
+  const segmentN = fc.length;
+  const sharePct = segmentN ? Math.round((segmentN / DB_SAMPLE_TOTAL) * 100) : 0;
   const d = dbGetData();
   const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
+  const freqVal = document.getElementById('dbFrequency')?.value || 'All Frequencies';
+  const ageSel = document.getElementById('dbAge')?.value || 'All Ages';
 
-  // KPIs
   document.getElementById('kpiScore').textContent       = d.score.toFixed(1);
   document.getElementById('kpiExplanatory').textContent = d.explanatory + '%';
   document.getElementById('mqR2').textContent           = d.explanatory + '%';
 
-  // Top driver / risk
+  const sampleNEl = document.getElementById('kpiSampleN');
+  const sampleShareEl = document.getElementById('kpiSampleShare');
+  if (sampleNEl) sampleNEl.textContent = String(segmentN);
+  if (sampleShareEl) {
+    sampleShareEl.innerHTML =
+      `<span class="en">${sharePct}% of full sample (${DB_SAMPLE_TOTAL})</span><span class="ar">${sharePct}% من العينة الكاملة (${DB_SAMPLE_TOTAL})</span>`;
+  }
+
   const topEl  = document.getElementById('kpiTopDriver');
   const riskEl = document.getElementById('kpiRisk');
   if (topEl)  topEl.innerHTML  = `<span class="en">${d.top}</span><span class="ar">${d.topAr||d.top}</span>`;
   if (riskEl) riskEl.innerHTML = `<span class="en">${d.risk}</span><span class="ar">${d.riskAr||d.risk}</span>`;
 
-  setLanguage(document.documentElement.getAttribute('data-lang'));
+  const warnEl = document.getElementById('dbSegmentWarning');
+  if (warnEl) {
+    if (segmentN < 30) {
+      warnEl.innerHTML =
+        `<span><span class="en"><b>Warning:</b> Segment N is below 30. Treat outputs as directional, not proof.</span><span class="ar"><b>تنبيه:</b> حجم الشريحة أقل من 30. اعتبر المخرجات توجيهية وليست دليلًا نهائيًا.</span></span>`;
+      warnEl.style.display = '';
+    } else if (segmentN < 60) {
+      warnEl.innerHTML =
+        `<span><span class="en"><b>Caution:</b> Segment N is modest — use for prioritization, not definitive proof.</span><span class="ar"><b>تحفّظ:</b> حجم الشريحة متوسط — للأولوية وليس الإثبات النهائي.</span></span>`;
+      warnEl.style.display = '';
+    } else {
+      warnEl.innerHTML =
+        `<span><span class="en"><b>Sample check:</b> Segment size supports dashboard-level interpretation.</span><span class="ar"><b>مراجعة العينة:</b> الحجم ملائم لتفسير على مستوى اللوحة.</span></span>`;
+      warnEl.style.display = '';
+    }
+  }
 
-  // Executive + Recommendations grids
+  const branchPerf = document.getElementById('dbBranchPerfBars');
+  if (branchPerf) {
+    branchPerf.innerHTML = DB_BR_LIST.map(b => {
+      const bd = DB_DATA[b];
+      const w = Math.min(100, Math.round(((bd.score || 3) / 5) * 100));
+      return `<div class="db-bar-row">
+        <span class="db-bar-label"><span class="en">${b}</span><span class="ar">${b === 'Riyadh' ? 'الرياض' : b === 'Jeddah' ? 'جدة' : 'الدمام'}</span></span>
+        <div class="db-bar-track"><div class="db-bar-fill" style="width:${w}%"></div></div>
+        <span class="db-bar-val">${bd.score.toFixed(1)}</span>
+      </div>`;
+    }).join('');
+  }
+
   const execHTML = `
     <div class="db-exec-card db-exec-invest">
       <div class="db-exec-card-title"><span class="en">Invest Now</span><span class="ar">استثمر الآن</span></div>
@@ -2746,27 +3277,35 @@ function dbRender() {
     }).join('');
   }
 
+  // Driver bubble map
+  const bub = document.getElementById('dbBubbleContainer');
+  if (bub) {
+    bub.innerHTML = d.drivers.map(dr => {
+      const left = 10 + dr.path * 78;
+      const bottom = 12 + (dr.avg / 5) * 70;
+      const size = 42 + dr.impact * 130;
+      const low = dr.name === 'Speed' ? ' low' : '';
+      const lab = isAr ? (dr.nameAr || dr.name) : dr.name;
+      const impLab = isAr ? 'أثر' : 'Impact';
+      return `<div class="db-bubble${low}" style="left:${left}%;bottom:${bottom}%;width:${size}px;height:${size}px;max-width:95%;max-height:95%">${lab}<br>${impLab} ${dr.impact.toFixed(2)}</div>`;
+    }).join('');
+  }
+
   // Customers table
   const customersBody = document.getElementById('dbCustomersTable');
   if (customersBody) {
-    const branch  = document.getElementById('dbBranch')?.value  || 'All Branches';
-    const gender  = document.getElementById('dbGender')?.value  || 'All Genders';
-    const service = document.getElementById('dbService')?.value || 'All Services';
-    const filtered = DB_CUSTOMERS.filter(c =>
-      (branch  === 'All Branches' || c[1] === branch) &&
-      (gender  === 'All Genders'  || c[2] === gender) &&
-      (service === 'All Services' || c[3] === service)
-    );
-    customersBody.innerHTML = filtered.length ? filtered.map(c => {
-      const riskCls = c[8]==='High' ? 'db-badge-danger' : c[8]==='Low' ? 'db-badge-success' : 'db-badge-warning';
-      const riskLabel = c[8]==='High' ? t('High','عالٍ') : c[8]==='Low' ? t('Low','منخفض') : t('Medium','متوسط');
+    customersBody.innerHTML = fc.length ? fc.slice(0, 80).map(c => {
+      const riskCls = c[11]==='High' ? 'db-badge-danger' : c[11]==='Low' ? 'db-badge-success' : 'db-badge-warning';
+      const riskLabel = c[11]==='High' ? t('High','عالٍ') : c[11]==='Low' ? t('Low','منخفض') : t('Medium','متوسط');
       return `<tr>
-        <td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td>
-        <td>${c[4]}</td><td>${c[5]}</td><td>${c[6]}</td><td>${c[7]}</td>
+        <td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4]}</td><td>${c[5]}</td>
+        <td>${c[6]}</td><td>${c[7]}</td><td>${c[8]}</td><td>${c[9]}</td><td>${c[10]}</td>
         <td><span class="db-badge ${riskCls}">${riskLabel}</span></td>
       </tr>`;
-    }).join('') : `<tr><td colspan="9" style="text-align:center;color:var(--db-muted);padding:28px">${t('No records match the selected filters.','لا توجد سجلات تطابق المرشّحات المختارة.')}</td></tr>`;
+    }).join('') : `<tr><td colspan="12" style="text-align:center;color:var(--db-muted);padding:28px">${t('No records match the selected filters.','لا توجد سجلات تطابق المرشّحات المختارة.')}</td></tr>`;
   }
+
+  dbRenderDemographics(d, segmentN, sharePct, freqVal, ageSel);
 
   // Simulation update if visible
   dbUpdateSimulation();
@@ -2785,14 +3324,16 @@ function dbRenderSimulation() {
   });
   const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
   container.innerHTML = d.drivers.slice(0, 4).map(dr => {
+    const spId = dbSimSpanId(dr.name);
     const dName = isAr ? (dr.nameAr||dr.name) : dr.name;
+    const encName = encodeURIComponent(dr.name);
     return `<div class="db-slider-wrap">
       <div class="db-slider-header">
         <span class="db-slider-name">${dName} ${t('Improvement','تحسين')}</span>
-        <span class="db-slider-val" id="sv-${dr.name}">${dbSimValues[dr.name]||10}%</span>
+        <span class="db-slider-val" id="${spId}">${dbSimValues[dr.name]||10}%</span>
       </div>
-      <input type="range" class="db-range" min="0" max="20" value="${dbSimValues[dr.name]||10}"
-        oninput="dbSimValues['${dr.name}']=+this.value; document.getElementById('sv-${dr.name}').textContent=this.value+'%'; dbUpdateSimulation()">
+      <input type="range" class="db-range" data-driver="${encName}" data-lab="${spId}" min="0" max="20" value="${dbSimValues[dr.name]||10}"
+        oninput="dbSimSliderInput(this)">
     </div>`;
   }).join('');
   dbUpdateSimulation();
@@ -2801,9 +3342,10 @@ function dbRenderSimulation() {
 function dbUpdateSimulation() {
   const d = dbGetData();
   let lift = 0;
-  const map = {};
-  d.drivers.forEach(dr => map[dr.name] = dr.impact);
-  d.drivers.slice(0,4).forEach(dr => { lift += (dbSimValues[dr.name]||0) * dr.impact * 0.11; });
+  d.drivers.slice(0, 4).forEach(dr => {
+    const mult = dr.name === 'Speed' ? 0.08 : 0.11;
+    lift += (dbSimValues[dr.name] || 0) * dr.impact * mult;
+  });
   const expected = Math.min(5, d.score + lift);
   const whole = Math.floor(expected);
   const dec   = expected.toFixed(2).split('.')[1];
@@ -2812,11 +3354,10 @@ function dbUpdateSimulation() {
   const baseEl = document.getElementById('dbSimBaseline');
   if (baseEl) baseEl.textContent = d.score.toFixed(2);
   const advEl = document.getElementById('dbSimAdvice');
-  if (advEl) advEl.innerHTML = `<span class="en">Strongest lever: <b>${d.top}</b>. Speed remains low-impact regardless of score.</span><span class="ar">الرافعة الأقوى: <b>${d.topAr||d.top}</b>. السرعة تظل منخفضة التأثير بغض النظر عن الدرجة.</span>`;
-  const roi = Math.round(d.drivers.reduce((acc, dr) => acc + (dbSimValues[dr.name]||0) * dr.impact, 0) * 100);
+  if (advEl) advEl.innerHTML = `<span class="en">Strongest lever: <b>${d.top}</b>. Speed remains low-impact unless its effect size changes.</span><span class="ar">الرافعة الأقوى: <b>${d.topAr||d.top}</b>. السرعة تظل ضعيفة الأثر ما لم يتغيّر حجم تأثيرها.</span>`;
+  const roi = Math.round(d.drivers.slice(0, 4).reduce((acc, dr) => acc + (dbSimValues[dr.name]||0) * dr.impact, 0) * 100);
   const roiEl = document.getElementById('dbSimROI');
   if (roiEl) roiEl.textContent = roi;
-  setLanguage(document.documentElement.getAttribute('data-lang'));
 }
 
 /* ── Segments ── */
@@ -2837,7 +3378,6 @@ function dbRenderSegments() {
       <div class="db-segment-meta">${d.explanatory}% · ${d.score}/5</div>
     </div>`;
   }).join('');
-  setLanguage(document.documentElement.getAttribute('data-lang'));
 }
 
 function dbSelectSegment(key, el) {
@@ -2874,7 +3414,6 @@ function dbSelectSegment(key, el) {
         <ul>${(isAr ? d.avoidAr||d.avoid : d.avoid).map(x=>`<li>${x}</li>`).join('')}</ul>
       </div>
     </div>`;
-  setLanguage(document.documentElement.getAttribute('data-lang'));
 }
 
 /* ── Dashboard Logout ── */
