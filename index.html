@@ -889,8 +889,8 @@ html[data-lang="ar"] .db-export-btn { font-family: 'Cairo', sans-serif; }
 .db-kpi-trend.down { color: #ef4444; }
 .db-kpi-trend.neutral { color: var(--db-muted); }
 
-.db-kpi-val { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: var(--white); line-height: 1; margin-bottom: 4px; }
-html[data-lang="ar"] .db-kpi-val { font-family: 'Cairo', sans-serif; font-size: 28px; }
+.db-kpi-val { font-family: 'Cormorant Garamond', serif; font-size: clamp(20px, 2.2vw, 36px); font-weight: 600; color: var(--white); line-height: 1; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-lang="ar"] .db-kpi-val { font-family: 'Cairo', sans-serif; font-size: clamp(18px, 1.8vw, 28px); }
 .db-kpi-label { font-size: 11px; color: var(--db-muted); letter-spacing: 0.06em; }
 html[data-lang="ar"] .db-kpi-label { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
 
@@ -1714,35 +1714,35 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 
     <nav class="db-nav">
       <div class="db-nav-section"><span class="en">Analytics</span><span class="ar">التحليلات</span></div>
-      <button class="db-nav-item active" onclick="dbShowPanel('executive', this)">
+      <button class="db-nav-item active" data-panel="executive" onclick="dbShowPanel('executive', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         <span class="en">Executive View</span><span class="ar">العرض التنفيذي</span>
       </button>
-      <button class="db-nav-item" onclick="dbShowPanel('drivers', this)">
+      <button class="db-nav-item" data-panel="drivers" onclick="dbShowPanel('drivers', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
         <span class="en">Driver Analysis</span><span class="ar">تحليل المحركات</span>
       </button>
-      <button class="db-nav-item" onclick="dbShowPanel('effect', this)">
+      <button class="db-nav-item" data-panel="effect" onclick="dbShowPanel('effect', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
         <span class="en">Effect Size</span><span class="ar">حجم التأثير</span>
       </button>
-      <button class="db-nav-item" onclick="dbShowPanel('segments', this)">
+      <button class="db-nav-item" data-panel="segments" onclick="dbShowPanel('segments', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
         <span class="en">Segments</span><span class="ar">الشرائح</span>
       </button>
-      <button class="db-nav-item" onclick="dbShowPanel('simulation', this)">
+      <button class="db-nav-item" data-panel="simulation" onclick="dbShowPanel('simulation', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         <span class="en">Simulation Lab</span><span class="ar">مختبر المحاكاة</span>
       </button>
-      <button class="db-nav-item" onclick="dbShowPanel('customers', this)">
+      <button class="db-nav-item" data-panel="customers" onclick="dbShowPanel('customers', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span class="en">Customer Patterns</span><span class="ar">أنماط العملاء</span>
       </button>
-      <button class="db-nav-item" onclick="dbShowPanel('recommendations', this)">
+      <button class="db-nav-item" data-panel="recommendations" onclick="dbShowPanel('recommendations', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         <span class="en">Recommendations</span><span class="ar">التوصيات</span>
       </button>
-      <button class="db-nav-item" onclick="dbShowPanel('model', this)">
+      <button class="db-nav-item" data-panel="model" onclick="dbShowPanel('model', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         <span class="en">Model Quality</span><span class="ar">جودة النموذج</span>
       </button>
@@ -1785,21 +1785,20 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
     <div class="db-filter-bar">
       <span class="db-filter-label"><span class="en">Filters:</span><span class="ar">التصفية:</span></span>
       <select class="db-select" id="dbBranch" onchange="dbRender()">
-        <option value="All Branches" class="en">All Branches</option>
-        <option value="All Branches" class="ar">جميع الفروع</option>
-        <option value="Riyadh"><span class="en">Riyadh</span><span class="ar">الرياض</span></option>
-        <option value="Jeddah"><span class="en">Jeddah</span><span class="ar">جدة</span></option>
-        <option value="Dammam"><span class="en">Dammam</span><span class="ar">الدمام</span></option>
+        <option value="All Branches" data-en="All Branches" data-ar="جميع الفروع">All Branches</option>
+        <option value="Riyadh"       data-en="Riyadh"       data-ar="الرياض">Riyadh</option>
+        <option value="Jeddah"       data-en="Jeddah"       data-ar="جدة">Jeddah</option>
+        <option value="Dammam"       data-en="Dammam"       data-ar="الدمام">Dammam</option>
       </select>
       <select class="db-select" id="dbGender" onchange="dbRender()">
-        <option value="All Genders"><span class="en">All Genders</span><span class="ar">الجنسين</span></option>
-        <option value="Male"><span class="en">Male</span><span class="ar">ذكر</span></option>
-        <option value="Female"><span class="en">Female</span><span class="ar">أنثى</span></option>
+        <option value="All Genders" data-en="All Genders" data-ar="الجنسين">All Genders</option>
+        <option value="Male"        data-en="Male"        data-ar="ذكر">Male</option>
+        <option value="Female"      data-en="Female"      data-ar="أنثى">Female</option>
       </select>
       <select class="db-select" id="dbService" onchange="dbRender()">
-        <option value="All Services"><span class="en">All Services</span><span class="ar">جميع الخدمات</span></option>
-        <option value="Mechanical"><span class="en">Mechanical</span><span class="ar">ميكانيكي</span></option>
-        <option value="Bodyshop"><span class="en">Bodyshop</span><span class="ar">هيكل السيارة</span></option>
+        <option value="All Services" data-en="All Services" data-ar="جميع الخدمات">All Services</option>
+        <option value="Mechanical"   data-en="Mechanical"   data-ar="ميكانيكي">Mechanical</option>
+        <option value="Bodyshop"     data-en="Bodyshop"     data-ar="هيكل السيارة">Bodyshop</option>
       </select>
       <span class="db-filter-label" style="margin-inline-start:8px;">Q2 2026</span>
       <button class="db-export-btn" onclick="window.print()">
@@ -2119,6 +2118,10 @@ function setLanguage(lang) {
   document.querySelectorAll('[data-ph-en]').forEach(el => {
     el.placeholder = isAr ? (el.dataset.phAr || '') : (el.dataset.phEn || '');
   });
+  // Dashboard filter select options
+  document.querySelectorAll('#customerDashboard select option[data-en]').forEach(opt => {
+    opt.textContent = isAr ? (opt.dataset.ar || opt.dataset.en) : opt.dataset.en;
+  });
   if (document.getElementById('hamburger')?.classList.contains('open')) closeMobileMenu();
   try { localStorage.setItem('roshd-lang', lang); } catch(e) {}
   // Re-render dashboard if open
@@ -2434,12 +2437,29 @@ function showDashboard(user) {
   const avatarEl = document.getElementById('dbAvatar');
   if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
 
+  // Restore saved filter selections
+  try {
+    const filters = JSON.parse(localStorage.getItem('roshd_filters') || 'null');
+    if (filters) {
+      const branchEl  = document.getElementById('dbBranch');
+      const genderEl  = document.getElementById('dbGender');
+      const serviceEl = document.getElementById('dbService');
+      if (branchEl  && filters.branch)  branchEl.value  = filters.branch;
+      if (genderEl  && filters.gender)  genderEl.value  = filters.gender;
+      if (serviceEl && filters.service) serviceEl.value = filters.service;
+    }
+  } catch(_) {}
+
   // Init simulation values
   const d = dbGetData();
   d.drivers.forEach(dr => { if (dbSimValues[dr.name] === undefined) dbSimValues[dr.name] = 10; });
 
   dbRender();
-  dbShowPanel('executive', document.querySelector('.db-nav-item'));
+
+  // Restore last active panel (default: executive)
+  const savedPanel = localStorage.getItem('roshd_panel') || 'executive';
+  const savedBtn   = document.querySelector(`.db-nav-item[data-panel="${savedPanel}"]`);
+  dbShowPanel(savedPanel, savedBtn || document.querySelector('.db-nav-item'));
 }
 
 function hideDashboard() {
@@ -2482,6 +2502,9 @@ function dbShowPanel(id, btn) {
   document.querySelectorAll('.db-nav-item').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
+  // Persist active panel so refresh / reopen lands here
+  try { localStorage.setItem('roshd_panel', id); } catch(_) {}
+
   const titles = {
     executive:       { en:'Executive View',     ar:'العرض التنفيذي' },
     drivers:         { en:'Driver Analysis',    ar:'تحليل المحركات' },
@@ -2504,6 +2527,15 @@ function dbShowPanel(id, btn) {
 
 /* ── Dashboard: Main Render ── */
 function dbRender() {
+  // Persist current filter state so it survives refresh / reopen
+  try {
+    localStorage.setItem('roshd_filters', JSON.stringify({
+      branch:  document.getElementById('dbBranch')?.value  || 'All Branches',
+      gender:  document.getElementById('dbGender')?.value  || 'All Genders',
+      service: document.getElementById('dbService')?.value || 'All Services'
+    }));
+  } catch(_) {}
+
   const d = dbGetData();
   const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
 
@@ -2721,7 +2753,14 @@ function dbSelectSegment(key, el) {
 
 /* ── Dashboard Logout ── */
 function handleDashboardLogout() {
-  try { localStorage.removeItem('roshd_access_token'); localStorage.removeItem('roshd_user'); } catch(_) {}
+  try {
+    localStorage.removeItem('roshd_access_token');
+    localStorage.removeItem('roshd_refresh_token');
+    localStorage.removeItem('roshd_user');
+    localStorage.removeItem('roshd_panel');
+    localStorage.removeItem('roshd_filters');
+    localStorage.removeItem('roshd_scroll');
+  } catch(_) {}
   hideDashboard();
   showToast(t('You have been logged out.', 'تم تسجيل خروجك.'));
 }
@@ -2745,11 +2784,51 @@ function closeDashboardSidebar() {
     const token = localStorage.getItem('roshd_access_token');
     const user  = JSON.parse(localStorage.getItem('roshd_user') || 'null');
     if (token && user) {
-      // Verify with server silently
+      // ── Immediately restore the dashboard — no waiting for server ──
+      showDashboard(user);
+
+      // ── Background verify: only log out on explicit 401/403 ──
       fetch('/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
-        .then(r => r.json())
-        .then(d => { if (d.success) showDashboard(d.user); })
-        .catch(() => {}); // Server offline — don't auto-login
+        .then(r => {
+          if (r.status === 401 || r.status === 403) {
+            // Token definitively rejected — clear session and exit dashboard
+            try {
+              localStorage.removeItem('roshd_access_token');
+              localStorage.removeItem('roshd_refresh_token');
+              localStorage.removeItem('roshd_user');
+            } catch(_) {}
+            hideDashboard();
+            showToast(t('Session expired. Please log in again.', 'انتهت الجلسة. يرجى تسجيل الدخول مجدداً.'));
+            return null;
+          }
+          return r.json();
+        })
+        .then(d => {
+          if (d && d.success && d.user) {
+            // Refresh stored user data with latest from server
+            try { localStorage.setItem('roshd_user', JSON.stringify(d.user)); } catch(_) {}
+            const displayName = d.user.first_name
+              ? (d.user.first_name + (d.user.last_name ? ' ' + d.user.last_name : ''))
+              : (d.user.email || 'Client');
+            const nameEl   = document.getElementById('dbUserName');
+            const avatarEl = document.getElementById('dbAvatar');
+            if (nameEl)   nameEl.textContent   = displayName;
+            if (avatarEl) avatarEl.textContent  = displayName.charAt(0).toUpperCase();
+          }
+        })
+        .catch(() => {
+          // Server offline / unreachable — keep dashboard open, do nothing
+        });
+    } else {
+      // No stored session — restore main-page scroll position
+      try {
+        const savedScroll = localStorage.getItem('roshd_scroll');
+        if (savedScroll) {
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: parseInt(savedScroll, 10), behavior: 'instant' });
+          });
+        }
+      } catch(_) {}
     }
   } catch(_) {}
 })();
@@ -2761,6 +2840,18 @@ document.querySelectorAll('.mini-tab').forEach(tab => {
     tab.classList.add('active');
   });
 });
+
+/* ── Main page scroll position persistence ── */
+let _scrollSaveTimer;
+window.addEventListener('scroll', () => {
+  const db = document.getElementById('customerDashboard');
+  if (db && !db.classList.contains('open')) {
+    clearTimeout(_scrollSaveTimer);
+    _scrollSaveTimer = setTimeout(() => {
+      try { localStorage.setItem('roshd_scroll', Math.round(window.scrollY)); } catch(_) {}
+    }, 150);
+  }
+}, { passive: true });
 </script>
 </body>
 </html>
