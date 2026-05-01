@@ -411,30 +411,58 @@ section { position: relative; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
 /* ═══════════════════════════════════════════════
-   ABOUT
+   ABOUT — two-column: copy aligns with Services; aside fills viewport
    ═══════════════════════════════════════════════ */
 .about-strip { background: var(--white); padding: 56px 0 88px; border-bottom: 1px solid var(--gray-light); }
 .about-strip .section-inner { display: block; }
-.about-single { max-width: min(920px, 100%); margin-inline: auto; }
-.about-head-row {
-  display: flex;
-  align-items: center;
-  gap: clamp(24px, 5vw, 48px);
-  margin-bottom: 32px;
-  padding-bottom: 28px;
-  border-bottom: 1px solid var(--gray-light);
+.about-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.46fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
 }
-.about-logo {
-  flex-shrink: 0;
-  width: clamp(88px, 18vw, 140px);
+.about-main {
+  min-width: 0;
+}
+.about-main > .section-tag { margin-bottom: 16px; }
+.about-main > .about-title { margin-bottom: 28px; }
+.about-aside { min-width: 0; }
+.about-aside-inner {
+  position: sticky;
+  top: 96px;
+  padding: clamp(28px, 4vw, 44px);
+  border-radius: 12px;
+  border: 1px solid var(--gray-light);
+  background: linear-gradient(160deg, var(--cream) 0%, var(--offwhite) 55%, var(--white) 100%);
+  box-shadow: 0 24px 60px rgba(26,41,82, 0.08);
+  text-align: center;
+}
+.about-aside-inner::before {
+  content: '';
+  display: block;
+  height: 3px;
+  width: 56px;
+  margin: 0 auto 28px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  border-radius: 99px;
+}
+.about-aside-logo {
+  display: block;
+  width: min(100%, 300px);
   height: auto;
+  margin-inline: auto;
   object-fit: contain;
-  align-self: center;
 }
-.about-head-text { flex: 1; min-width: 0; }
-.about-head-text .section-tag { margin-bottom: 14px; }
-.about-head-text .section-tag span { letter-spacing: 0.22em; font-size: 12px; }
-/* About-specific title: clear hierarchy (no awkward line breaks mid-phrase) */
+.about-aside-tagline {
+  margin-top: 24px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--navy-mid);
+  line-height: 1.5;
+}
+/* About-specific title */
 .about-title {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 400;
@@ -457,7 +485,7 @@ section { position: relative; }
 }
 .about-title-accent {
   display: block;
-  font-size: clamp(34px, 5vw, 56px);
+  font-size: clamp(32px, 4.2vw, 52px);
   font-weight: 500;
   line-height: 1.12;
 }
@@ -466,35 +494,52 @@ section { position: relative; }
   color: var(--gold);
   font-weight: 500;
 }
-html[data-lang="ar"] .about-head-row { flex-direction: row-reverse; }
-html[data-lang="ar"] .about-title-lead { letter-spacing: 0; text-transform: none; font-family: 'Cairo', sans-serif; font-size: clamp(14px, 1.6vw, 17px); font-weight: 700; color: var(--navy-mid); }
+html[data-lang="ar"] .about-title-lead {
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: 'Cairo', sans-serif;
+  font-size: clamp(14px, 1.6vw, 17px);
+  font-weight: 700;
+  color: var(--navy-mid);
+}
 html[data-lang="ar"] .about-title-accent { font-family: 'Cairo', sans-serif; font-weight: 700; letter-spacing: 0; }
 html[data-lang="ar"] .about-title-accent em { font-style: normal; }
-.about-body { font-size: 15px; line-height: 1.85; color: var(--gray); margin-bottom: 16px; max-width: 58ch; }
+html[data-lang="ar"] .about-aside-tagline {
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+}
+.about-body { font-size: 15px; line-height: 1.85; color: var(--gray); margin-bottom: 16px; }
 .about-bold { font-weight: 600; color: var(--navy); }
-.about-bullets { list-style: none; margin: 0 0 16px 0; padding: 0; max-width: 58ch; }
+.about-bullets { list-style: none; margin: 0 0 16px 0; padding: 0; }
 .about-bullets li { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 10px; padding-left: 20px; position: relative; }
 .about-bullets li::before { content: ''; position: absolute; left: 0; top: 12px; width: 8px; height: 2px; background: var(--gold); }
-.about-principle { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; color: var(--navy); border-left: 3px solid var(--gold); padding: 12px 16px; margin-top: 24px; background: var(--offwhite); border-radius: 0 4px 4px 0; max-width: 58ch; }
+.about-principle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 19px;
+  font-style: italic;
+  color: var(--navy);
+  border-left: 3px solid var(--gold);
+  padding: 12px 16px;
+  margin-top: 24px;
+  background: var(--offwhite);
+  border-radius: 0 4px 4px 0;
+}
 
-@media (max-width: 680px) {
-  .about-head-row {
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding-bottom: 24px;
+@media (max-width: 960px) {
+  .about-layout { grid-template-columns: 1fr; gap: 40px; }
+  .about-aside-inner {
+    position: relative;
+    top: auto;
+    max-width: 420px;
+    margin-inline-start: 0;
   }
-  html[data-lang="ar"] .about-head-row { flex-direction: column; }
-  .about-head-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-  }
-  .about-head-text .section-tag { justify-content: center; }
-  html[data-lang="ar"] .about-head-text .section-tag { flex-direction: row-reverse; }
-  .about-title { width: 100%; }
+}
+
+@media (max-width: 640px) {
+  .about-aside-inner { padding: 22px 20px; }
+  .about-aside-inner::before { margin-bottom: 20px; }
 }
 
 /* ═══════════════════════════════════════════════
@@ -1398,51 +1443,57 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
      ═══════════════════════════════════════════════ -->
 <section class="about-strip" id="about">
   <div class="section-inner">
-    <div class="en about-single">
-      <div class="about-head-row reveal">
-        <img src="/logo2.png" alt="ROSHD Professional" class="about-logo" width="120" height="120">
-        <div class="about-head-text">
-          <div class="section-tag"><div class="section-tag-line"></div><span>About Us</span></div>
-          <h2 class="about-title"><span class="about-title-lead">We are an</span><span class="about-title-accent"><em>Enablement Partner</em></span></h2>
+    <div class="en about-layout">
+      <div class="about-main">
+        <div class="section-tag reveal"><div class="section-tag-line"></div><span>About Us</span></div>
+        <h2 class="about-title reveal"><span class="about-title-lead">We are an</span><span class="about-title-accent"><em>Enablement Partner</em></span></h2>
+        <div class="reveal">
+          <p class="about-body">We are not a training company.<br>We are not a traditional consulting firm.<br><strong>We are an Enablement Partner.</strong></p>
+          <p class="about-body">Our role is simple: turn knowledge into execution, and execution into measurable results.</p>
+          <p class="about-body">Most organizations invest in training, systems, and consulting—but fail to translate them into real performance. The problem is not lack of knowledge. It is the absence of structured application.</p>
+          <p class="about-body about-bold">We close this gap.</p>
+          <p class="about-body">We design integrated solutions where:</p>
+          <ul class="about-bullets">
+            <li>Training is linked to real business outcomes</li>
+            <li>Consulting is translated into operating systems</li>
+            <li>Data is converted into clear decisions</li>
+          </ul>
+          <p class="about-body">We don't deliver courses or reports.<br>We build working systems that drive performance.</p>
+          <div class="about-principle">If it cannot be applied, it has no value.</div>
         </div>
       </div>
-      <div class="reveal">
-        <p class="about-body">We are not a training company.<br>We are not a traditional consulting firm.<br><strong>We are an Enablement Partner.</strong></p>
-        <p class="about-body">Our role is simple: turn knowledge into execution, and execution into measurable results.</p>
-        <p class="about-body">Most organizations invest in training, systems, and consulting—but fail to translate them into real performance. The problem is not lack of knowledge. It is the absence of structured application.</p>
-        <p class="about-body about-bold">We close this gap.</p>
-        <p class="about-body">We design integrated solutions where:</p>
-        <ul class="about-bullets">
-          <li>Training is linked to real business outcomes</li>
-          <li>Consulting is translated into operating systems</li>
-          <li>Data is converted into clear decisions</li>
-        </ul>
-        <p class="about-body">We don't deliver courses or reports.<br>We build working systems that drive performance.</p>
-        <div class="about-principle">If it cannot be applied, it has no value.</div>
-      </div>
+      <aside class="about-aside reveal">
+        <div class="about-aside-inner">
+          <img src="/logo2.png" alt="" class="about-aside-logo" width="300" height="300">
+          <p class="about-aside-tagline"><span class="en">Clarity · Insight · Impact</span></p>
+        </div>
+      </aside>
     </div>
-    <div class="ar about-single">
-      <div class="about-head-row reveal">
-        <img src="/logo2.png" alt="روشد" class="about-logo" width="120" height="120">
-        <div class="about-head-text">
-          <div class="section-tag"><div class="section-tag-line"></div><span>من نحن</span></div>
-          <h2 class="about-title"><span class="about-title-lead">شريككم في</span><span class="about-title-accent"><em>تمكين الأداء وتحقيق النتائج</em></span></h2>
+    <div class="ar about-layout">
+      <div class="about-main">
+        <div class="section-tag reveal"><div class="section-tag-line"></div><span>من نحن</span></div>
+        <h2 class="about-title reveal"><span class="about-title-lead">شريككم في</span><span class="about-title-accent"><em>تمكين الأداء وتحقيق النتائج</em></span></h2>
+        <div class="reveal">
+          <p class="about-body">لسنا شركة تدريب تقليدية،<br>ولسنا شركة استشارات بالمعنى الكلاسيكي.<br><strong>نحن شريك تمكين</strong></p>
+          <p class="about-body">دورنا واضح: تحويل المعرفة إلى تطبيق، والتطبيق إلى نتائج قابلة للقياس.</p>
+          <p class="about-body">تعاني معظم الجهات من فجوة حقيقية: الاستثمار في التدريب والأنظمة والاستشارات دون تحقيق نتائج فعلية. المشكلة ليست في نقص المعرفة، بل في غياب التطبيق المنظم.</p>
+          <p class="about-body about-bold">هنا يأتي دورنا.</p>
+          <p class="about-body">نقوم بتصميم حلول متكاملة بحيث:</p>
+          <ul class="about-bullets">
+            <li>يرتبط التدريب بنتائج تشغيلية حقيقية</li>
+            <li>تتحول الاستشارات إلى أنظمة عمل</li>
+            <li>تتحول البيانات إلى قرارات واضحة</li>
+          </ul>
+          <p class="about-body">نحن لا نقدم دورات ولا تقارير،<br>بل نبني أنظمة تشغيل تحقق الأداء.</p>
+          <div class="about-principle">أي معرفة لا تُطبّق… لا قيمة لها.</div>
         </div>
       </div>
-      <div class="reveal">
-        <p class="about-body">لسنا شركة تدريب تقليدية،<br>ولسنا شركة استشارات بالمعنى الكلاسيكي.<br><strong>نحن شريك تمكين</strong></p>
-        <p class="about-body">دورنا واضح: تحويل المعرفة إلى تطبيق، والتطبيق إلى نتائج قابلة للقياس.</p>
-        <p class="about-body">تعاني معظم الجهات من فجوة حقيقية: الاستثمار في التدريب والأنظمة والاستشارات دون تحقيق نتائج فعلية. المشكلة ليست في نقص المعرفة، بل في غياب التطبيق المنظم.</p>
-        <p class="about-body about-bold">هنا يأتي دورنا.</p>
-        <p class="about-body">نقوم بتصميم حلول متكاملة بحيث:</p>
-        <ul class="about-bullets">
-          <li>يرتبط التدريب بنتائج تشغيلية حقيقية</li>
-          <li>تتحول الاستشارات إلى أنظمة عمل</li>
-          <li>تتحول البيانات إلى قرارات واضحة</li>
-        </ul>
-        <p class="about-body">نحن لا نقدم دورات ولا تقارير،<br>بل نبني أنظمة تشغيل تحقق الأداء.</p>
-        <div class="about-principle">أي معرفة لا تُطبّق… لا قيمة لها.</div>
-      </div>
+      <aside class="about-aside reveal">
+        <div class="about-aside-inner">
+          <img src="/logo2.png" alt="" class="about-aside-logo" width="300" height="300">
+          <p class="about-aside-tagline"><span class="ar">وضوح · بصيرة · تأثير</span></p>
+        </div>
+      </aside>
     </div>
   </div>
 </section>
