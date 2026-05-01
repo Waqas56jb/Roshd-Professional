@@ -34,6 +34,11 @@
   --db-text: rgba(255,255,255,0.88);
   --db-muted: rgba(255,255,255,0.45);
   --db-sidebar: #0b1525;
+  --db-chart-1: #d4af55;
+  --db-chart-2: #6fa8d8;
+  --db-chart-3: #a898d6;
+  --db-chart-4: #5eb890;
+  --db-chart-5: #e0986e;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -977,10 +982,889 @@ html[data-lang="ar"] .db-export-btn { font-family: 'Cairo', sans-serif; }
 .db-panel.active { display: block; animation: panelIn 0.35s ease; }
 @keyframes panelIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ── KPI Grid ── */
+/* ── KPI Grid (legacy helpers still used inside overview tiles) ── */
 .db-kpi-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
 
 #dbKpiStrip { margin-bottom: 20px; }
+
+/* ── Rich KPI overview (funnel + chart tiles, replaces plain cards) ── */
+.db-overviewviz {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.db-overviewviz-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.db-overviewviz-title {
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.04em;
+}
+html[data-lang="ar"] .db-overviewviz-title { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
+.db-overviewviz-card {
+  background: var(--db-card);
+  border: 1px solid var(--db-border-subtle);
+  border-radius: 14px;
+  padding: 16px 18px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.db-overviewviz-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), #3b82f6, #22C55E, #a855f7);
+}
+.db-overviewviz-card-hd {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--db-muted);
+  margin-bottom: 12px;
+}
+html[data-lang="ar"] .db-overviewviz-card-hd { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
+.db-overviewviz-funnel { min-height: 108px; }
+.db-overviewviz-funnel--rep { min-height: 112px; }
+.db-overview-rep {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 22px;
+  padding: 4px 0 8px;
+}
+.db-overview-rep-gauge {
+  position: relative;
+  flex: 0 0 200px;
+  max-width: 240px;
+  width: 100%;
+  margin-inline: auto;
+  padding-bottom: 12px;
+}
+.db-overview-rep-g svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.db-overview-rep-val {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 8px;
+  text-align: center;
+  pointer-events: none;
+}
+.db-overview-rep-num {
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 800;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+html[data-lang="ar"] .db-overview-rep-num {
+  font-family: 'Cairo', sans-serif;
+}
+.db-overview-rep-lbl {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5eead4;
+  margin-top: 4px;
+}
+html[data-lang="ar"] .db-overview-rep-lbl {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11px;
+}
+.db-overview-rep-copy {
+  flex: 1;
+  min-width: min(280px, 100%);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--db-muted);
+  font-weight: 600;
+}
+html[data-lang="ar"] .db-overview-rep-copy {
+  font-family: 'Cairo', sans-serif;
+  font-size: 13px;
+}
+.db-overview-rep-stat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  margin-top: 12px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.82);
+}
+.db-funnel-stack { display: flex; flex-direction: column; gap: 10px; }
+.db-funnel-bars {
+  display: grid;
+  align-items: end;
+  gap: 4px;
+  height: 86px;
+  padding: 0 2px;
+}
+.db-funnel-bar {
+  border-radius: 8px 8px 4px 4px;
+  min-height: 16px;
+  position: relative;
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.55), rgba(59, 130, 246, 0.08));
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+.db-funnel-bar:nth-child(1) {
+  background: linear-gradient(180deg, rgba(212, 175, 85, 0.5), rgba(212, 175, 85, 0.1));
+}
+.db-funnel-bar:nth-child(2) {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.5), rgba(59, 130, 246, 0.12));
+}
+.db-funnel-bar:nth-child(3) {
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.45), rgba(34, 197, 94, 0.1));
+}
+.db-funnel-bar:nth-child(4) {
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.5), rgba(168, 85, 247, 0.1));
+}
+.db-funnel-vals {
+  display: grid;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.3;
+}
+html[data-lang="ar"] .db-funnel-vals { font-family: 'Cairo', sans-serif; font-size: 12px; }
+.db-funnel-vals small {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--db-muted);
+  margin-top: 2px;
+}
+html[data-lang="ar"] .db-funnel-vals small { font-size: 10px; }
+.db-funnel-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--db-border-subtle);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--db-muted);
+}
+html[data-lang="ar"] .db-funnel-foot { font-family: 'Cairo', sans-serif; font-size: 12px; }
+.db-funnel-foot strong { color: var(--gold-light); font-variant-numeric: tabular-nums; }
+.db-overviewviz-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+.db-overviewviz-tile.db-kpi-card { padding: 14px 16px 18px; }
+.db-overviewviz-chart-area {
+  min-height: 72px;
+  max-height: 88px;
+  margin: 2px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.db-overviewviz-chart-area svg { width: 100%; max-width: 200px; height: auto; overflow: visible; }
+.db-overviewviz-spark-wrap {
+  width: 100%;
+  margin: -6px 0 4px;
+  opacity: 0.92;
+}
+.db-overviewviz-spark-wrap svg { width: 100%; height: 44px; display: block; }
+.db-overviewviz-mini-bars { width: 100%; max-width: 220px; margin: 0 auto; display: flex; flex-direction: column; gap: 7px; }
+.db-overviewviz-mini-row {
+  display: grid;
+  grid-template-columns: minmax(0, 92px) 1fr;
+  gap: 8px;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+html[data-lang="ar"] .db-overviewviz-mini-row { font-family: 'Cairo', sans-serif; }
+.db-overviewviz-mini-row span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.78);
+}
+.db-overviewviz-mini-track {
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.db-overviewviz-mini-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+}
+.db-overviewviz-risk-meter {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  height: 12px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #22c55e, #eab308 45%, #f97316 70%, #dc2626);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+  margin-bottom: 4px;
+}
+.db-overviewviz-risk-tick {
+  position: absolute;
+  top: -5px;
+  width: 0;
+  height: 0;
+  border-inline: 7px solid transparent;
+  border-top: 9px solid #fff;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5));
+}
+.db-overviewviz-donut {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  margin: 0 auto;
+  box-shadow:
+    inset 0 2px 14px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(50% - 10px), #000 calc(50% - 9px));
+  mask: radial-gradient(farthest-side, transparent calc(50% - 10px), #000 calc(50% - 9px));
+  transition: background 0.35s ease;
+}
+.db-overviewviz-donut--r2 { width: 80px; height: 80px; }
+
+/* Hide KPI strip on Pilot & Questionnaire (replaced by in-panel visuals) */
+#customerDashboard.db-panel-no-kpi #dbKpiStrip {
+  display: none !important;
+}
+#customerDashboard.db-panel-no-kpi .db-content {
+  padding-block-start: 28px;
+}
+
+/* Pilot tab: instrument flow diagram */
+.db-pilot-flow-card { margin-bottom: 20px; }
+.db-pilot-diagram-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -4px;
+  padding: 4px;
+}
+.db-pilot-flow-svg {
+  display: block;
+  width: 100%;
+  min-width: 520px;
+  max-width: 720px;
+  height: auto;
+  margin: 0 auto;
+}
+.db-pilot-flow-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--db-muted);
+}
+html[data-lang="ar"] .db-pilot-flow-legend { font-family: 'Cairo', sans-serif; }
+.db-pilot-legend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.db-pilot-legend-chip > i {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.db-pilot-legend-chip > i.ret { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+.db-pilot-legend-chip > i.rem { background: rgba(239, 68, 68, 0.85); }
+.db-pilot-alpha-block {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--db-border-subtle);
+}
+.db-pilot-alpha-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--db-muted);
+  margin-bottom: 14px;
+}
+html[data-lang="ar"] .db-pilot-alpha-head { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
+.db-pilot-alpha-row {
+  display: grid;
+  grid-template-columns: minmax(0, 148px) 1fr 40px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+html[data-lang="ar"] .db-pilot-alpha-row { font-family: 'Cairo', sans-serif; }
+.db-pilot-alpha-name { color: rgba(255,255,255,0.92); line-height: 1.3; word-break: break-word; }
+.db-pilot-alpha-track {
+  height: 10px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.db-pilot-alpha-fill {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, rgba(212,175,85,0.85), var(--gold-light));
+}
+.db-pilot-alpha-val {
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-light);
+  text-align: end;
+}
+
+/* Questionnaire instrument map */
+.db-q-viz-card {
+  margin-bottom: 20px;
+}
+.db-q-viz-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -4px;
+  padding: 4px;
+}
+.db-q-viz-svg {
+  display: block;
+  width: 100%;
+  min-width: 440px;
+  max-width: 560px;
+  height: auto;
+  margin: 0 auto;
+}
+.db-q-viz-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--db-muted);
+}
+html[data-lang="ar"] .db-q-viz-legend { font-family: 'Cairo', sans-serif; }
+.db-q-viz-note {
+  margin-top: 14px;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--db-muted);
+}
+html[data-lang="ar"] .db-q-viz-note { font-family: 'Cairo', sans-serif; }
+
+/* Model Quality — measurement illustration (antecedents → Customer Experience Score) */
+.db-mq-measure-card { margin-bottom: 20px; }
+.db-mq-measure-intro {
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--db-muted);
+  margin-bottom: 20px;
+  max-width: 720px;
+}
+html[data-lang="ar"] .db-mq-measure-intro { font-family: 'Cairo', sans-serif; }
+.db-mq-measure-split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: clamp(18px, 3vw, 32px);
+  justify-content: space-between;
+}
+.db-mq-construct-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1 1 240px;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.db-mq-ant {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 600;
+  font-size: 13px;
+}
+html[data-lang="ar"] .db-mq-ant { font-family: 'Cairo', sans-serif; }
+.db-mq-ant strong .en,
+.db-mq-ant strong .ar { font-weight: 700; color: rgba(255, 255, 255, 0.95); }
+.db-mq-ant--quality { border-color: rgba(96, 165, 250, 0.45); background: rgba(96, 165, 250, 0.08); }
+.db-mq-ant--comm { border-color: rgba(52, 211, 153, 0.45); background: rgba(52, 211, 153, 0.06); }
+.db-mq-ant--price { border-color: rgba(234, 179, 8, 0.4); background: rgba(234, 179, 8, 0.07); }
+.db-mq-ant--speed { border-color: rgba(167, 139, 250, 0.5); background: rgba(167, 139, 250, 0.07); }
+.db-mq-ant--cx {
+  border-color: rgba(212, 175, 85, 0.45);
+  background: rgba(184, 150, 46, 0.1);
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+}
+.db-mq-ico {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.db-mq-ant--quality .db-mq-ico { background: rgba(96, 165, 250, 0.25); border: 1px solid rgba(96, 165, 250, 0.5); }
+.db-mq-ant--comm .db-mq-ico { background: rgba(52, 211, 153, 0.22); border: 1px solid rgba(52, 211, 153, 0.45); }
+.db-mq-ant--price .db-mq-ico { background: rgba(234, 179, 8, 0.22); border: 1px solid rgba(234, 179, 8, 0.45); }
+.db-mq-ant--speed .db-mq-ico { background: rgba(167, 139, 250, 0.25); border: 1px solid rgba(167, 139, 250, 0.45); }
+.db-mq-ant--cx .db-mq-ico { background: rgba(212, 175, 85, 0.2); border: 1px solid rgba(212, 175, 85, 0.42); color: var(--gold-light); }
+.db-mq-ant-text small {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--db-muted);
+  margin-top: 3px;
+  line-height: 1.35;
+}
+html[data-lang="ar"] .db-mq-ant-text small { font-family: 'Cairo', sans-serif; font-size: 11px; }
+.db-mq-chip {
+  flex-shrink: 0;
+  min-width: 56px;
+  text-align: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--gold-light);
+}
+.db-mq-chip-lg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1.2;
+}
+.db-mq-chip-lg .db-mq-qty { font-size: 15px; font-weight: 800; color: rgba(255, 255, 255, 0.95); }
+.db-mq-chip-lg .db-mq-q-note {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--db-muted);
+}
+html[data-lang="ar"] .db-mq-chip-lg .db-mq-q-note { font-family: 'Cairo', sans-serif; letter-spacing: 0; text-transform: none; font-size: 10px; }
+.db-mq-diagram-panel {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.db-mq-diagram-caption {
+  font-size: 11px;
+  color: var(--db-muted);
+  margin-top: 10px;
+  text-align: center;
+  max-width: 360px;
+  margin-inline: auto;
+}
+html[data-lang="ar"] .db-mq-diagram-caption { font-family: 'Cairo', sans-serif; }
+.db-mq-svg-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.db-mq-model-svg {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  margin-inline: auto;
+}
+
+/* ── Demographics: pipeline / exclusions / sample strength (reference-style) ── */
+.db-demo-quality-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 900px) {
+  .db-demo-quality-top { grid-template-columns: 1fr; }
+}
+.db-demo-qcard {
+  background: var(--db-card);
+  border: 1px solid var(--db-border-subtle);
+  border-radius: 14px;
+  padding: 16px 18px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.db-demo-qcard::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+.db-demo-qcard--funnel::after {
+  background: linear-gradient(90deg, #2563eb, #22d3ee, #22c55e);
+}
+.db-demo-qcard--exc::after {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+.db-demo-qcard-hd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.db-demo-qcard-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.db-demo-qcard--funnel .db-demo-qcard-icon {
+  background: rgba(37, 99, 235, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  color: #60a5fa;
+}
+.db-demo-qcard--exc .db-demo-qcard-icon {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  color: #fca5a5;
+}
+.db-demo-qcard-title {
+  font-weight: 800;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.02em;
+}
+html[data-lang="ar"] .db-demo-qcard-title { font-family: 'Cairo', sans-serif; }
+.db-demo-funnel-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 -4px;
+  padding: 4px;
+}
+.db-demo-funnel-svg {
+  display: block;
+  width: 100%;
+  min-width: 520px;
+  height: auto;
+}
+.db-demo-funnel-caption-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 12px;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.9);
+}
+@media (max-width: 640px) {
+  .db-demo-funnel-caption-grid { font-size: 10px; }
+}
+html[data-lang="ar"] .db-demo-funnel-caption-grid { font-family: 'Cairo', sans-serif; font-size: 12px; }
+.db-demo-funnel-caption-grid small {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--db-muted);
+  margin-top: 4px;
+}
+html[data-lang="ar"] .db-demo-funnel-caption-grid small { font-size: 10px; }
+.db-exc-center-n {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+html[data-lang="ar"] .db-exc-center-n { font-family: 'Cairo', sans-serif; }
+.db-exc-center-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(226, 232, 240, 0.75);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  max-width: 88px;
+  line-height: 1.25;
+}
+html[data-lang="ar"] .db-exc-center-lbl {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 10px;
+}
+.db-demo-funnel-kpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+@media (max-width: 480px) {
+  .db-demo-funnel-kpis { grid-template-columns: 1fr; }
+}
+.db-demo-kpi-mini {
+  border: 1px solid var(--db-border-subtle);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.db-demo-kpi-mini .val {
+  font-size: 20px;
+  font-weight: 800;
+  color: #93c5fd;
+  font-variant-numeric: tabular-nums;
+}
+html[data-lang="ar"] .db-demo-kpi-mini .val { font-family: 'Cairo', sans-serif; }
+.db-demo-kpi-mini .lbl {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--db-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+html[data-lang="ar"] .db-demo-kpi-mini .lbl {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 11px;
+}
+.db-demo-kpi-mini .sub {
+  font-size: 10px;
+  color: var(--db-muted);
+  margin-top: 4px;
+}
+html[data-lang="ar"] .db-demo-kpi-mini .sub { font-family: 'Cairo', sans-serif; font-size: 11px; }
+.db-exc-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  justify-content: space-between;
+}
+html[data-lang="ar"] .db-exc-body { flex-direction: row-reverse; }
+.db-exc-donut-wrap {
+  position: relative;
+  width: 118px;
+  height: 118px;
+  flex-shrink: 0;
+}
+.db-exc-donut {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: inset 0 2px 14px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(50% - 14px), #000 calc(50% - 13px));
+  mask: radial-gradient(farthest-side, transparent calc(50% - 14px), #000 calc(50% - 13px));
+}
+.db-exc-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.db-exc-rows {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.db-exc-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+html[data-lang="ar"] .db-exc-row { flex-direction: row-reverse; font-family: 'Cairo', sans-serif; }
+.db-exc-sw {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-inline-end: 8px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35);
+}
+html[data-lang="ar"] .db-exc-sw { margin-inline-end: 0; margin-inline-start: 8px; }
+.db-exc-row-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+html[data-lang="ar"] .db-exc-row-main { flex-direction: row-reverse; }
+.db-exc-pct {
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-light);
+}
+.db-exc-foot {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--db-border-subtle);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+html[data-lang="ar"] .db-exc-foot { font-family: 'Cairo', sans-serif; }
+.db-exc-foot-strong {
+  color: #fca5a5;
+  font-variant-numeric: tabular-nums;
+}
+.db-demo-strength-wrap {
+  margin-bottom: 16px;
+}
+.db-demo-qcard--strength::after {
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa, #34d399);
+}
+.db-demo-qcard--strength .db-demo-qcard-icon {
+  background: rgba(139, 92, 246, 0.22);
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  color: #c4b5fd;
+}
+.db-str-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 22px;
+}
+@media (max-width: 640px) {
+  .db-str-body { flex-direction: column; }
+}
+.db-str-gauge {
+  position: relative;
+  flex: 0 0 200px;
+  max-width: 220px;
+  margin-inline: auto;
+  padding-bottom: 10px;
+}
+@media (max-width: 640px) {
+  .db-str-gauge {
+    flex-basis: auto;
+    width: min(260px, 100%);
+    margin-inline: auto;
+  }
+}
+.db-str-gauge-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.db-str-val {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  text-align: center;
+  pointer-events: none;
+}
+.db-str-val-num {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+html[data-lang="ar"] .db-str-val-num { font-family: 'Cairo', sans-serif; }
+.db-str-val-lbl {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(167, 139, 250, 0.95);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+html[data-lang="ar"] .db-str-val-lbl { font-family: 'Cairo', sans-serif; letter-spacing: 0; text-transform: none; font-size: 12px; }
+.db-str-aside {
+  flex: 1;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+}
+.db-str-aside-sub {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--db-muted);
+  margin-bottom: 6px;
+}
+html[data-lang="ar"] .db-str-aside-sub { font-family: 'Cairo', sans-serif; letter-spacing: 0; text-transform: none; font-size: 11px; }
+.db-str-twin {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.db-str-box {
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: rgba(139, 92, 246, 0.06);
+}
+.db-str-box .n {
+  font-size: 24px;
+  font-weight: 800;
+  color: #c4b5fd;
+  font-variant-numeric: tabular-nums;
+}
+html[data-lang="ar"] .db-str-box .n { font-family: 'Cairo', sans-serif; }
+.db-str-box .l {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--db-muted);
+  margin-bottom: 4px;
+}
+html[data-lang="ar"] .db-str-box .l { font-family: 'Cairo', sans-serif; font-size: 11px; }
+.db-str-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.db-str-msg svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+html[data-lang="ar"] .db-str-msg { font-family: 'Cairo', sans-serif; }
+.db-str-msg.ok { color: #4ade80; }
+.db-str-msg.warn { color: #fcd34d; }
+.db-str-msg.bad { color: #fca5a5; }
 
 .db-kpi-card {
   background: var(--db-card);
@@ -1079,6 +1963,102 @@ html[data-lang="ar"] .db-bubble { font-family: 'Cairo', sans-serif; }
 .db-mini-title { font-weight: 700; font-size: 13px; color: var(--white); margin: 0 0 12px; }
 html[data-lang="ar"] .db-mini-title { font-family: 'Cairo', sans-serif; }
 .db-demo-chart { display: flex; flex-direction: column; gap: 10px; }
+.db-demo-chart--rich { gap: 12px; }
+.db-demo-kicker {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--db-muted);
+  margin: -4px 0 10px;
+}
+html[data-lang="ar"] .db-demo-kicker { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
+html[data-lang="ar"] .db-demo-kicker .en { display: none; }
+html[data-lang="en"] .db-demo-kicker .ar { display: none; }
+.db-demo-donut-shell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  justify-content: space-between;
+}
+html[data-lang="ar"] .db-demo-donut-shell { flex-direction: row-reverse; }
+.db-demo-donut-wrap { flex-shrink: 0; position: relative; }
+.db-demo-donut {
+  width: clamp(90px, 24vw, 118px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow:
+    inset 0 2px 12px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(50% - 12px), #000 calc(50% - 11px));
+  mask: radial-gradient(farthest-side, transparent calc(50% - 12px), #000 calc(50% - 11px));
+}
+.db-demo-mini-legend { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+html[data-lang="ar"] .db-demo-mini-legend { align-items: flex-end; text-align: right; }
+.db-demo-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+html[data-lang="ar"] .db-demo-legend-row { flex-direction: row-reverse; justify-content: flex-start; font-family: 'Cairo', sans-serif; }
+.db-demo-legend-sw { flex-shrink: 0; width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.35); }
+.db-demo-legend-lbl {
+  flex: 1;
+  min-width: 0;
+  color: rgba(255, 255, 255, 0.92);
+}
+html[data-lang="ar"] .db-demo-legend-lbl .en { display: none; }
+html[data-lang="en"] .db-demo-legend-lbl .ar { display: none; }
+.db-demo-legend-pct {
+  font-variant-numeric: tabular-nums;
+  color: var(--gold-light);
+  font-weight: 700;
+}
+.db-demo-stack {
+  height: 12px;
+  border-radius: 99px;
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.db-demo-stack > span {
+  min-width: 2px;
+  height: 100%;
+  opacity: 0.95;
+  transition: opacity 0.2s ease;
+}
+.db-demo-svg-wrap {
+  width: 100%;
+  margin: -2px 0 4px;
+}
+.db-demo-svg-wrap svg {
+  width: 100%;
+  height: auto;
+  max-height: 120px;
+  display: block;
+  overflow: visible;
+}
+.db-demo-col-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--db-muted);
+  text-align: center;
+  line-height: 1.25;
+}
+html[data-lang="ar"] .db-demo-col-grid .en { display: none; }
+html[data-lang="en"] .db-demo-col-grid .ar { display: none; }
+
 .db-demo-row { display: grid; grid-template-columns: minmax(0, 130px) 1fr 40px; gap: 10px; align-items: center; font-size: 12px; font-weight: 600; }
 .db-demo-row > span:first-child { color: rgba(255,255,255,0.9); font-weight: 600; line-height: 1.35; word-break: break-word; }
 .db-demo-row > span:last-child { color: var(--gold-light); font-variant-numeric: tabular-nums; }
@@ -1187,7 +2167,15 @@ input[type=range].db-range::-webkit-slider-thumb:hover { background: var(--gold)
 }
 .db-sim-score { font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300; color: var(--white); line-height: 1; }
 .db-sim-score span { color: var(--gold-light); }
+.db-sim-pct-mark {
+  font-size: clamp(18px, 3.2vw, 28px);
+  font-weight: 600;
+  color: rgba(212, 175, 85, 0.95);
+  vertical-align: baseline;
+  white-space: nowrap;
+}
 html[data-lang="ar"] .db-sim-score { font-family: 'Cairo', sans-serif; font-size: 52px; }
+html[data-lang="ar"] .db-sim-pct-mark { font-size: clamp(16px, 2.6vw, 24px); font-family: 'Cairo', sans-serif; }
 .db-sim-label { font-size: 11px; color: var(--db-muted); text-transform: uppercase; letter-spacing: 0.15em; }
 html[data-lang="ar"] .db-sim-label { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
 .db-sim-baseline { font-size: 13px; color: var(--db-muted); }
@@ -1289,6 +2277,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .hero-content { gap: 56px; }
   .section-inner { padding: 0 32px; }
   .db-kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .db-overviewviz-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .db-model-grid:not(.db-model-grid--wrap) { grid-template-columns: repeat(3, 1fr); }
 }
 
@@ -1328,6 +2317,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .db-sidebar-overlay.open { opacity: 1; pointer-events: auto; }
   .db-sidebar-toggle { display: flex; }
   .db-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .db-overviewviz-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .db-exec-grid { grid-template-columns: 1fr; }
   .db-sim-grid { grid-template-columns: 1fr; }
   .db-segment-grid { grid-template-columns: 1fr 1fr; }
@@ -1348,6 +2338,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .db-sim-grid { grid-template-columns: 1fr !important; }
   .db-grid-2 { grid-template-columns: 1fr !important; }
   .db-kpi-grid { grid-template-columns: 1fr 1fr; }
+  .db-overviewviz-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .db-segment-grid { grid-template-columns: 1fr; }
   .db-model-grid:not(.db-model-grid--wrap) { grid-template-columns: repeat(2, 1fr); }
   .db-content { padding: 16px; }
@@ -1392,6 +2383,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .btn-primary, .btn-ghost { padding: 15px 24px; font-size: 13px; min-height: 50px; }
   /* Dashboard */
   .db-kpi-grid { grid-template-columns: 1fr; gap: 10px; }
+  .db-overviewviz-metrics { grid-template-columns: 1fr; gap: 10px; }
   .db-content { padding: 14px 12px; }
   .db-segment-grid { grid-template-columns: 1fr !important; }
   .db-model-grid:not(.db-model-grid--wrap) { grid-template-columns: 1fr 1fr; }
@@ -1423,10 +2415,12 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .db-select { min-width: 0; font-size: 14px; padding: 9px 11px; min-height: 42px; }
   .db-filter-bar { gap: 8px; }
   .db-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .db-overviewviz-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 420px) {
   .db-kpi-grid { grid-template-columns: 1fr !important; }
+  .db-overviewviz-metrics { grid-template-columns: 1fr !important; }
   .db-model-grid:not(.db-model-grid--wrap) { grid-template-columns: 1fr !important; }
   .db-topbar { padding: 0 12px; height: 52px; }
   .db-filter-bar { padding: 10px 12px; }
@@ -1545,7 +2539,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
           <div class="dp-title"><span class="en">Insight Engine — Live Dashboard</span><span class="ar">محرك الرؤى — لوحة التحكم المباشرة</span></div>
         </div>
         <div class="dp-kpis">
-          <div class="dp-kpi"><div class="dp-kpi-val gold">3.8</div><div class="dp-kpi-label"><span class="en">Satisfaction Score</span><span class="ar">درجة الرضا</span></div></div>
+          <div class="dp-kpi"><div class="dp-kpi-val gold">3.8 (76%)</div><div class="dp-kpi-label"><span class="en">Satisfaction Score</span><span class="ar">درجة الرضا</span></div></div>
           <div class="dp-kpi"><div class="dp-kpi-val">72%</div><div class="dp-kpi-label"><span class="en">Model Power</span><span class="ar">قوة النموذج</span></div></div>
           <div class="dp-kpi"><div class="dp-kpi-val gold"><span class="en">Quality</span><span class="ar">الجودة</span></div><div class="dp-kpi-label"><span class="en">Top Driver</span><span class="ar">المحرك الأول</span></div></div>
         </div>
@@ -1568,23 +2562,23 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   <div class="section-inner">
     <div class="en about-layout">
       <div class="about-main">
-        <div class="section-tag reveal"><div class="section-tag-line"></div><span>About Us</span></div>
+      <div class="section-tag reveal"><div class="section-tag-line"></div><span>About Us</span></div>
         <h2 class="about-title reveal"><span class="about-title-lead">We are an</span><span class="about-title-accent"><em>Enablement Partner</em></span></h2>
-        <div class="reveal">
-          <p class="about-body">We are not a training company.<br>We are not a traditional consulting firm.<br><strong>We are an Enablement Partner.</strong></p>
-          <p class="about-body">Our role is simple: turn knowledge into execution, and execution into measurable results.</p>
-          <p class="about-body">Most organizations invest in training, systems, and consulting—but fail to translate them into real performance. The problem is not lack of knowledge. It is the absence of structured application.</p>
-          <p class="about-body about-bold">We close this gap.</p>
-          <p class="about-body">We design integrated solutions where:</p>
-          <ul class="about-bullets">
-            <li>Training is linked to real business outcomes</li>
-            <li>Consulting is translated into operating systems</li>
-            <li>Data is converted into clear decisions</li>
-          </ul>
-          <p class="about-body">We don't deliver courses or reports.<br>We build working systems that drive performance.</p>
-          <div class="about-principle">If it cannot be applied, it has no value.</div>
-        </div>
+      <div class="reveal">
+        <p class="about-body">We are not a training company.<br>We are not a traditional consulting firm.<br><strong>We are an Enablement Partner.</strong></p>
+        <p class="about-body">Our role is simple: turn knowledge into execution, and execution into measurable results.</p>
+        <p class="about-body">Most organizations invest in training, systems, and consulting—but fail to translate them into real performance. The problem is not lack of knowledge. It is the absence of structured application.</p>
+        <p class="about-body about-bold">We close this gap.</p>
+        <p class="about-body">We design integrated solutions where:</p>
+        <ul class="about-bullets">
+          <li>Training is linked to real business outcomes</li>
+          <li>Consulting is translated into operating systems</li>
+          <li>Data is converted into clear decisions</li>
+        </ul>
+        <p class="about-body">We don't deliver courses or reports.<br>We build working systems that drive performance.</p>
+        <div class="about-principle">If it cannot be applied, it has no value.</div>
       </div>
+    </div>
       <aside class="about-aside reveal">
         <div class="about-aside-inner">
           <img src="/logo2.png" alt="" class="about-aside-logo" width="300" height="300">
@@ -1593,22 +2587,22 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
     </div>
     <div class="ar about-layout">
       <div class="about-main">
-        <div class="section-tag reveal"><div class="section-tag-line"></div><span>من نحن</span></div>
+      <div class="section-tag reveal"><div class="section-tag-line"></div><span>من نحن</span></div>
         <h2 class="about-title reveal"><span class="about-title-lead">شريككم في</span><span class="about-title-accent"><em>تمكين الأداء وتحقيق النتائج</em></span></h2>
-        <div class="reveal">
-          <p class="about-body">لسنا شركة تدريب تقليدية،<br>ولسنا شركة استشارات بالمعنى الكلاسيكي.<br><strong>نحن شريك تمكين</strong></p>
-          <p class="about-body">دورنا واضح: تحويل المعرفة إلى تطبيق، والتطبيق إلى نتائج قابلة للقياس.</p>
-          <p class="about-body">تعاني معظم الجهات من فجوة حقيقية: الاستثمار في التدريب والأنظمة والاستشارات دون تحقيق نتائج فعلية. المشكلة ليست في نقص المعرفة، بل في غياب التطبيق المنظم.</p>
-          <p class="about-body about-bold">هنا يأتي دورنا.</p>
-          <p class="about-body">نقوم بتصميم حلول متكاملة بحيث:</p>
-          <ul class="about-bullets">
-            <li>يرتبط التدريب بنتائج تشغيلية حقيقية</li>
-            <li>تتحول الاستشارات إلى أنظمة عمل</li>
-            <li>تتحول البيانات إلى قرارات واضحة</li>
-          </ul>
-          <p class="about-body">نحن لا نقدم دورات ولا تقارير،<br>بل نبني أنظمة تشغيل تحقق الأداء.</p>
-          <div class="about-principle">أي معرفة لا تُطبّق… لا قيمة لها.</div>
-        </div>
+      <div class="reveal">
+        <p class="about-body">لسنا شركة تدريب تقليدية،<br>ولسنا شركة استشارات بالمعنى الكلاسيكي.<br><strong>نحن شريك تمكين</strong></p>
+        <p class="about-body">دورنا واضح: تحويل المعرفة إلى تطبيق، والتطبيق إلى نتائج قابلة للقياس.</p>
+        <p class="about-body">تعاني معظم الجهات من فجوة حقيقية: الاستثمار في التدريب والأنظمة والاستشارات دون تحقيق نتائج فعلية. المشكلة ليست في نقص المعرفة، بل في غياب التطبيق المنظم.</p>
+        <p class="about-body about-bold">هنا يأتي دورنا.</p>
+        <p class="about-body">نقوم بتصميم حلول متكاملة بحيث:</p>
+        <ul class="about-bullets">
+          <li>يرتبط التدريب بنتائج تشغيلية حقيقية</li>
+          <li>تتحول الاستشارات إلى أنظمة عمل</li>
+          <li>تتحول البيانات إلى قرارات واضحة</li>
+        </ul>
+        <p class="about-body">نحن لا نقدم دورات ولا تقارير،<br>بل نبني أنظمة تشغيل تحقق الأداء.</p>
+        <div class="about-principle">أي معرفة لا تُطبّق… لا قيمة لها.</div>
+      </div>
       </div>
       <aside class="about-aside reveal">
         <div class="about-aside-inner">
@@ -1981,11 +2975,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
       </button>
       <button class="db-nav-item" data-panel="drivers" onclick="dbShowPanel('drivers', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-        <span class="en">Driver Analysis</span><span class="ar">تحليل المحركات</span>
-      </button>
-      <button class="db-nav-item" data-panel="effect" onclick="dbShowPanel('effect', this)">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        <span class="en">Effect Size</span><span class="ar">حجم التأثير</span>
+        <span class="en">CX Drivers Analysis</span><span class="ar">تحليل محركات تجربة العميل</span>
       </button>
       <button class="db-nav-item" data-panel="segments" onclick="dbShowPanel('segments', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
@@ -2038,8 +3028,8 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div>
-          <div class="db-page-title" id="dbPageTitle"><span class="en">Executive View</span><span class="ar">العرض التنفيذي</span></div>
-          <div class="db-breadcrumb"><span class="en">ROSHD</span><span class="ar">رشد</span> <span>›</span> <span id="dbPageBreadcrumb"><span class="en">Dashboard</span><span class="ar">لوحة التحكم</span></span></div>
+        <div class="db-page-title" id="dbPageTitle"><span class="en">Executive View</span><span class="ar">العرض التنفيذي</span></div>
+        <div class="db-breadcrumb"><span class="en">ROSHD</span><span class="ar">رشد</span> <span>›</span> <span id="dbPageBreadcrumb"><span class="en">Dashboard</span><span class="ar">لوحة التحكم</span></span></div>
         </div>
       </div>
       <div class="db-topbar-right">
@@ -2096,52 +3086,87 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
     <!-- Scrollable Content -->
     <div class="db-content">
 
-      <!-- KPI Strip -->
+    <!-- KPI snapshot: sample representativeness + CX + donut metrics -->
       <div id="dbKpiStrip">
-        <div class="db-kpi-grid">
-          <div class="db-kpi-card" style="--kpi-color:var(--gold);--kpi-bg:rgba(184,150,46,0.15)">
-          <div class="db-kpi-header">
-            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-            <span class="db-kpi-trend up" id="kpiTrend1">↑ +0.3</span>
+        <section class="db-overviewviz" aria-label="Executive KPI snapshot">
+          <div class="db-overviewviz-head">
+            <div class="db-overviewviz-title"><span class="en">Data &amp; quality snapshot</span><span class="ar">لمحة البيانات والجودة</span></div>
+            <span class="db-kpi-pill"><span class="en">Live filters</span><span class="ar">مرشّحات مباشرة</span></span>
           </div>
-          <div class="db-kpi-val" id="kpiScore">3.8</div>
-          <div class="db-kpi-label"><span class="en">Overall Satisfaction / 5</span><span class="ar">الرضا العام / 5</span></div>
-        </div>
-        <div class="db-kpi-card" style="--kpi-color:#3b82f6;--kpi-bg:rgba(59,130,246,0.12)">
-          <div class="db-kpi-header">
-            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-            <span class="db-kpi-trend up">↑ 2%</span>
+
+          <div class="db-overviewviz-card">
+            <div class="db-overviewviz-card-hd"><span class="en">Sample representativeness indicator</span><span class="ar">مؤشّر تمثيل العيّنة</span></div>
+            <div id="dbOverviewFunnel" class="db-overviewviz-funnel db-overviewviz-funnel--rep" dir="ltr"></div>
           </div>
-          <div class="db-kpi-val" id="kpiExplanatory">72%</div>
-          <div class="db-kpi-label"><span class="en">Model Explanatory Power</span><span class="ar">القوة التفسيرية للنموذج</span></div>
-        </div>
-        <div class="db-kpi-card" style="--kpi-color:#22C55E;--kpi-bg:rgba(34,197,94,0.12)">
-          <div class="db-kpi-header">
-            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#22C55E" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-            <span class="db-kpi-trend neutral">—</span>
+
+          <div class="db-overviewviz-metrics">
+            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:var(--gold);--kpi-bg:rgba(184,150,46,0.15)">
+              <div class="db-kpi-header">
+                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                <span class="db-kpi-trend up" id="kpiTrend1">↑ +0.3</span>
+              </div>
+              <div class="db-overviewviz-chart-area">
+                <svg viewBox="0 0 120 64" aria-hidden="true">
+                  <path d="M 14 54 A 46 46 0 0 1 106 54" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="10" stroke-linecap="round"/>
+                  <path id="dbKpiCxGaugePath" d="M 14 54 A 46 46 0 0 1 106 54" fill="none" stroke="url(#cxGrad)" stroke-width="10" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+                  <defs><linearGradient id="cxGrad" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="var(--gold)"/><stop offset="100%" stop-color="#fcd34d"/></linearGradient></defs>
+                </svg>
+              </div>
+              <div class="db-overviewviz-spark-wrap" id="dbOverviewCxSpark" aria-hidden="true"></div>
+              <div class="db-kpi-val" id="kpiScore">3.8 (76%)</div>
+              <div class="db-kpi-label"><span class="en">Customer Experience Score / 5</span><span class="ar">درجة تجربة العميل / 5</span></div>
+            </div>
+            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:#3b82f6;--kpi-bg:rgba(59,130,246,0.12)">
+              <div class="db-kpi-header">
+                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.98 14.98 0 0 1 10 26"/></svg></div>
+                <span class="db-kpi-trend neutral"><span class="en">Profile slice</span><span class="ar">قطاع الملف</span></span>
+              </div>
+              <div class="db-overviewviz-chart-area">
+                <div id="dbKpiR2Donut" class="db-overviewviz-donut db-overviewviz-donut--r2" style="background:conic-gradient(rgba(59,130,246,0.2) 0deg 360deg)"></div>
+              </div>
+              <div class="db-kpi-val" id="kpiExplanatory">—</div>
+              <div class="db-kpi-label"><span class="en">Sample profile</span><span class="ar">ملف العيّنة</span></div>
+              <div class="db-kpi-sublabel" id="kpiSampleProfileSub"><span class="en">Demographic composition</span><span class="ar">التركيب الديموغرافي</span></div>
+            </div>
+            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:#22C55E;--kpi-bg:rgba(34,197,94,0.12)">
+              <div class="db-kpi-header">
+                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#22C55E" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+                <span class="db-kpi-trend neutral"><span class="en">Effect share</span><span class="ar">حصة الأثر</span></span>
+              </div>
+              <div class="db-overviewviz-chart-area">
+                <div id="dbKpiDomDonut" class="db-overviewviz-donut db-overviewviz-donut--r2" style="background:conic-gradient(rgba(34,197,94,0.35) 0deg 180deg,rgba(255,255,255,0.08) 180deg 360deg)"></div>
+              </div>
+              <div class="db-kpi-val" id="kpiDomSharePct">—</div>
+              <div class="db-kpi-label"><span class="en">Driver dominance</span><span class="ar">هيمنة المحركات</span></div>
+              <div class="db-kpi-sublabel" id="kpiDomLead"><span class="en">Leading construct</span><span class="ar">البُنية الأقوى</span></div>
+            </div>
+            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:#9333ea;--kpi-bg:rgba(147,51,234,0.12)">
+              <div class="db-kpi-header">
+                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#c4b5fd" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/><path d="M12 12c-3 0-5.5 2.2-6 5 1.2-.8 2.8-1.3 6-1.3s4.8.5 6 1.3c-.5-2.8-3-5-6-5z"/><path d="M12 12c3 0 5.5-2.2 6-5-1.2.8-2.8 1.3-6 1.3s-4.8-.5-6-1.3c.5 2.8 3 5 6 5"/></svg></div>
+                <span class="db-kpi-trend neutral"><span class="en">Mix</span><span class="ar">التوزيع</span></span>
+              </div>
+              <div class="db-overviewviz-chart-area">
+                <div id="dbKpiImpDonut" class="db-overviewviz-donut db-overviewviz-donut--r2" style="background:conic-gradient(var(--gold) 0deg 72deg,#38bdf8 72deg 144deg,#eab308 144deg 216deg,#a855f7 216deg 288deg,#ef4444 288deg 360deg)"></div>
+              </div>
+              <div class="db-kpi-val" id="kpiImpMassPct">—</div>
+              <div class="db-kpi-label"><span class="en">Driver importance</span><span class="ar">أهمية المحركات</span></div>
+              <div class="db-kpi-sublabel" id="kpiImpDetail"><span class="en">Effect mass across constructs</span><span class="ar">كتلة الأثر على البُنيات</span></div>
+            </div>
+            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:var(--gold-light);--kpi-bg:rgba(255,255,255,0.06)">
+              <div class="db-kpi-header">
+                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <span class="db-kpi-pill"><span class="en">Filtered N</span><span class="ar">عيّنة مرشَّحة</span></span>
+              </div>
+              <div class="db-overviewviz-chart-area">
+                <div id="dbKpiSampleDonut" class="db-overviewviz-donut" style="background:conic-gradient(var(--gold) 0deg 270deg, rgba(255,255,255,0.08) 270deg 360deg)"></div>
+              </div>
+              <div class="db-kpi-val" id="kpiSampleN">300</div>
+              <div class="db-kpi-label"><span class="en">Segment coverage</span><span class="ar">تغطية الشريحة</span></div>
+              <div class="db-kpi-sublabel" id="kpiSampleShare"><span class="en">100% of full sample</span><span class="ar">100% من العينة الكاملة</span></div>
+            </div>
           </div>
-          <div class="db-kpi-val" id="kpiTopDriver"><span class="en">Quality</span><span class="ar">الجودة</span></div>
-          <div class="db-kpi-label"><span class="en">Top Driver</span><span class="ar">المحرك الأول</span></div>
-        </div>
-        <div class="db-kpi-card" style="--kpi-color:#dc2626;--kpi-bg:rgba(239,68,68,0.12)">
-          <div class="db-kpi-header">
-            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-            <span class="db-kpi-trend down">⚠</span>
-          </div>
-          <div class="db-kpi-val" id="kpiRisk"><span class="en">Speed</span><span class="ar">السرعة</span></div>
-          <div class="db-kpi-label"><span class="en">Waste Risk</span><span class="ar">خطر الهدر</span></div>
-        </div>
-        <div class="db-kpi-card" style="--kpi-color:var(--gold-light);--kpi-bg:rgba(255,255,255,0.06)">
-          <div class="db-kpi-header">
-            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-            <span class="db-kpi-pill"><span class="en">Filtered N</span><span class="ar">عيّنة مرشَّحة</span></span>
-          </div>
-          <div class="db-kpi-val" id="kpiSampleN">300</div>
-          <div class="db-kpi-label"><span class="en">Segment sample</span><span class="ar">عيّنة الشريحة</span></div>
-          <div class="db-kpi-sublabel" id="kpiSampleShare"><span class="en">100% of full sample</span><span class="ar">100% من العينة الكاملة</span></div>
-        </div>
+        </section>
       </div>
-    </div>
 
       <!-- ── EXECUTIVE PANEL ── -->
       <div class="db-panel active" id="db-panel-executive">
@@ -2163,7 +3188,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 </div>
                 <div style="flex:1;min-width:100px;background:rgba(255,255,255,0.04);border:1px solid var(--db-border-subtle);border-radius:8px;padding:14px;text-align:center">
                   <div style="font-weight:700;color:var(--gold-light);margin-bottom:4px;font-size:13px"><span class="en">3. Drivers</span><span class="ar">٣. المحركات</span></div>
-                  <div style="font-size:11px;color:var(--db-muted)"><span class="en">Path + Impact</span><span class="ar">المسار + الأثر</span></div>
+                  <div style="font-size:11px;color:var(--db-muted)"><span class="en">Impact + decisions</span><span class="ar">الأثر + القرار</span></div>
                 </div>
                 <div style="flex:1;min-width:100px;background:rgba(255,255,255,0.04);border:1px solid var(--db-border-subtle);border-radius:8px;padding:14px;text-align:center">
                   <div style="font-weight:700;color:var(--gold-light);margin-bottom:4px;font-size:13px"><span class="en">4. Simulate</span><span class="ar">٤. المحاكاة</span></div>
@@ -2192,7 +3217,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
         </div>
       </div>
 
-      <!-- ── DRIVERS PANEL ── -->
+      <!-- ── CX DRIVERS ANALYSIS (map + ranking + effect deep dive + remove scenario) ── -->
       <div class="db-panel" id="db-panel-drivers">
         <div class="db-grid-2">
           <div class="db-card">
@@ -2213,9 +3238,8 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                   <tr>
                     <th><span class="en">Rank</span><span class="ar">الترتيب</span></th>
                     <th><span class="en">Driver</span><span class="ar">المحرك</span></th>
+                    <th><span class="en">Effect size (% share)</span><span class="ar">حجم الأثر (نسبة %)</span></th>
                     <th><span class="en">Avg Score</span><span class="ar">المتوسط</span></th>
-                    <th><span class="en">Path Coeff.</span><span class="ar">معامل المسار</span></th>
-                    <th><span class="en">Effect Size (Impact)</span><span class="ar">حجم التأثير</span></th>
                     <th><span class="en">Decision</span><span class="ar">القرار</span></th>
                   </tr>
                 </thead>
@@ -2224,20 +3248,16 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- ── EFFECT SIZE PANEL ── -->
-      <div class="db-panel" id="db-panel-effect">
-        <div class="db-grid-2">
+        <div class="db-grid-2" style="margin-top:20px">
           <div class="db-card">
             <div class="db-card-header">
-              <div><div class="db-card-title"><span class="en">Effect Size Deep Dive</span><span class="ar">تحليل حجم التأثير</span></div><div class="db-card-subtitle"><span class="en">How much each driver contributes to explaining satisfaction</span><span class="ar">مقدار مساهمة كل محرك في تفسير الرضا</span></div></div>
+              <div><div class="db-card-title"><span class="en">Effect Size Deep Dive</span><span class="ar">تحليل حجم التأثير</span></div><div class="db-card-subtitle"><span class="en">How much each driver contributes to explaining the Customer Experience Score</span><span class="ar">مقدار مساهمة كل محرك في تفسير درجة تجربة العميل</span></div></div>
             </div>
             <div class="db-card-body">
               <div class="db-bar-list" id="dbEffectBars"></div>
               <div class="db-info-box warning" style="margin-top:16px">
                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-                <span><span class="en"><b>Interpretation:</b> ~0.02 small · ~0.15 medium · ~0.35 large. Business judgment still matters.</span><span class="ar"><b>التفسير:</b> ~0.02 صغير · ~0.15 متوسط · ~0.35 كبير. الحكم التجاري لا يزال مهمًا.</span></span>
+                <span><span class="en"><b>Interpretation:</b> thresholds as share of explanatory contribution: ~2% small · ~15% medium · ~35% large (same logic as coefficients 0.02 / 0.15 / 0.35). Business judgment still matters.</span><span class="ar"><b>التفسير:</b> العتبات كنسبة من المساهمة التفسيرية: ~٢٪ صغير · ~١٥٪ متوسط · ~٣٥٪ كبير (مطابقة لمعاملات ٠٫٠٢ / ٠٫١٥ / ٠٫٣٥). الحكم التجاري لا يزال مهمًا.</span></span>
               </div>
             </div>
           </div>
@@ -2282,8 +3302,8 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               <div id="dbSimSliders"></div>
               <div class="db-sim-result">
                 <div class="db-sim-label"><span class="en">Expected Satisfaction</span><span class="ar">الرضا المتوقع</span></div>
-                <div class="db-sim-score" id="dbSimExpected">4.<span>20</span></div>
-                <div class="db-sim-baseline"><span class="en">Baseline: </span><span class="ar">الأساس: </span><span id="dbSimBaseline">3.80</span> / 5</div>
+                <div class="db-sim-score" id="dbSimExpected">4.<span>20</span><span class="db-sim-pct-mark"> (84%)</span></div>
+                <div class="db-sim-baseline"><span class="en">Baseline: </span><span class="ar">الأساس: </span><span id="dbSimBaseline">3.80 (76%)</span> / 5</div>
                 <div class="db-sim-advice" id="dbSimAdvice"></div>
                 <div class="db-sim-roi">
                   <span class="db-sim-roi-label"><span class="en">ROI Index</span><span class="ar">مؤشر العائد</span></span>
@@ -2339,6 +3359,116 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 
       <!-- ── MODEL QUALITY PANEL ── -->
       <div class="db-panel" id="db-panel-model">
+        <div class="db-card db-mq-measure-card">
+          <div class="db-card-header">
+            <div>
+              <div class="db-card-title"><span class="en">Structural measurement model</span><span class="ar">النموذج القياسي البُنيوي</span></div>
+              <div class="db-card-subtitle">
+                <span class="en">Constructs captured by the questionnaire, with item counts, converging toward the Customer Experience Score outcome.</span>
+                <span class="ar">المستحدَثات التي يقيّمها الاستبيان وبعدد البنود، تتجمّع نحو مخرج درجة تجربة العميل.</span>
+              </div>
+            </div>
+          </div>
+          <div class="db-card-body">
+            <p class="db-mq-measure-intro">
+              <span class="en"><b>Note:</b> Below is a built-in diagram for the dark dashboard. To use your own asset, save it as <code style="opacity:.85">mode.png</code> in the site root and we can wire it in next to this block.</span>
+              <span class="ar"><b>ملاحظة:</b> أدناه مخطط مدمج يناسب الوضع الداكن. لاستخدام صورتك، احفظها باسم <code style="opacity:.85">mode.png</code> في جذر الموقع لربطها لاحقًا بجانب هذا القسم.</span>
+            </p>
+            <div class="db-mq-measure-split">
+              <ul class="db-mq-construct-list">
+                <li class="db-mq-ant db-mq-ant--quality">
+                  <span class="db-mq-ico" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#93c5fd" stroke-width="1.75"/></svg>
+                  </span>
+                  <div class="db-mq-ant-text">
+                    <strong><span class="en">Quality</span><span class="ar">الجودة</span></strong>
+                    <small><span class="en">Repair correctness, expectation fit, confidence</span><span class="ar">استقرار الإصلاح، التوقعات، الثقة</span></small>
+                  </div>
+                  <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">4</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+                </li>
+                <li class="db-mq-ant db-mq-ant--comm">
+                  <span class="db-mq-ico" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="#6ee7b7" stroke-width="1.75"/></svg>
+                  </span>
+                  <div class="db-mq-ant-text">
+                    <strong><span class="en">Communication</span><span class="ar">التواصل</span></strong>
+                    <small><span class="en">Updates, clarity of explanation, delays</span><span class="ar">التحديثات، الشرح، التأخير</span></small>
+                  </div>
+                  <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">4</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+                </li>
+                <li class="db-mq-ant db-mq-ant--price">
+                  <span class="db-mq-ico" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M17 6H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6" stroke="#facc15" stroke-width="1.75"/></svg>
+                  </span>
+                  <div class="db-mq-ant-text">
+                    <strong><span class="en">Price fairness</span><span class="ar">عدالة السعر</span></strong>
+                    <small><span class="en">Fairness perception, invoice vs estimate</span><span class="ar">المعقولية، الفاتورة والتقدير</span></small>
+                  </div>
+                  <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">4</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+                </li>
+                <li class="db-mq-ant db-mq-ant--speed">
+                  <span class="db-mq-ico" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#c4b5fd" stroke-width="1.75"/><path d="M12 7v6l4 2" stroke="#c4b5fd" stroke-width="1.75"/></svg>
+                  </span>
+                  <div class="db-mq-ant-text">
+                    <strong><span class="en">Speed</span><span class="ar">السرعة</span></strong>
+                    <small><span class="en">Completion time, waits, commitments</span><span class="ar">وقت الإنجاز، الانتظار، الالتزام</span></small>
+                  </div>
+                  <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">4</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+                </li>
+                <li class="db-mq-ant db-mq-ant--cx">
+                  <span class="db-mq-ico" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#d4af55" stroke-width="1.75"/><circle cx="12" cy="7" r="4" stroke="#d4af55" stroke-width="1.75"/></svg>
+                  </span>
+                  <div class="db-mq-ant-text">
+                    <strong><span class="en">Customer Experience Score</span><span class="ar">درجة تجربة العميل</span></strong>
+                    <small><span class="en">Reflective latent · OS1–OS3</span><span class="ar">كتلة انعكاسية · OS1–OS3</span></small>
+                  </div>
+                  <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">3</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+                </li>
+              </ul>
+              <div class="db-mq-diagram-panel">
+                <div class="db-mq-svg-wrap" dir="ltr">
+                  <svg class="db-mq-model-svg" viewBox="0 0 400 296" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <defs>
+                      <marker id="dbMqMb" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#60a5fa"/></marker>
+                      <marker id="dbMqMg" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#34d399"/></marker>
+                      <marker id="dbMqMy" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#eab308"/></marker>
+                      <marker id="dbMqMv" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0 0,7 3.5,0 7" fill="#a78bfa"/></marker>
+                    </defs>
+                    <!-- Antecedent nodes -->
+                    <rect x="14" y="16" width="132" height="44" rx="10" stroke="rgba(96,165,250,0.55)" stroke-width="1.4" fill="rgba(96,165,250,0.1)"/>
+                    <text x="80" y="36" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="12" font-weight="700">Quality</text>
+                    <text x="80" y="52" text-anchor="middle" fill="#93c5fd" font-size="10.5" font-weight="700">× 4 questions</text>
+                    <rect x="14" y="78" width="132" height="44" rx="10" stroke="rgba(52,211,153,0.52)" stroke-width="1.4" fill="rgba(52,211,153,0.08)"/>
+                    <text x="80" y="98" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="12" font-weight="700">Communication</text>
+                    <text x="80" y="114" text-anchor="middle" fill="#6ee7b7" font-size="10.5" font-weight="700">× 4 questions</text>
+                    <rect x="14" y="140" width="132" height="44" rx="10" stroke="rgba(234,179,8,0.5)" stroke-width="1.4" fill="rgba(234,179,8,0.08)"/>
+                    <text x="80" y="160" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="12" font-weight="700">Price fairness</text>
+                    <text x="80" y="176" text-anchor="middle" fill="#facc15" font-size="10.5" font-weight="700">× 4 questions</text>
+                    <rect x="14" y="202" width="132" height="44" rx="10" stroke="rgba(167,139,250,0.55)" stroke-width="1.4" fill="rgba(167,139,250,0.08)"/>
+                    <text x="80" y="222" text-anchor="middle" fill="rgba(255,255,255,0.9)" font-size="12" font-weight="700">Speed</text>
+                    <text x="80" y="238" text-anchor="middle" fill="#c4b5fd" font-size="10.5" font-weight="700">× 4 questions</text>
+                    <!-- Outcome -->
+                    <rect x="242" y="104" width="142" height="96" rx="14" stroke="rgba(212,175,85,0.55)" stroke-width="1.5" fill="rgba(184,150,46,0.1)"/>
+                    <text x="313" y="138" text-anchor="middle" fill="rgba(255,255,255,0.95)" font-size="12" font-weight="700">Customer Experience</text>
+                    <text x="313" y="156" text-anchor="middle" fill="rgba(255,255,255,0.95)" font-size="12" font-weight="700">Score</text>
+                    <text x="313" y="184" text-anchor="middle" fill="#e8c65c" font-size="11" font-weight="700">3 indicators (OS1–OS3)</text>
+                    <!-- Arrows -->
+                    <path d="M 146 38 C 200 38 220 120 242 140" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#dbMqMb)"/>
+                    <path d="M 146 100 C 198 100 218 130 242 148" stroke="#34d399" stroke-width="2" fill="none" marker-end="url(#dbMqMg)"/>
+                    <path d="M 146 162 C 196 162 214 152 242 156" stroke="#eab308" stroke-width="2" fill="none" marker-end="url(#dbMqMy)"/>
+                    <path d="M 146 224 C 198 224 216 175 242 168" stroke="#a78bfa" stroke-width="2" fill="none" marker-end="url(#dbMqMv)"/>
+                  </svg>
+                </div>
+                <p class="db-mq-diagram-caption">
+                  <span class="en">Conceptual drivers → Customer Experience Score (19 items across all blocks pre-pilot).</span>
+                  <span class="ar">محركات مفاهيمية → درجة تجربة العميل (١٩ بندًا إجمالًا قبل التجربة).</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="db-card" style="margin-bottom:20px">
           <div class="db-card-header">
             <div><div class="db-card-title"><span class="en">Model Quality Metrics</span><span class="ar">مقاييس جودة النموذج</span></div><div class="db-card-subtitle"><span class="en">Build analytical credibility with stakeholders</span><span class="ar">بناء مصداقية تحليلية مع أصحاب المصلحة</span></div></div>
@@ -2389,6 +3519,66 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 
       <!-- ── QUESTIONNAIRE PANEL ── -->
       <div class="db-panel" id="db-panel-questionnaire">
+        <div class="db-card db-q-viz-card">
+          <div class="db-card-header">
+            <div>
+              <div class="db-card-title"><span class="en">Instrument map</span><span class="ar">خريطة الأداة القياسية</span></div>
+              <div class="db-card-subtitle">
+                <span class="en">Nineteen items grouped into five constructs before pilot refinement (conceptual schematic).</span>
+                <span class="ar">تسعة عشر بندًا في خمس مستحدَثات قبل ضبط التجربة (مخطط مفاهيمي).</span>
+              </div>
+            </div>
+          </div>
+          <div class="db-card-body">
+            <div class="db-q-viz-wrap" dir="ltr">
+              <svg class="db-q-viz-svg" viewBox="0 0 512 168" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <linearGradient id="dbQChip" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(212,175,85,0.92)" />
+                    <stop offset="100%" stop-color="rgba(184,150,46,0.45)" />
+                  </linearGradient>
+                </defs>
+                <rect x="12" y="8" width="488" height="32" rx="10" stroke="rgba(212,175,85,0.35)" stroke-width="1.2" fill="rgba(184,150,46,0.06)" />
+                <text x="256" y="20" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-weight="700" font-family="'DM Sans', sans-serif">19 items · 5 constructs</text>
+                <text x="256" y="34" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9.5" font-weight="600" font-family="'DM Sans', sans-serif">neutral mapping — prior to pilot</text>
+                <g stroke="rgba(212,175,85,0.28)" stroke-width="1">
+                  <rect x="48" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="48" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="48" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="48" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="136" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="136" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="136" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="136" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="224" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="224" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="224" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="224" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="312" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="312" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="312" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="312" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                  <rect x="392" y="54" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                  <rect x="392" y="68" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                  <rect x="392" y="82" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                </g>
+                <text x="78" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">Q×4</text>
+                <text x="166" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">C×4</text>
+                <text x="254" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">P×4</text>
+                <text x="342" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">S×4</text>
+                <text x="428" y="124" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">CES×3</text>
+                <text x="256" y="152" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-weight="600" font-family="'DM Sans', sans-serif">each chip = one questionnaire item</text>
+              </svg>
+            </div>
+            <div class="db-q-viz-legend">
+              <span><span class="en"><b>Q</b> Quality · <b>C</b> Communication · <b>P</b> Price · <b>S</b> Speed · <b>OS</b> Customer Experience Score</span><span class="ar"><b>Q</b> جودة · <b>C</b> تواصل · <b>P</b> سعر · <b>S</b> سرعة · <b>OS</b> درجة تجربة العميل</span></span>
+            </div>
+            <p class="db-q-viz-note">
+              <span class="en">Schematic only; item wording lives in the cards below. Pilot-driven changes are documented under Pilot Test Analysis.</span>
+              <span class="ar">مخطط فقط؛ نص البنود في البطاقات أدناه. تعديلات التجربة تُعرَف ضمن تحليل الاختبار التجريبي.</span>
+            </p>
+          </div>
+        </div>
         <div class="db-grid-2">
           <div class="db-card">
             <div class="db-card-header"><div><div class="db-card-title"><span class="en">Questionnaire Items</span><span class="ar">عناصر الاستبيان</span></div><div class="db-card-subtitle"><span class="en">Neutral mapping — no accept/reject classification</span><span class="ar">ربط محايد دون تصنيف قبول/رفض</span></div></div></div>
@@ -2409,7 +3599,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 <span class="en">S1: The service was completed within a reasonable time.<br>S2: Waiting time was acceptable.<br>S3: Delivery matched the promised timing.<br>S4: Total process time was convenient.</span>
                 <span class="ar">S1: أُنجزت الخدمة في وقت معقول.<br>S2: وقت الانتظار مقبول.<br>S3: التسليم طابق الموعد المُعلَن.<br>S4: وقت العملية كان مناسبًا.</span>
               </div>
-              <div class="db-q-item"><b><span class="en">Overall Satisfaction</span><span class="ar">الرضا العام</span></b>
+              <div class="db-q-item"><b><span class="en">Customer Experience Score</span><span class="ar">درجة تجربة العميل</span></b>
                 <span class="en">OS1: Overall I am satisfied with the service experience.<br>OS2: The experience met my expectations.<br>OS3: I would consider returning.</span>
                 <span class="ar">OS1: بشكل عام راضٍ عن تجربة الخدمة.<br>OS2: التجربة نالت توقّعاتي.<br>OS3: قد أعود لنفس المركز.</span>
               </div>
@@ -2426,7 +3616,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                     <tr><td><span class="en">Communication</span><span class="ar">التواصل</span></td><td>4</td><td><span class="en">Updates, explanation, delay notification, clarity</span><span class="ar">تحديثات، شرح، إشعار التأخير، الوضوح</span></td></tr>
                     <tr><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td>4</td><td><span class="en">Fairness, estimate, invoice, value</span><span class="ar">العدالة، التقدير، الفاتورة، القيمة</span></td></tr>
                     <tr><td><span class="en">Speed</span><span class="ar">السرعة</span></td><td>4</td><td><span class="en">Completion time, waiting, promised timing, convenience</span><span class="ar">الإنجاز، الانتظار، الموعد، الملاءمة</span></td></tr>
-                    <tr><td><span class="en">Overall Satisfaction</span><span class="ar">الرضا العام</span></td><td>3</td><td><span class="en">Overall evaluation, expectations, return intention</span><span class="ar">تقييم شامل، التوقعات، نية العودة</span></td></tr>
+                    <tr><td><span class="en">Customer Experience Score</span><span class="ar">درجة تجربة العميل</span></td><td>3</td><td><span class="en">CX evaluation, expectations, return intention</span><span class="ar">تقييم التجربة، التوقعات، نية العودة</span></td></tr>
                   </tbody>
                 </table>
               </div>
@@ -2440,6 +3630,86 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 
       <!-- ── PILOT PANEL ── -->
       <div class="db-panel" id="db-panel-pilot">
+        <div class="db-card db-pilot-flow-card">
+          <div class="db-card-header">
+            <div>
+              <div class="db-card-title"><span class="en">Pilot instrument flow</span><span class="ar">مسار الأداة في التجريب</span></div>
+              <div class="db-card-subtitle">
+                <span class="en">From pilot responses through item pruning to the retained 15-item measurement model (5 constructs).</span>
+                <span class="ar">من استجابات التجريب عبر ضبط البنود إلى نموذج القياس المكوّن من 15 بندًا (5 مُستحدَثات).</span>
+              </div>
+            </div>
+          </div>
+          <div class="db-card-body">
+            <div class="db-pilot-diagram-wrap" dir="ltr">
+              <svg class="db-pilot-flow-svg" viewBox="0 0 640 158" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                  <marker id="dbPilotArr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                    <polygon points="0 0, 8 4, 0 8" fill="rgba(255,255,255,0.25)" />
+                  </marker>
+                </defs>
+                <rect x="8" y="46" width="92" height="52" rx="10" stroke="rgba(184,150,46,0.45)" stroke-width="1.5" fill="rgba(184,150,46,0.09)" />
+                <text x="54" y="72" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="15" font-weight="700" font-family="'DM Sans', sans-serif">30</text>
+                <text x="54" y="90" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="600" font-family="'DM Sans', sans-serif">n</text>
+                <line x1="100" y1="72" x2="126" y2="72" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#dbPilotArr)" />
+                <rect x="134" y="46" width="92" height="52" rx="10" stroke="rgba(212,175,85,0.35)" stroke-width="1.5" fill="rgba(255,255,255,0.04)" />
+                <text x="180" y="72" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="15" font-weight="700" font-family="'DM Sans', sans-serif">19</text>
+                <text x="180" y="90" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="600" font-family="'DM Sans', sans-serif">items</text>
+                <line x1="226" y1="72" x2="252" y2="72" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#dbPilotArr)" />
+                <path d="M 260 72 L 290 72 L 290 40 L 320 40" stroke="rgba(239,68,68,0.55)" stroke-width="1.5" fill="none" marker-end="url(#dbPilotArr)" />
+                <path d="M 290 72 L 290 100 L 320 100" stroke="rgba(212,175,85,0.45)" stroke-width="1.5" fill="none" marker-end="url(#dbPilotArr)" />
+                <rect x="322" y="22" width="86" height="36" rx="8" stroke="rgba(239,68,68,0.65)" stroke-width="1.5" fill="rgba(239,68,68,0.12)" />
+                <text x="365" y="37" text-anchor="middle" fill="#fca5a5" font-size="13" font-weight="700" font-family="'DM Sans', sans-serif">4</text>
+                <text x="365" y="52" text-anchor="middle" fill="rgba(252,165,165,0.85)" font-size="9.5" font-weight="600" font-family="'DM Sans', sans-serif">removed</text>
+                <rect x="322" y="82" width="86" height="44" rx="10" stroke="rgba(184,150,46,0.55)" stroke-width="1.5" fill="rgba(184,150,46,0.1)" />
+                <text x="365" y="104" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="15" font-weight="700" font-family="'DM Sans', sans-serif">15</text>
+                <text x="365" y="120" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10" font-weight="600" font-family="'DM Sans', sans-serif">retained</text>
+                <line x1="408" y1="104" x2="432" y2="104" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#dbPilotArr)" />
+                <rect x="440" y="72" width="118" height="64" rx="12" stroke="rgba(212,175,85,0.4)" stroke-width="1.5" fill="rgba(255,255,255,0.03)" />
+                <text x="499" y="100" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="15" font-weight="700" font-family="'DM Sans', sans-serif">5 × 3</text>
+                <text x="499" y="120" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="600" font-family="'DM Sans', sans-serif">constructs · items</text>
+              </svg>
+            </div>
+            <div class="db-pilot-flow-legend">
+              <span class="db-pilot-legend-chip"><i class="ret" aria-hidden="true"></i><span class="en">Retained path → final instrument</span><span class="ar">مسار المحتفَظ به → الأداة النهائية</span></span>
+              <span class="db-pilot-legend-chip"><i class="rem" aria-hidden="true"></i><span class="en">Governed removals (documented below)</span><span class="ar">إزالات موثَّقة (أدناه في الجدول)</span></span>
+            </div>
+            <div class="db-pilot-alpha-block">
+              <div class="db-pilot-alpha-head"><span class="en">Cronbach’s α · pilot composites</span><span class="ar">Cronbach α · مركبات التجربة</span></div>
+              <div class="db-pilot-alpha-row">
+                <div class="db-pilot-alpha-name"><span class="en">Quality</span><span class="ar">الجودة</span></div>
+                <div class="db-pilot-alpha-track"><div class="db-pilot-alpha-fill" style="width:86%"></div></div>
+                <div class="db-pilot-alpha-val">0.86</div>
+              </div>
+              <div class="db-pilot-alpha-row">
+                <div class="db-pilot-alpha-name"><span class="en">Communication</span><span class="ar">التواصل</span></div>
+                <div class="db-pilot-alpha-track"><div class="db-pilot-alpha-fill" style="width:84%"></div></div>
+                <div class="db-pilot-alpha-val">0.84</div>
+              </div>
+              <div class="db-pilot-alpha-row">
+                <div class="db-pilot-alpha-name"><span class="en">Price fairness</span><span class="ar">عدالة السعر</span></div>
+                <div class="db-pilot-alpha-track"><div class="db-pilot-alpha-fill" style="width:81%"></div></div>
+                <div class="db-pilot-alpha-val">0.81</div>
+              </div>
+              <div class="db-pilot-alpha-row">
+                <div class="db-pilot-alpha-name"><span class="en">Speed</span><span class="ar">السرعة</span></div>
+                <div class="db-pilot-alpha-track"><div class="db-pilot-alpha-fill" style="width:78%"></div></div>
+                <div class="db-pilot-alpha-val">0.78</div>
+              </div>
+              <div class="db-pilot-alpha-row">
+                <div class="db-pilot-alpha-name"><span class="en">Customer Experience Score</span><span class="ar">درجة تجربة العميل</span></div>
+                <div class="db-pilot-alpha-track"><div class="db-pilot-alpha-fill" style="width:88%"></div></div>
+                <div class="db-pilot-alpha-val">0.88</div>
+              </div>
+              <div class="db-info-box info" style="margin-top:16px">
+                <span>
+                  <span class="en"><b>Note:</b> Bar fill width mirrors α scaled to the 0–1 metric (illustrative).</span>
+                  <span class="ar"><b>ملاحظة:</b> عرض الشريحة يقتبس α على مقياس ٠–١ (توضيحي).</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="db-grid-2">
           <div class="db-card">
             <div class="db-card-header"><div><div class="db-card-title"><span class="en">Pilot Test Analysis</span><span class="ar">تحليل الاختبار التجريبي</span></div><div class="db-card-subtitle"><span class="en">Reliability + governance — not the final SEM model</span><span class="ar">الموثوقية والحوكمة — وليس نموذج SEM النهائي</span></div></div></div>
@@ -2459,7 +3729,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                     <tr><td><span class="en">Communication</span><span class="ar">التواصل</span></td><td>3</td><td>0.84</td><td><span class="en">Good</span><span class="ar">جيد</span></td></tr>
                     <tr><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td>3</td><td>0.81</td><td><span class="en">Good</span><span class="ar">جيد</span></td></tr>
                     <tr><td><span class="en">Speed</span><span class="ar">السرعة</span></td><td>3</td><td>0.78</td><td><span class="en">Acceptable</span><span class="ar">مقبول</span></td></tr>
-                    <tr><td><span class="en">Overall Sat.</span><span class="ar">الرضا العام</span></td><td>3</td><td>0.88</td><td><span class="en">Good</span><span class="ar">جيد</span></td></tr>
+                    <tr><td><span class="en">Cust. Experience Score</span><span class="ar">درجة تجربة العميل</span></td><td>3</td><td>0.88</td><td><span class="en">Good</span><span class="ar">جيد</span></td></tr>
                   </tbody>
                 </table>
               </div>
@@ -2472,9 +3742,9 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 <table class="db-table">
                   <thead><tr><th><span class="en">Item</span><span class="ar">البند</span></th><th><span class="en">Variable</span><span class="ar">المتغيّر</span></th><th><span class="en">Why removed</span><span class="ar">سبب الإزالة</span></th></tr></thead>
                   <tbody>
-                    <tr><td>Q4</td><td><span class="en">Quality</span><span class="ar">الجودة</span></td><td><span class="en">Overlapped with overall satisfaction; weakened construct purity.</span><span class="ar">تداخل مع الرضا العام؛ أضعف نقاء المُستحدَث.</span></td></tr>
+                    <tr><td>Q4</td><td><span class="en">Quality</span><span class="ar">الجودة</span></td><td><span class="en">Overlapped with Customer Experience Score items; weakened construct purity.</span><span class="ar">تداخل مع بنود درجة تجربة العميل؛ أضعف نقاء المُستحدَث.</span></td></tr>
                     <tr><td>C4</td><td><span class="en">Communication</span><span class="ar">التواصل</span></td><td><span class="en">Duplicate meaning with advisor clarity; weaker item-total.</span><span class="ar">تكرار المعنى مع وضوح المستشار؛ مساهمة أضعف في البند–الكلي.</span></td></tr>
-                    <tr><td>P4</td><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td><span class="en">Mixed value with fairness; risk of cross-loading on satisfaction.</span><span class="ar">اختلاط القيمة بالعدالة؛ خطر تحميل متقاطع مع الرضا.</span></td></tr>
+                    <tr><td>P4</td><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td><span class="en">Mixed value with fairness; risk of cross-loading on the Customer Experience Score construct.</span><span class="ar">اختلاط القيمة بالعدالة؛ خطر تحميل متقاطع مع مستحدَث درجة تجربة العميل.</span></td></tr>
                     <tr><td>S4</td><td><span class="en">Speed</span><span class="ar">السرعة</span></td><td><span class="en">Broad “convenience” overlapped waiting &amp; process wording.</span><span class="ar">صياغة «الملاءمة» تتداخل مع الانتظار وتجربة العملية.</span></td></tr>
                   </tbody>
                 </table>
@@ -2489,21 +3759,46 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 
       <!-- ── DEMOGRAPHICS PANEL ── -->
       <div class="db-panel" id="db-panel-demographics">
+        <div class="db-demo-quality-top">
+          <div class="db-demo-qcard db-demo-qcard--funnel">
+            <div class="db-demo-qcard-hd">
+              <div class="db-demo-qcard-icon" aria-hidden="true">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16h8l4-6-4-7-3 5-3-2-3 4h-3"/></svg>
+              </div>
+              <div class="db-demo-qcard-title"><span class="en">1 · Data collection funnel</span><span class="ar">١ · قمع جمع البيانات</span></div>
+            </div>
+            <div class="db-demo-funnel-scroll"><div id="dbDemoQualityFunnel"></div></div>
+          </div>
+          <div class="db-demo-qcard db-demo-qcard--exc">
+            <div class="db-demo-qcard-hd">
+              <div class="db-demo-qcard-icon" aria-hidden="true">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+              </div>
+              <div class="db-demo-qcard-title"><span class="en">2 · Data cleaning (exclusions)</span><span class="ar">٢ · التنظيف (الاستبعاد)</span></div>
+            </div>
+            <div id="dbDemoQualityExclusions"></div>
+          </div>
+        </div>
+        <div class="db-demo-strength-wrap">
+          <div class="db-demo-qcard db-demo-qcard--strength">
+            <div class="db-demo-qcard-hd">
+              <div class="db-demo-qcard-icon" aria-hidden="true">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+              </div>
+              <div class="db-demo-qcard-title"><span class="en">3 · Sample strength</span><span class="ar">٣ · قوّة العيّنة</span></div>
+            </div>
+            <div id="dbDemoQualityStrength"></div>
+          </div>
+        </div>
         <div class="db-grid-2">
           <div class="db-card">
             <div class="db-card-header"><div><div class="db-card-title"><span class="en">Demographics &amp; Sample Engine</span><span class="ar">الديموغرافيا وحجم العيّنة</span></div><div class="db-card-subtitle"><span class="en">Live profile for the current filter selection</span><span class="ar">ملف حي وفق المرشّح الحالي</span></div></div></div>
             <div class="db-card-body">
-              <div class="db-model-grid db-model-grid--wrap" style="margin-bottom:18px">
-                <div class="db-model-metric"><div class="db-model-metric-val" id="dbDemoTotal">300</div><div class="db-model-metric-label"><span class="en">Full sample</span><span class="ar">العينة الكاملة</span></div><div class="db-model-metric-desc"><span class="en">Valid responses</span><span class="ar">استجابات صالحة</span></div></div>
-                <div class="db-model-metric"><div class="db-model-metric-val" id="dbDemoCurrent">300</div><div class="db-model-metric-label"><span class="en">Current segment</span><span class="ar">الشريحة الحالية</span></div></div>
-                <div class="db-model-metric"><div class="db-model-metric-val" id="dbDemoShare">100%</div><div class="db-model-metric-label"><span class="en">Share</span><span class="ar">النسبة</span></div><div class="db-model-metric-desc"><span class="en">Of full sample</span><span class="ar">من العينة الكاملة</span></div></div>
-                <div class="db-model-metric"><div class="db-model-metric-val" id="dbDemoFlag">OK</div><div class="db-model-metric-label"><span class="en">Confidence</span><span class="ar">الثقة</span></div><div class="db-model-metric-desc"><span class="en">By N threshold</span><span class="ar">بحسب الحجم</span></div></div>
-              </div>
-              <div class="db-info-box info" id="dbDemoInsight"></div>
+              <div class="db-info-box info" id="dbDemoInsight" style="margin-top:0"></div>
             </div>
           </div>
           <div class="db-card">
-            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Demographic Diagrams</span><span class="ar">مخططات ديموغرافية</span></div><div class="db-card-subtitle"><span class="en">Composition within filtered segment</span><span class="ar">التكوين داخل الشريحة المرشَّحة</span></div></div></div>
+            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Final sample profile (demographics)</span><span class="ar">ملف العينة النهائي (ديموغرافيا)</span></div><div class="db-card-subtitle"><span class="en">Composition within filtered segment</span><span class="ar">التكوين داخل الشريحة المرشَّحة</span></div></div></div>
             <div class="db-card-body">
               <div class="db-demo-grid">
                 <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Branches</span><span class="ar">الفروع</span></div><div id="dbBranchDemoChart" class="db-demo-chart"></div></div>
@@ -2511,7 +3806,6 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Service</span><span class="ar">الخدمة</span></div><div id="dbServiceDemoChart" class="db-demo-chart"></div></div>
                 <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Visit frequency</span><span class="ar">تكرار الزيارات</span></div><div id="dbFrequencyDemoChart" class="db-demo-chart"></div></div>
                 <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Age bands</span><span class="ar">شرائح العمر</span></div><div id="dbAgeDemoChart" class="db-demo-chart"></div></div>
-                <div class="db-mini-chart"><div class="db-mini-title"><span class="en">Decision signals</span><span class="ar">إشارات قرار</span></div><div class="db-table-wrap"><table class="db-table"><thead><tr><th><span class="en">Signal</span><span class="ar">الإشارة</span></th><th><span class="en">Value</span><span class="ar">القيمة</span></th></tr></thead><tbody id="dbSignalRows"></tbody></table></div></div>
               </div>
             </div>
           </div>
@@ -2962,9 +4256,13 @@ function showDashboard(user) {
 
   dbRender();
 
-  // Restore last active panel (default: executive)
-  const savedPanel = localStorage.getItem('roshd_panel') || 'executive';
-  const savedBtn   = document.querySelector(`.db-nav-item[data-panel="${savedPanel}"]`);
+  // Restore last active panel (default: executive). Legacy Effect panel merged into Drivers.
+  let savedPanel = localStorage.getItem('roshd_panel') || 'executive';
+  if (savedPanel === 'effect') {
+    savedPanel = 'drivers';
+    try { localStorage.setItem('roshd_panel', 'drivers'); } catch(_) {}
+  }
+  const savedBtn = document.querySelector(`.db-nav-item[data-panel="${savedPanel}"]`);
   dbShowPanel(savedPanel, savedBtn || document.querySelector('.db-nav-item'));
 }
 
@@ -3094,20 +4392,29 @@ function dbGetData() {
 
 /* ── Dashboard: Panel Navigation ── */
 function dbShowPanel(id, btn) {
+  if (id === 'effect') id = 'drivers';
+
   document.querySelectorAll('.db-panel').forEach(p => p.classList.remove('active'));
   const panel = document.getElementById('db-panel-' + id);
   if (panel) panel.classList.add('active');
 
+  const dash = document.getElementById('customerDashboard');
+  if (dash)
+    dash.classList.toggle(
+      'db-panel-no-kpi',
+      id === 'pilot' || id === 'questionnaire'
+    );
+
   document.querySelectorAll('.db-nav-item').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+  const navBtn = document.querySelector(`.db-nav-item[data-panel="${id}"]`) || btn;
+  if (navBtn) navBtn.classList.add('active');
 
   // Persist active panel so refresh / reopen lands here
   try { localStorage.setItem('roshd_panel', id); } catch(_) {}
 
   const titles = {
     executive:       { en:'Executive View',       ar:'العرض التنفيذي' },
-    drivers:         { en:'Driver Analysis',      ar:'تحليل المحركات' },
-    effect:          { en:'Effect Size',          ar:'حجم التأثير' },
+    drivers:         { en:'CX Drivers Analysis', ar:'تحليل محركات تجربة العميل' },
     segments:        { en:'Segments',             ar:'الشرائح' },
     simulation:      { en:'Simulation Lab',       ar:'مختبر المحاكاة' },
     customers:       { en:'Customer Patterns',    ar:'أنماط العملاء' },
@@ -3127,39 +4434,300 @@ function dbShowPanel(id, btn) {
   closeDashboardSidebar();
 }
 
-function dbFillDemoBars(containerId, fieldIdx, labelPairs) {
-  const rows = dbFilteredCustomers();
-  const total = rows.length || 1;
+/** Demographics visuals */
+const DB_DEMO_PALETTE_CSS = ['var(--db-chart-1)', 'var(--db-chart-2)', 'var(--db-chart-3)', 'var(--db-chart-4)', 'var(--db-chart-5)'];
+
+function dbDemoSlices(fieldIdx, labelPairs) {
+  const fc = dbFilteredCustomers();
+  const total = fc.length || 1;
+  const slices = labelPairs.map(([value, htmlLabel]) => {
+    const n = fc.filter(r => r[fieldIdx] === value).length;
+    const p = total ? Math.round((n / total) * 100) : 0;
+    const w = total ? (n / total) * 100 : 0;
+    return { value, htmlLabel, n, p, w };
+  });
+  return { total, slices };
+}
+
+function dbDemoConicGradient(slices) {
+  const sumN = slices.reduce((a, s) => a + s.n, 0) || 1;
+  let angle = 0;
+  const parts = slices.map((s, i) => {
+    const a0 = angle;
+    angle += (s.n / sumN) * 360;
+    return `${DB_DEMO_PALETTE_CSS[i % 5]} ${a0.toFixed(2)}deg ${angle.toFixed(2)}deg`;
+  });
+  return `conic-gradient(${parts.join(',')})`;
+}
+
+function dbFillDemoDonutStack(containerId, fieldIdx, labelPairs, kickerEn, kickerAr) {
   const box = document.getElementById(containerId);
   if (!box) return;
-  box.innerHTML = labelPairs.map(([value, htmlLabel]) => {
-    const n = rows.filter(r => r[fieldIdx] === value).length;
-    const p = Math.round((n / total) * 100);
-    return `<div class="db-demo-row"><span>${htmlLabel}</span><div class="db-demo-track"><div class="db-demo-fill" style="width:${p}%"></div></div><span>${p}%</span></div>`;
-  }).join('');
+  const { total, slices } = dbDemoSlices(fieldIdx, labelPairs);
+  const donutBg =
+    total && slices.some(s => s.n > 0)
+      ? dbDemoConicGradient(slices)
+      : 'conic-gradient(var(--db-muted) 0deg 360deg)';
+  const legend = slices
+    .map(
+      (s, i) =>
+        `<div class="db-demo-legend-row"><span class="db-demo-legend-sw" style="background:${DB_DEMO_PALETTE_CSS[i % 5]}"></span>` +
+        `<span class="db-demo-legend-lbl">${s.htmlLabel}</span>` +
+        `<span class="db-demo-legend-pct">${s.p}%</span></div>`
+    )
+    .join('');
+  const stack = slices
+    .map((s, i) => `<span style="width:${s.w}%;background:${DB_DEMO_PALETTE_CSS[i % 5]}"></span>`)
+    .join('');
+  const barRows = slices
+    .map(
+      s =>
+        `<div class="db-demo-row"><span>${s.htmlLabel}</span><div class="db-demo-track"><div class="db-demo-fill" style="width:${s.p}%"></div></div><span>${s.p}%</span></div>`
+    )
+    .join('');
+  box.classList.add('db-demo-chart--rich');
+  box.innerHTML =
+    `<div class="db-demo-kicker"><span class="en">${kickerEn}</span><span class="ar">${kickerAr}</span></div>` +
+    `<div class="db-demo-donut-shell"><div class="db-demo-donut-wrap" aria-hidden="true"><div class="db-demo-donut" style="background:${donutBg}"></div></div>` +
+    `<div class="db-demo-mini-legend">${legend}</div></div>` +
+    `<div class="db-demo-stack">${stack}</div>` +
+    barRows;
+}
+
+function dbFillDemoColumnBars(containerId, fieldIdx, labelPairs, kickerEn, kickerAr) {
+  const box = document.getElementById(containerId);
+  if (!box) return;
+  const { slices } = dbDemoSlices(fieldIdx, labelPairs);
+  const n = Math.max(slices.length, 1);
+  const vbW = 320;
+  const padL = 10;
+  const padR = 10;
+  const chartTop = 8;
+  const chartH = 74;
+  const baseY = chartTop + chartH;
+  const vbH = baseY + 10;
+  const innerW = vbW - padL - padR;
+  const slotW = innerW / n;
+  const barW = Math.max(14, Math.min(44, slotW * 0.58));
+  const maxP = Math.max(...slices.map(s => s.p), 1);
+  let rects = '';
+  slices.forEach((s, i) => {
+    const hRaw = chartH * (s.p / maxP);
+    const h = Math.max(s.p > 0 ? 2 : 0, hRaw);
+    const cx = padL + i * slotW + slotW / 2;
+    const x = cx - barW / 2;
+    const y = baseY - h;
+    rects +=
+      `<g><title>${s.p}%</title><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(
+        1
+      )}" height="${h.toFixed(1)}" rx="5" fill="${DB_DEMO_PALETTE_CSS[i % 5]}" opacity="0.94" /></g>`;
+  });
+  const svg =
+    `<svg viewBox="0 0 ${vbW} ${vbH}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><line x1="${padL}" y1="${baseY}" x2="${vbW - padR}" y2="${baseY}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>` +
+    rects +
+    `</svg>`;
+  const labels = slices.map((s) => `<span>${s.htmlLabel}</span>`).join('');
+  const barRows = slices
+    .map(
+      s =>
+        `<div class="db-demo-row"><span>${s.htmlLabel}</span><div class="db-demo-track"><div class="db-demo-fill" style="width:${s.p}%"></div></div><span>${s.p}%</span></div>`
+    )
+    .join('');
+  box.classList.add('db-demo-chart--rich');
+  box.innerHTML =
+    `<div class="db-demo-kicker"><span class="en">${kickerEn}</span><span class="ar">${kickerAr}</span></div>` +
+    `<div class="db-demo-svg-wrap">${svg}</div>` +
+    `<div class="db-demo-col-grid">${labels}</div>` +
+    barRows;
+}
+
+function dbFillDemographicsQualityCards(segmentN, sharePct) {
+  const studyN = DB_SAMPLE_TOTAL;
+  const sent = 1250;
+  const recv = 412;
+  const compl = 352;
+  const rateR = +(recv / sent * 100).toFixed(2);
+  const rateC = +(compl / recv * 100).toFixed(2);
+  const rateV = +(studyN / compl * 100).toFixed(2);
+
+  const nInc = 60;
+  const nSpe = 32;
+  const nLow = 20;
+  const nExc = nInc + nSpe + nLow;
+  const pIncRecv = +(nInc / recv * 100).toFixed(2);
+  const pSpeRecv = +(nSpe / recv * 100).toFixed(2);
+  const pLowRecv = +(nLow / recv * 100).toFixed(2);
+  const pExcRecv = +(nExc / recv * 100).toFixed(2);
+  const a1 = (nInc / nExc) * 360;
+  const a2 = a1 + (nSpe / nExc) * 360;
+  const donutBg = `conic-gradient(#ef4444 0deg ${a1}deg, #eab308 ${a1}deg ${a2}deg, #a855f7 ${a2}deg 360deg)`;
+
+  const covGauge = segmentN <= 0 ? 0 : segmentN >= 60 ? 100 : Math.round((segmentN / 60) * 100);
+  let msgCls = 'ok';
+  let msgHtml =
+    '<span class="en">Sample size is adequate for reliable analysis.</span>' +
+    '<span class="ar">حجم العيّنة كافٍ لتحليل موثوق.</span>';
+  if (segmentN < 30) {
+    msgCls = 'bad';
+    msgHtml =
+      '<span class="en">Segment is small — outputs are directional only.</span>' +
+      '<span class="ar">شريحة صغيرة — المخرجات توجيهية فقط.</span>';
+  } else if (segmentN < 60) {
+    msgCls = 'warn';
+    msgHtml =
+      '<span class="en">Modest segment — prioritize directionally; validate where possible.</span>' +
+      '<span class="ar">حجم متوسط — أولْ الاتجاه والتحقق عند الإمكان.</span>';
+  }
+
+  const cx = [102, 262, 422, 582];
+  const wi = [168, 132, 108, 86];
+  const poly = [0, 1, 2, 3]
+    .map(i => {
+      const c = cx[i];
+      const w = wi[i];
+      const tt = w * 0.42;
+      const bb = w * 0.5;
+      return `<polygon fill="url(#dbfGrad${i})" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-linejoin="round" points="${c - tt},52 ${c + tt},52 ${c + bb},124 ${c - bb},124"/>`;
+    })
+    .join('');
+  const rateTx = [rateR, rateC, rateV]
+    .map((r, i) => {
+      const m = (cx[i] + cx[i + 1]) / 2;
+      return `<text x="${m}" y="36" fill="#e2e8f0" font-size="12" font-weight="800" text-anchor="middle">${r}%</text><path d="M ${m - 20} 42 H ${m + 20}" stroke="#64748b" stroke-width="1.5" stroke-linecap="round"/>`;
+    })
+    .join('');
+  const icons = [
+    `<g transform="translate(${cx[0]},92)" fill="none" stroke="#e2e8f0" stroke-width="2"><rect x="-14" y="-10" width="28" height="20" rx="2"/><polyline points="-5,-4 -5,6 7,0"/></g>`,
+    `<g transform="translate(${cx[1]},92)" fill="none" stroke="#e2e8f0" stroke-width="2"><path d="M -14 -4 h 28 v 16 a 10 8 0 0 1 -10 8 h -8 a 10 8 0 0 1 -10 -8 z"/><circle cx="-4" cy="6" r="1.5" fill="#e2e8f0" stroke="none"/><circle cx="6" cy="6" r="1.5" fill="#e2e8f0" stroke="none"/></g>`,
+    `<g transform="translate(${cx[2]},90)" fill="none" stroke="#e2e8f0" stroke-width="2"><rect x="-12" y="-12" width="24" height="34" rx="2"/><line x1="-6" y1="-2" x2="10" y2="-2"/><line x1="-6" y1="6" x2="8" y2="6"/><line x1="-6" y1="14" x2="6" y2="14"/></g>`,
+    `<g transform="translate(${cx[3]},92)" fill="none" stroke="#86efac" stroke-width="2"><path d="M 0 -12 L -12 14 H 12 Z"/><path d="M -1 0 L 3 8 9 -6" stroke-linecap="round" stroke-linejoin="round"/></g>`
+  ].join('');
+
+  const funnel = document.getElementById('dbDemoQualityFunnel');
+  if (funnel) {
+    funnel.innerHTML =
+      `<svg class="db-demo-funnel-svg" viewBox="0 0 688 138" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="dbfGrad0" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#1e3a8a"/><stop offset="100%" stop-color="#2563eb"/></linearGradient>
+        <linearGradient id="dbfGrad1" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#1d4ed8"/><stop offset="100%" stop-color="#0ea5e9"/></linearGradient>
+        <linearGradient id="dbfGrad2" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#0f766e"/><stop offset="100%" stop-color="#2dd4bf"/></linearGradient>
+        <linearGradient id="dbfGrad3" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="#166534"/><stop offset="100%" stop-color="#4ade80"/></linearGradient>
+      </defs>
+      ${poly}
+      ${rateTx}
+      ${icons}
+    </svg>
+    <div class="db-demo-funnel-caption-grid">
+      <div><span class="en">Surveys sent</span><span class="ar">المرسلة</span><br/><strong>${sent.toLocaleString()}</strong><small class="en">Invitation wave</small><small class="ar">موجة الدعوة</small></div>
+      <div><span class="en">Responses</span><span class="ar">المستجابات</span><br/><strong>${recv}</strong><small>${rateR}% <span class="en">vs sent</span><span class="ar">من المرسل</span></small></div>
+      <div><span class="en">Completed</span><span class="ar">المكتملة</span><br/><strong>${compl}</strong><small>${rateC}% <span class="en">vs responses</span><span class="ar">من المستجابة</span></small></div>
+      <div><span class="en">Valid sample (N)</span><span class="ar">عينة صالحة</span><br/><strong>${studyN}</strong><small>${rateV}% <span class="en">to study file</span><span class="ar">إلى ملف الدراسة</span></small></div>
+    </div>
+    <div class="db-demo-funnel-kpis">
+      <div class="db-demo-kpi-mini">
+        <div class="lbl"><span class="en">Response rate</span><span class="ar">معدل الاستجابة</span></div>
+        <div class="val">${rateR}%</div>
+        <div class="sub"><span class="en">Responses / Sent</span><span class="ar">المستجابات / المرسل</span></div>
+      </div>
+      <div class="db-demo-kpi-mini">
+        <div class="lbl"><span class="en">Completion rate</span><span class="ar">معدل الإتمام</span></div>
+        <div class="val">${rateC}%</div>
+        <div class="sub"><span class="en">Completed / Responses</span><span class="ar">المكتمل / المستجابة</span></div>
+      </div>
+    </div>`;
+  }
+
+  const exc = document.getElementById('dbDemoQualityExclusions');
+  if (exc) {
+    exc.innerHTML =
+      `<div class="db-exc-body">
+      <div class="db-exc-donut-wrap" aria-hidden="true">
+        <div class="db-exc-donut" style="background:${donutBg}"></div>
+        <div class="db-exc-donut-center">
+          <span class="db-exc-center-n">${nExc}</span>
+          <span class="db-exc-center-lbl"><span class="en">Total excluded</span><span class="ar">إجمالي المستبعد</span></span>
+        </div>
+      </div>
+      <div class="db-exc-rows">
+        <div class="db-exc-row">
+          <span class="db-exc-row-main"><span class="db-exc-sw" style="background:#ef4444"></span><span><span class="en">Incomplete responses</span><span class="ar">غير مكتملة</span></span></span>
+          <span class="db-exc-pct">${nInc} (${pIncRecv}%)</span>
+        </div>
+        <div class="db-exc-row">
+          <span class="db-exc-row-main"><span class="db-exc-sw" style="background:#eab308"></span><span><span class="en">Speeders / too fast</span><span class="ar">سريعون جدًا</span></span></span>
+          <span class="db-exc-pct">${nSpe} (${pSpeRecv}%)</span>
+        </div>
+        <div class="db-exc-row">
+          <span class="db-exc-row-main"><span class="db-exc-sw" style="background:#a855f7"></span><span><span class="en">Low-quality responses</span><span class="ar">جودة منخفضة</span></span></span>
+          <span class="db-exc-pct">${nLow} (${pLowRecv}%)</span>
+        </div>
+      </div>
+    </div>
+    <div class="db-exc-foot">
+      <span><span class="en">Total excluded (vs responses)</span><span class="ar">المستبعد (مقابل المستجابات)</span></span>
+      <span class="db-exc-foot-strong">${nExc} (${pExcRecv}%)</span>
+    </div>`;
+  }
+
+  const gaugeOff = Math.max(0.5, Math.min(100, 100 - covGauge));
+  let msgSvg =
+    '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+  if (msgCls === 'warn')
+    msgSvg =
+      '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>';
+  if (msgCls === 'bad')
+    msgSvg =
+      '<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+
+  const str = document.getElementById('dbDemoQualityStrength');
+  if (str) {
+    str.innerHTML =
+      `<div class="db-str-body">
+      <div class="db-str-gauge">
+        <svg class="db-str-gauge-svg" viewBox="0 0 120 78" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 14 64 A 46 46 0 0 1 106 64" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="11" stroke-linecap="round"/>
+          <path d="M 14 64 A 46 46 0 0 1 106 64" fill="none" stroke="#a855f7" stroke-width="11" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${gaugeOff}" />
+          <text x="14" y="74" fill="rgba(148,163,184,0.9)" font-size="9">0%</text>
+          <text x="106" y="74" fill="rgba(148,163,184,0.9)" font-size="9" text-anchor="end">100%</text>
+        </svg>
+        <div class="db-str-val">
+          <div class="db-str-val-num">${covGauge}%</div>
+          <div class="db-str-val-lbl"><span class="en">Coverage</span><span class="ar">التغطية</span></div>
+        </div>
+      </div>
+      <div class="db-str-aside">
+        <div>
+          <div class="db-str-aside-sub"><span class="en">Sample size</span><span class="ar">حجم العيّنة</span></div>
+          <div class="db-str-twin">
+            <div class="db-str-box">
+              <div class="l"><span class="en">Total valid sample (N)</span><span class="ar">الإجمالي الصالح</span></div>
+              <div class="n">${studyN}</div>
+            </div>
+            <div class="db-str-box">
+              <div class="l"><span class="en">Current filtered (N)</span><span class="ar">المصفّى الحالي</span></div>
+              <div class="n">${segmentN}</div>
+            </div>
+          </div>
+        </div>
+        <div class="db-str-msg ${msgCls}">
+          ${msgSvg}
+          ${msgHtml}
+        </div>
+      </div>
+    </div>`;
+  }
 }
 
 function dbRenderDemographics(d, segmentN, sharePct, freqVal, ageSel) {
-  const demoTotal = document.getElementById('dbDemoTotal');
-  const demoCurr = document.getElementById('dbDemoCurrent');
-  const demoShare = document.getElementById('dbDemoShare');
-  const demoFlag = document.getElementById('dbDemoFlag');
+  dbFillDemographicsQualityCards(segmentN, sharePct);
+
   const demoInsight = document.getElementById('dbDemoInsight');
 
-  if (demoTotal) demoTotal.textContent = String(DB_SAMPLE_TOTAL);
-  if (demoCurr) demoCurr.textContent = String(segmentN);
-  if (demoShare) demoShare.innerHTML = `<span class="en">${sharePct}%</span><span class="ar">${sharePct}%</span>`;
-
-  if (demoFlag) {
-    if (segmentN < 30)
-      demoFlag.innerHTML = `<span class="en">LOW N</span><span class="ar">حجم منخفض</span>`;
-    else if (segmentN < 60)
-      demoFlag.innerHTML = `<span class="en">CAUTION</span><span class="ar">انتباه</span>`;
-    else
-      demoFlag.innerHTML = `<span class="en">OK</span><span class="ar">مقبول</span>`;
-  }
-
   if (demoInsight) {
+    const flagEn =
+      segmentN < 30 ? 'LOW N — directional only.' : segmentN < 60 ? 'CAUTION — modest sample.' : 'OK — adequate sample.';
+    const flagAr =
+      segmentN < 30 ? 'حجم منخفض — نتائج توجيهية.' : segmentN < 60 ? 'انتباه — عينة متوسطة.' : 'مقبول — عينة كافية.';
     const extraFreqEn =
       freqVal === '4+ Visits'
         ? 'High-frequency customers are retention assets — quality failures are costly.'
@@ -3181,47 +4749,232 @@ function dbRenderDemographics(d, segmentN, sharePct, freqVal, ageSel) {
         ? 'الأصغر حساسية أعلى للسعر؛ أولِ شفافية التقديرات.'
         : 'راجع مزيج العمر قبل افتراض أولوية السعر.';
     demoInsight.innerHTML =
-      `<span><span class="en"><b>Insight:</b> <b>${segmentN}</b> filtered responses. Strongest lever: <b>${d.top}</b>. ${extraFreqEn} ${ageEn}</span>` +
-      `<span class="ar"><b>ملخص:</b> <b>${segmentN}</b> استجابة بعد التصفية. أقوى رافعة: <b>${d.topAr || d.top}</b>. ${extraFreqAr} ${ageAr}</span></span>`;
+      `<span><span class="en"><b>Insight:</b> <b>${segmentN}</b> of <b>${DB_SAMPLE_TOTAL}</b> responses in this slice (<b>${sharePct}%</b> of full sample). <b>${flagEn}</b> Strongest lever: <b>${d.top}</b>. ${extraFreqEn} ${ageEn}</span>` +
+      `<span class="ar"><b>ملخص:</b> <b>${segmentN}</b> من <b>${DB_SAMPLE_TOTAL}</b> ضمن هذه الشريحة (<b>${sharePct}%</b> من العينة الكاملة). <b>${flagAr}</b> أقوى رافعة: <b>${d.topAr || d.top}</b>. ${extraFreqAr} ${ageAr}</span></span>`;
   }
 
-  dbFillDemoBars('dbBranchDemoChart', 1, [
-    ['Riyadh', '<span class="en">Riyadh</span><span class="ar">الرياض</span>'],
-    ['Jeddah', '<span class="en">Jeddah</span><span class="ar">جدة</span>'],
-    ['Dammam', '<span class="en">Dammam</span><span class="ar">الدمام</span>']
-  ]);
-  dbFillDemoBars('dbGenderDemoChart', 2, [
-    ['Male', '<span class="en">Male</span><span class="ar">ذكر</span>'],
-    ['Female', '<span class="en">Female</span><span class="ar">أنثى</span>']
-  ]);
-  dbFillDemoBars('dbServiceDemoChart', 3, [
-    ['Mechanical', '<span class="en">Mechanical</span><span class="ar">ميكانيكي</span>'],
-    ['Bodyshop', '<span class="en">Bodyshop</span><span class="ar">هيكل السيارة</span>']
-  ]);
-  dbFillDemoBars('dbFrequencyDemoChart', 4, [
-    ['1 Visit', '<span class="en">1 Visit</span><span class="ar">زيارة واحدة</span>'],
-    ['2–3 Visits', '<span class="en">2–3 Visits</span><span class="ar">2–3 زيارات</span>'],
-    ['4+ Visits', '<span class="en">4+ Visits</span><span class="ar">4+ زيارات</span>']
-  ]);
-  dbFillDemoBars('dbAgeDemoChart', 5, [
-    ['<25', '<span class="en">&lt;25</span><span class="ar">أقل من 25</span>'],
-    ['25–34', '<span class="en">25–34</span><span class="ar">25–34</span>'],
-    ['35–44', '<span class="en">35–44</span><span class="ar">35–44</span>'],
-    ['45+', '<span class="en">45+</span><span class="ar">45+</span>']
-  ]);
-
-  const sig = document.getElementById('dbSignalRows');
-  if (sig) {
-    const sampEn = segmentN < 30 ? 'Directional only' : segmentN < 60 ? 'Use with caution' : 'Decision-ready';
-    const sampAr = segmentN < 30 ? 'اتجاهات فقط' : segmentN < 60 ? 'مع تحفّظ' : 'جاهزة للقرار';
-    sig.innerHTML =
-      `<tr><td><span class="en">Segment top driver</span><span class="ar">المحرك الأعلى</span></td><td><span class="en">${d.top}</span><span class="ar">${d.topAr || d.top}</span></td></tr>` +
-      `<tr><td><span class="en">Low-impact driver</span><span class="ar">محرك ضعيف الأثر</span></td><td><span class="en">${d.risk}</span><span class="ar">${d.riskAr || d.risk}</span></td></tr>` +
-      `<tr><td><span class="en">Sample decision use</span><span class="ar">استخدام القرار</span></td><td><span class="en">${sampEn}</span><span class="ar">${sampAr}</span></td></tr>`;
-  }
+  dbFillDemoDonutStack(
+    'dbBranchDemoChart',
+    1,
+    [
+      ['Riyadh', '<span class="en">Riyadh</span><span class="ar">الرياض</span>'],
+      ['Jeddah', '<span class="en">Jeddah</span><span class="ar">جدة</span>'],
+      ['Dammam', '<span class="en">Dammam</span><span class="ar">الدمام</span>']
+    ],
+    'Donut · share by branch',
+    'دائرة · توزيع الفروع'
+  );
+  dbFillDemoDonutStack(
+    'dbGenderDemoChart',
+    2,
+    [
+      ['Male', '<span class="en">Male</span><span class="ar">ذكر</span>'],
+      ['Female', '<span class="en">Female</span><span class="ar">أنثى</span>']
+    ],
+    'Composition · gender mix',
+    'التركيب · الجنس'
+  );
+  dbFillDemoDonutStack(
+    'dbServiceDemoChart',
+    3,
+    [
+      ['Mechanical', '<span class="en">Mechanical</span><span class="ar">ميكانيكي</span>'],
+      ['Bodyshop', '<span class="en">Bodyshop</span><span class="ar">هيكل السيارة</span>']
+    ],
+    'Split · service lane',
+    'انقسام · نوع الخدمة'
+  );
+  dbFillDemoColumnBars(
+    'dbFrequencyDemoChart',
+    4,
+    [
+      ['1 Visit', '<span class="en">1 Visit</span><span class="ar">زيارة واحدة</span>'],
+      ['2–3 Visits', '<span class="en">2–3 Visits</span><span class="ar">2–3 زيارات</span>'],
+      ['4+ Visits', '<span class="en">4+ Visits</span><span class="ar">4+ زيارات</span>']
+    ],
+    'Bars · visit frequency vs max',
+    'أعمدة · تكرار الزيارات'
+  );
+  dbFillDemoColumnBars(
+    'dbAgeDemoChart',
+    5,
+    [
+      ['<25', '<span class="en">&lt;25</span><span class="ar">أقل من 25</span>'],
+      ['25–34', '<span class="en">25–34</span><span class="ar">25–34</span>'],
+      ['35–44', '<span class="en">35–44</span><span class="ar">35–44</span>'],
+      ['45+', '<span class="en">45+</span><span class="ar">45+</span>']
+    ],
+    'Bars · age band spread',
+    'أعمدة · شرائح العمر'
+  );
 }
 
 /* ── Dashboard: Main Render ── */
+/** Percent of max 5 for 1–5 scale means (capped 0–100). */
+function dbPctOf5(score) {
+  const v = Number(score);
+  if (Number.isNaN(v)) return 0;
+  return Math.min(100, Math.max(0, Math.round((v / 5) * 100)));
+}
+/** e.g. 3.8 → "3.8 (76%)" */
+function dbFormatMean5(score, decimals) {
+  const d = decimals === undefined ? 1 : decimals;
+  const v = Number(score);
+  if (Number.isNaN(v)) return String(score);
+  return `${v.toFixed(d)} (${dbPctOf5(v)}%)`;
+}
+/** Effect impact coefficient (typically 0–1 scale) → e.g. "34%" */
+function dbImpactPct(impact, decimals) {
+  const v = Number(impact);
+  if (Number.isNaN(v)) return '—';
+  const pct = v * 100;
+  return decimals !== undefined ? `${pct.toFixed(decimals)}%` : `${Math.round(pct)}%`;
+}
+
+
+/** Build conic-gradient from positive weights. */
+function dbKpiConicFromWeights(items) {
+  const sum = items.reduce((acc, x) => acc + Math.max(0, x.w), 0) || 1;
+  let cur = 0;
+  const parts = [];
+  for (const it of items) {
+    const ww = Math.max(0, it.w) / sum;
+    if (ww < 0.002) continue;
+    const d = ww * 360;
+    parts.push(`${it.color} ${cur}deg ${cur + d}deg`);
+    cur += d;
+  }
+  if (!parts.length) return 'conic-gradient(rgba(255,255,255,0.08) 0deg 360deg)';
+  return `conic-gradient(${parts.join(',')})`;
+}
+
+function dbRepresentScore(n, sharePct) {
+  if (n <= 0) return 0;
+  let s = 50 + Math.min(30, Math.round((n / DB_SAMPLE_TOTAL) * 30));
+  s += n >= 60 ? 10 : n >= 30 ? 4 : 0;
+  s += sharePct >= 90 ? 8 : sharePct >= 50 ? 4 : 0;
+  return Math.min(98, Math.max(42, s));
+}
+
+/** KPI strip: sample representativeness + CX gauge + donuts (profile / dominance / importance / coverage). */
+function dbFillOverviewVisualizations(d, segmentN, sharePct, fc) {
+  const funnelEl = document.getElementById('dbOverviewFunnel');
+  const repPct = dbRepresentScore(segmentN, sharePct);
+  const repGaugeOff = Math.max(0.25, Math.min(100, 100 - repPct));
+  if (funnelEl) {
+    funnelEl.innerHTML =
+      `<div class="db-overview-rep">
+        <div class="db-overview-rep-gauge">
+          <div class="db-overview-rep-g">
+            <svg viewBox="0 0 120 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="dbRepGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#2dd4bf"/><stop offset="100%" stop-color="#6366f1"/></linearGradient>
+              </defs>
+              <path d="M 14 62 A 46 46 0 0 1 106 62" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10" stroke-linecap="round"/>
+              <path d="M 14 62 A 46 46 0 0 1 106 62" fill="none" stroke="url(#dbRepGrad)" stroke-width="10" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${repGaugeOff}" />
+            </svg>
+          </div>
+          <div class="db-overview-rep-val">
+            <div class="db-overview-rep-num">${repPct}%</div>
+            <div class="db-overview-rep-lbl"><span class="en">Representative</span><span class="ar">تمثيل</span></div>
+          </div>
+        </div>
+        <div class="db-overview-rep-copy">
+          <span class="en"><b>Slice alignment</b> with the study frame (effective N, filters, coverage). Higher = safer executive readouts.</span>
+          <span class="ar"><b>انسجام الشريحة</b> مع إطار الدراسة (العبء الفعلي للعينة، المرشّحات، التغطية). ارتفع الرقم = قراءات أوثق تنفيذيًا.</span>
+          <div class="db-overview-rep-stat">
+            <span><span class="en">Segment <b>N=${segmentN}</b></span><span class="ar">شريحة <b>N=${segmentN}</b></span></span>
+            <span><span class="en"><b>${sharePct}%</b> of study benchmark</span><span class="ar"><b>${sharePct}%</b> من مرجع الدراسة</span></span>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  const cxPct = dbPctOf5(d.score);
+  const gaugePath = document.getElementById('dbKpiCxGaugePath');
+  if (gaugePath) gaugePath.style.strokeDashoffset = String(100 - cxPct);
+
+  const sparkWrap = document.getElementById('dbOverviewCxSpark');
+  if (sparkWrap) {
+    const pts = [];
+    let yy = 40;
+    for (let i = 0; i < 8; i++) {
+      yy += -cxPct * 0.058 + Math.sin(i * 0.7) * 1.8;
+      pts.push(`${6 + i * 15},${Math.max(4, Math.min(50, yy))}`);
+    }
+    sparkWrap.innerHTML =
+      `<svg viewBox="0 0 120 54" aria-hidden="true"><defs><linearGradient id="dbSparkFill" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="rgba(212,175,85,0.15)"/><stop offset="100%" stop-color="rgba(252,211,77,0.95)"/></linearGradient></defs>
+        <polygon fill="url(#dbSparkFill)" fill-opacity="0.18" points="6,54 ${pts.join(' ')} 114,54" />
+        <polyline fill="none" stroke="rgba(253,224,138,0.45)" stroke-width="1.2" stroke-linecap="round" points="${pts.join(' ')}" />
+        <polyline fill="none" stroke="url(#dbSparkFill)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" points="${pts.join(' ')}" /></svg>`;
+  }
+
+  const branchMeta = [
+    { key: 'Riyadh', en: 'Riyadh', ar: 'الرياض', color: '#60a5fa' },
+    { key: 'Jeddah', en: 'Jeddah', ar: 'جدة', color: '#a78bfa' },
+    { key: 'Dammam', en: 'Dammam', ar: 'الدمام', color: '#34d399' }
+  ];
+  const nSeg = segmentN || 1;
+  const bCounts = branchMeta.map(b => ({ ...b, n: fc.filter(r => r[1] === b.key).length }));
+  const profileItems = bCounts.map(x => ({ w: x.n, color: x.color }));
+  const r2El = document.getElementById('dbKpiR2Donut');
+  if (r2El) r2El.style.background = dbKpiConicFromWeights(profileItems);
+
+  let topIdx = 0;
+  let topN = bCounts[0].n;
+  bCounts.forEach((x, i) => {
+    if (x.n > topN) {
+      topN = x.n;
+      topIdx = i;
+    }
+  });
+  const profilePct = Math.round((topN / nSeg) * 100);
+  const profileSub = document.getElementById('kpiSampleProfileSub');
+  const kpiProf = document.getElementById('kpiExplanatory');
+  const topBr = branchMeta[topIdx];
+  if (kpiProf) kpiProf.textContent = `${profilePct}%`;
+  if (profileSub)
+    profileSub.innerHTML = `<span class="en">Largest branch share: ${topBr.en}</span><span class="ar">أكبر حصة فرع: ${topBr.ar}</span>`;
+
+  const sortedD = [...(d.drivers || [])].sort((a, b) => b.impact - a.impact);
+  const sumI = sortedD.reduce((a, x) => a + x.impact, 0) || 1;
+  const dom = sortedD[0] ? sortedD[0].impact / sumI : 0;
+  const domEl = document.getElementById('dbKpiDomDonut');
+  if (domEl)
+    domEl.style.background = dbKpiConicFromWeights([
+      { w: dom, color: '#22c55e' },
+      { w: Math.max(0, 1 - dom), color: 'rgba(255,255,255,0.08)' }
+    ]);
+  const domShareEl = document.getElementById('kpiDomSharePct');
+  if (domShareEl) domShareEl.textContent = `${Math.round(dom * 100)}%`;
+  const domLead = document.getElementById('kpiDomLead');
+  if (domLead)
+    domLead.innerHTML = sortedD[0]
+      ? `<span class="en">${sortedD[0].name}</span><span class="ar">${sortedD[0].nameAr || sortedD[0].name}</span>`
+      : '<span class="en">—</span><span class="ar">—</span>';
+
+  const impCols = ['#22c55e', '#38bdf8', '#eab308', '#a855f7', '#f97316'];
+  const impItems = sortedD.map((dr, i) => ({ w: dr.impact, color: impCols[i % impCols.length] }));
+  const impEl = document.getElementById('dbKpiImpDonut');
+  if (impEl) impEl.style.background = dbKpiConicFromWeights(impItems);
+  const top2 = sortedD.length
+    ? ((sortedD[0].impact || 0) + (sortedD[1]?.impact || 0)) / sumI
+    : 0;
+  const impPctEl = document.getElementById('kpiImpMassPct');
+  if (impPctEl) impPctEl.textContent = `${Math.round(top2 * 100)}%`;
+  const impDet = document.getElementById('kpiImpDetail');
+  if (impDet)
+    impDet.innerHTML =
+      `<span class="en">Top 2 drivers hold <b>${Math.round(top2 * 100)}%</b> of modeled effect</span>` +
+      `<span class="ar">أعلى محرّكين يحملان <b>${Math.round(top2 * 100)}%</b> من الأثر النموذجي</span>`;
+
+  const donut = document.getElementById('dbKpiSampleDonut');
+  if (donut) {
+    const p = Math.max(0.5, Math.min(sharePct, 100));
+    donut.style.background = `conic-gradient(var(--gold) 0deg ${p * 3.6}deg, rgba(255,255,255,0.08) ${p * 3.6}deg 360deg)`;
+  }
+}
+
 function dbRender() {
   // Persist current filter state so it survives refresh / reopen
   try {
@@ -3242,8 +4995,7 @@ function dbRender() {
   const freqVal = document.getElementById('dbFrequency')?.value || 'All Frequencies';
   const ageSel = document.getElementById('dbAge')?.value || 'All Ages';
 
-  document.getElementById('kpiScore').textContent       = d.score.toFixed(1);
-  document.getElementById('kpiExplanatory').textContent = d.explanatory + '%';
+  document.getElementById('kpiScore').textContent       = dbFormatMean5(d.score, 1);
   document.getElementById('mqR2').textContent           = d.explanatory + '%';
 
   const sampleNEl = document.getElementById('kpiSampleN');
@@ -3254,10 +5006,7 @@ function dbRender() {
       `<span class="en">${sharePct}% of full sample (${DB_SAMPLE_TOTAL})</span><span class="ar">${sharePct}% من العينة الكاملة (${DB_SAMPLE_TOTAL})</span>`;
   }
 
-  const topEl  = document.getElementById('kpiTopDriver');
-  const riskEl = document.getElementById('kpiRisk');
-  if (topEl)  topEl.innerHTML  = `<span class="en">${d.top}</span><span class="ar">${d.topAr||d.top}</span>`;
-  if (riskEl) riskEl.innerHTML = `<span class="en">${d.risk}</span><span class="ar">${d.riskAr||d.risk}</span>`;
+  dbFillOverviewVisualizations(d, segmentN, sharePct, fc);
 
   const warnEl = document.getElementById('dbSegmentWarning');
   if (warnEl) {
@@ -3284,7 +5033,7 @@ function dbRender() {
       return `<div class="db-bar-row">
         <span class="db-bar-label"><span class="en">${b}</span><span class="ar">${b === 'Riyadh' ? 'الرياض' : b === 'Jeddah' ? 'جدة' : 'الدمام'}</span></span>
         <div class="db-bar-track"><div class="db-bar-fill" style="width:${w}%"></div></div>
-        <span class="db-bar-val">${bd.score.toFixed(1)}</span>
+        <span class="db-bar-val">${dbFormatMean5(bd.score, 1)}</span>
       </div>`;
     }).join('');
   }
@@ -3317,9 +5066,8 @@ function dbRender() {
       return `<tr>
         <td><b>#${i+1}</b></td>
         <td><b>${dName}</b></td>
-        <td>${dr.avg.toFixed(1)}</td>
-        <td>${dr.path.toFixed(2)}</td>
-        <td><b>${dr.impact.toFixed(2)}</b></td>
+        <td><b>${dbImpactPct(dr.impact)}</b></td>
+        <td>${dbFormatMean5(dr.avg, 1)}</td>
         <td><span class="db-badge ${badgeCls}">${dDec}</span></td>
       </tr>`;
     }).join('');
@@ -3335,7 +5083,7 @@ function dbRender() {
       return `<div class="db-bar-row">
         <span class="db-bar-label">${dName}</span>
         <div class="db-bar-track"><div class="db-bar-fill ${fillCls}" style="width:${w}%"></div></div>
-        <span class="db-bar-val">${dr.impact.toFixed(2)}</span>
+        <span class="db-bar-val">${dbImpactPct(dr.impact)}</span>
       </div>`;
     }).join('');
   }
@@ -3365,9 +5113,9 @@ function dbRender() {
       const low = dr.name === 'Speed' ? ' low' : '';
       const lab = isAr ? (dr.nameAr || dr.name) : dr.name;
       const impLab = isAr ? 'الأثر' : 'Impact';
-      return `<div class="db-bubble${low}" style="width:${size}px;height:${size}px" role="img" aria-label="${lab} ${impLab} ${dr.impact.toFixed(2)}">
+      return `<div class="db-bubble${low}" style="width:${size}px;height:${size}px" role="img" aria-label="${lab} ${impLab} ${dbImpactPct(dr.impact)}">
         <span class="db-bubble-name">${lab}</span>
-        <span class="db-bubble-imp">${impLab} ${dr.impact.toFixed(2)}</span>
+        <span class="db-bubble-imp">${impLab} ${dbImpactPct(dr.impact)}</span>
       </div>`;
     }).join('');
   }
@@ -3380,7 +5128,7 @@ function dbRender() {
       const riskLabel = c[11]==='High' ? t('High','عالٍ') : c[11]==='Low' ? t('Low','منخفض') : t('Medium','متوسط');
       return `<tr>
         <td><b>${c[0]}</b></td><td>${c[1]}</td><td>${c[2]}</td><td>${c[3]}</td><td>${c[4]}</td><td>${c[5]}</td>
-        <td>${c[6]}</td><td>${c[7]}</td><td>${c[8]}</td><td>${c[9]}</td><td>${c[10]}</td>
+        <td>${dbFormatMean5(c[6], 1)}</td><td>${dbFormatMean5(c[7], 1)}</td><td>${dbFormatMean5(c[8], 1)}</td><td>${dbFormatMean5(c[9], 1)}</td><td>${dbFormatMean5(c[10], 1)}</td>
         <td><span class="db-badge ${riskCls}">${riskLabel}</span></td>
       </tr>`;
     }).join('') : `<tr><td colspan="12" style="text-align:center;color:var(--db-muted);padding:28px">${t('No records match the selected filters.','لا توجد سجلات تطابق المرشّحات المختارة.')}</td></tr>`;
@@ -3431,9 +5179,9 @@ function dbUpdateSimulation() {
   const whole = Math.floor(expected);
   const dec   = expected.toFixed(2).split('.')[1];
   const expEl = document.getElementById('dbSimExpected');
-  if (expEl) expEl.innerHTML = `${whole}.<span>${dec}</span>`;
+  if (expEl) expEl.innerHTML = `${whole}.<span>${dec}</span><span class="db-sim-pct-mark"> (${dbPctOf5(expected)}%)</span>`;
   const baseEl = document.getElementById('dbSimBaseline');
-  if (baseEl) baseEl.textContent = d.score.toFixed(2);
+  if (baseEl) baseEl.textContent = dbFormatMean5(d.score, 2);
   const advEl = document.getElementById('dbSimAdvice');
   if (advEl) advEl.innerHTML = `<span class="en">Strongest lever: <b>${d.top}</b>. Speed remains low-impact unless its effect size changes.</span><span class="ar">الرافعة الأقوى: <b>${d.topAr||d.top}</b>. السرعة تظل ضعيفة الأثر ما لم يتغيّر حجم تأثيرها.</span>`;
   const roi = Math.round(d.drivers.slice(0, 4).reduce((acc, dr) => acc + (dbSimValues[dr.name]||0) * dr.impact, 0) * 100);
@@ -3456,7 +5204,7 @@ function dbRenderSegments() {
     return `<div class="db-segment-card" onclick="dbSelectSegment('${s.key}', this)">
       <div class="db-segment-name"><span class="en">${s.labelEn}</span><span class="ar">${s.labelAr}</span></div>
       <div class="db-segment-top">↑ <span class="en">${d.top}</span><span class="ar">${d.topAr||d.top}</span></div>
-      <div class="db-segment-meta">${d.explanatory}% · ${d.score}/5</div>
+      <div class="db-segment-meta">${d.explanatory}% · ${dbFormatMean5(d.score, 1)}</div>
     </div>`;
   }).join('');
 }
@@ -3470,7 +5218,7 @@ function dbSelectSegment(key, el) {
   const lbl = labels[key] || [key, key];
 
   document.getElementById('dbSegDetailTitle').innerHTML   = `<span class="en">${lbl[0]} — Segment Analysis</span><span class="ar">${lbl[1]} — تحليل الشريحة</span>`;
-  document.getElementById('dbSegDetailSub').innerHTML     = `${d.explanatory}% · <span class="en">Top driver:</span><span class="ar">المحرك الأول:</span> <span class="en">${d.top}</span><span class="ar">${d.topAr||d.top}</span> · ${d.score}/5`;
+  document.getElementById('dbSegDetailSub').innerHTML     = `${d.explanatory}% · <span class="en">Top driver:</span><span class="ar">المحرك الأول:</span> <span class="en">${d.top}</span><span class="ar">${d.topAr||d.top}</span> · ${dbFormatMean5(d.score, 1)}`;
 
   document.getElementById('dbSegDetailBody').innerHTML = `
     <div class="db-bar-list" style="margin-bottom:20px">
@@ -3478,7 +5226,7 @@ function dbSelectSegment(key, el) {
         <div class="db-bar-row">
           <span class="db-bar-label"><span class="en">${dr.name}</span><span class="ar">${dr.nameAr||dr.name}</span></span>
           <div class="db-bar-track"><div class="db-bar-fill" style="width:${Math.min(100,dr.impact/.35*100)}%"></div></div>
-          <span class="db-bar-val">${dr.impact.toFixed(2)}</span>
+          <span class="db-bar-val">${dbImpactPct(dr.impact)}</span>
         </div>`).join('')}
     </div>
     <div class="db-exec-grid">
