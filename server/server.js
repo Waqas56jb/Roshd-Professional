@@ -526,17 +526,27 @@ app.delete('/api/admin/customers/:id', requireAdmin(), async (req, res) => {
   }
 });
 
-// ─── Static files ─────────────────────────────────────────────────────────────
+// ─── Static files (local dev only) ────────────────────────────────────────────
+// On Vercel the frontend is a separate deployment; skip static serving entirely
+// to avoid sendFile() hanging on missing paths inside the Lambda sandbox.
 
-app.get('/', (_req, res) => res.sendFile(path.join(statRoot, 'index.html')));
-app.get(['/dashboard', '/dashboard/'], (_req, res) => res.sendFile(path.join(statRoot, 'index.html')));
+if (!process.env.VERCEL) {
+  app.get('/', (_req, res) => res.sendFile(path.join(statRoot, 'index.html')));
+  app.get(['/dashboard', '/dashboard/'], (_req, res) => res.sendFile(path.join(statRoot, 'index.html')));
 
-const adminUi = path.join(statRoot, 'admin', 'admin.html');
-app.get(['/admin', '/admin/', '/admin.html'], (_req, res) =>
-  fs.existsSync(adminUi) ? res.sendFile(adminUi) : res.status(404).send('Admin UI not deployed')
-);
+  const adminUi = path.join(statRoot, 'admin', 'admin.html');
+  app.get(['/admin', '/admin/', '/admin.html'], (_req, res) =>
+    fs.existsSync(adminUi) ? res.sendFile(adminUi) : res.status(404).send('Admin UI not deployed')
+  );
 
-app.use(express.static(statRoot));
+  app.use(express.static(statRoot));
+}
+
+// ─── 404 fallback ─────────────────────────────────────────────────────────────
+
+app.use((_req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found.' });
+});
 
 export default app;
 
