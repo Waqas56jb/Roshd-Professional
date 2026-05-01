@@ -85,6 +85,14 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
+app.get('/api/health', (_req, res) => {
+  res.json({
+    status: 'ok',
+    supabase: supabaseAnon && supabaseAdmin ? 'connected' : 'missing_env',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 const statRoot = path.join(__dirname, '..');
 
 /** Quick DB reachability check (local dev only). */
