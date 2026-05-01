@@ -738,12 +738,12 @@ html[data-lang="ar"] .db-nav-item.active::before { border-radius: 99px 0 0 99px;
   display: flex; align-items: center; gap: 10px;
   width: 100%; padding: 11px 14px; border-radius: 8px;
   background: none; border: none;
-  color: rgba(220,38,38,0.65); font-size: 14px; font-weight: 500;
+  color: rgba(20,83,45,0.65); font-size: 14px; font-weight: 500;
   cursor: pointer; transition: all 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
 html[data-lang="ar"] .db-logout-btn { font-family: 'Cairo', sans-serif; }
-.db-logout-btn:hover { background: rgba(220,38,38,0.08); color: #ef4444; }
+.db-logout-btn:hover { background: rgba(20,83,45,0.08); color: #14532D; }
 
 /* ── Dashboard Main Area ── */
 .db-main {
@@ -886,8 +886,8 @@ html[data-lang="ar"] .db-export-btn { font-family: 'Cairo', sans-serif; }
 .db-kpi-icon { width: 36px; height: 36px; border-radius: 8px; display: grid; place-items: center; background: var(--kpi-bg, rgba(184,150,46,0.15)); }
 
 .db-kpi-trend { font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 3px; }
-.db-kpi-trend.up { color: #22c55e; }
-.db-kpi-trend.down { color: #ef4444; }
+.db-kpi-trend.up { color: #22C55E; }
+.db-kpi-trend.down { color: #14532D; }
 .db-kpi-trend.neutral { color: var(--db-muted); }
 
 .db-kpi-val { font-family: 'Cormorant Garamond', serif; font-size: clamp(20px, 2.2vw, 36px); font-weight: 600; color: var(--white); line-height: 1; margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -922,8 +922,8 @@ html[data-lang="ar"] .db-bar-label { font-family: 'Cairo', sans-serif; }
 .db-bar-track { height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
 .db-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
 .db-bar-fill.navy { background: linear-gradient(90deg, var(--navy), var(--navy-mid)); }
-.db-bar-fill.success { background: linear-gradient(90deg, #059669, #10b981); }
-.db-bar-fill.danger { background: linear-gradient(90deg, #dc2626, #ef4444); }
+.db-bar-fill.success { background: linear-gradient(90deg, #22C55E, #22C55E); }
+.db-bar-fill.danger { background: linear-gradient(90deg, #14532D, #14532D); }
 .db-bar-val { font-weight: 700; color: var(--gold-light); font-size: 13px; text-align: end; }
 
 /* ── Badges ── */
@@ -931,9 +931,9 @@ html[data-lang="ar"] .db-bar-label { font-family: 'Cairo', sans-serif; }
 html[data-lang="ar"] .db-badge { font-family: 'Cairo', sans-serif; }
 .db-badge-gold { background: rgba(184,150,46,0.18); color: var(--gold-light); border: 1px solid rgba(184,150,46,0.3); }
 .db-badge-navy { background: var(--navy); color: var(--white); }
-.db-badge-success { background: rgba(5,150,105,0.15); color: #34d399; border: 1px solid rgba(5,150,105,0.25); }
+.db-badge-success { background: rgba(34,197,94,0.15); color: #22C55E; border: 1px solid rgba(34,197,94,0.25); }
 .db-badge-warning { background: rgba(217,119,6,0.15); color: #fbbf24; border: 1px solid rgba(217,119,6,0.25); }
-.db-badge-danger { background: rgba(220,38,38,0.15); color: #f87171; border: 1px solid rgba(220,38,38,0.25); }
+.db-badge-danger { background: rgba(20,83,45,0.15); color: #14532D; border: 1px solid rgba(20,83,45,0.25); }
 
 /* ── Table ── */
 .db-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; min-width: 0; }
@@ -998,11 +998,11 @@ html[data-lang="ar"] .db-exec-card li { font-family: 'Cairo', sans-serif; }
 .db-exec-invest { background: var(--navy); border: 1px solid rgba(184,150,46,0.2); }
 .db-exec-invest .db-exec-card-title { color: var(--gold-light); }
 .db-exec-invest li { color: rgba(255,255,255,0.75); }
-.db-exec-optimize { background: rgba(5,150,105,0.08); border: 1px solid rgba(5,150,105,0.2); }
-.db-exec-optimize .db-exec-card-title { color: #34d399; }
+.db-exec-optimize { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); }
+.db-exec-optimize .db-exec-card-title { color: #22C55E; }
 .db-exec-optimize li { color: rgba(255,255,255,0.65); }
-.db-exec-avoid { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.2); }
-.db-exec-avoid .db-exec-card-title { color: #f87171; }
+.db-exec-avoid { background: rgba(20,83,45,0.08); border: 1px solid rgba(20,83,45,0.2); }
+.db-exec-avoid .db-exec-card-title { color: #14532D; }
 .db-exec-avoid li { color: rgba(255,255,255,0.65); }
 
 /* ── Info box ── */
@@ -1832,17 +1832,17 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
           <div class="db-kpi-val" id="kpiExplanatory">72%</div>
           <div class="db-kpi-label"><span class="en">Model Explanatory Power</span><span class="ar">القوة التفسيرية للنموذج</span></div>
         </div>
-        <div class="db-kpi-card" style="--kpi-color:#22c55e;--kpi-bg:rgba(34,197,94,0.12)">
+        <div class="db-kpi-card" style="--kpi-color:#22C55E;--kpi-bg:rgba(34,197,94,0.12)">
           <div class="db-kpi-header">
-            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#22c55e" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#22C55E" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
             <span class="db-kpi-trend neutral">—</span>
           </div>
           <div class="db-kpi-val" id="kpiTopDriver"><span class="en">Quality</span><span class="ar">الجودة</span></div>
           <div class="db-kpi-label"><span class="en">Top Driver</span><span class="ar">المحرك الأول</span></div>
         </div>
-        <div class="db-kpi-card" style="--kpi-color:#ef4444;--kpi-bg:rgba(239,68,68,0.12)">
+        <div class="db-kpi-card" style="--kpi-color:#14532D;--kpi-bg:rgba(20,83,45,0.12)">
           <div class="db-kpi-header">
-            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#ef4444" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+            <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#14532D" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
             <span class="db-kpi-trend down">⚠</span>
           </div>
           <div class="db-kpi-val" id="kpiRisk"><span class="en">Speed</span><span class="ar">السرعة</span></div>
