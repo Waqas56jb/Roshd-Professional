@@ -81,8 +81,27 @@ function dbReady(res) {
 
 // ─── Express app ───────────────────────────────────────────────────────────────
 
+const ALLOWED_ORIGINS = [
+  'https://roshd-professional-27zf.vercel.app',
+  'https://roshd-professional-s8lh.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'http://127.0.0.1:5000',
+  'http://127.0.0.1:3000',
+];
+
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: (origin, cb) => {
+    // Allow requests with no origin (curl, Postman, server-to-server)
+    if (!origin) return cb(null, true);
+    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    return cb(new Error(`CORS: origin ${origin} not allowed`), false);
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 app.use(express.json({ limit: '1mb' }));
 
 app.get('/api/health', (_req, res) => {

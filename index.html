@@ -2099,6 +2099,9 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
      JAVASCRIPT
      ═══════════════════════════════════════════════ -->
 <script>
+/* ── Backend API base URL ── */
+const API_BASE = 'https://roshd-professional-s8lh.vercel.app';
+
 /* ── Language System ── */
 function setLanguage(lang) {
   const isAr = lang === 'ar';
@@ -2247,7 +2250,7 @@ async function handleLogin() {
   if (btnEl) { btnEl.disabled = true; btnEl.textContent = t('Signing in…', 'جارٍ تسجيل الدخول…'); }
 
   try {
-    const res  = await fetch('/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+    const res  = await fetch(API_BASE + '/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
     let data = {};
     try { data = await res.json(); } catch(_) {}
 
@@ -2304,7 +2307,7 @@ async function handleSignup() {
   const originalText = btnEl ? btnEl.innerHTML : '';
   if (btnEl) { btnEl.disabled = true; btnEl.textContent = t('Creating account…','جارٍ إنشاء الحساب…'); }
   try {
-    const res = await fetch('/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password: pw, first_name: first, last_name: last }) });
+    const res = await fetch(API_BASE + '/api/auth/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password: pw, first_name: first, last_name: last }) });
     let data = {};
     try { data = await res.json(); } catch(_) {}
     if (data.success) {
@@ -2788,7 +2791,7 @@ function closeDashboardSidebar() {
       showDashboard(user);
 
       // ── Background verify: only log out on explicit 401/403 ──
-      fetch('/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
+      fetch(API_BASE + '/api/auth/me', { headers: { 'Authorization': 'Bearer ' + token } })
         .then(r => {
           if (r.status === 401 || r.status === 403) {
             // Token definitively rejected — clear session and exit dashboard
