@@ -413,31 +413,89 @@ section { position: relative; }
 /* ═══════════════════════════════════════════════
    ABOUT
    ═══════════════════════════════════════════════ */
-.about-strip { background: var(--white); padding: 56px 0 72px; border-bottom: 1px solid var(--gray-light); }
+.about-strip { background: var(--white); padding: 56px 0 88px; border-bottom: 1px solid var(--gray-light); }
 .about-strip .section-inner { display: block; }
-.about-single { max-width: min(640px, 100%); }
+.about-single { max-width: min(920px, 100%); margin-inline: auto; }
 .about-head-row {
   display: flex;
-  align-items: flex-start;
-  gap: clamp(16px, 4vw, 32px);
-  margin-bottom: 24px;
+  align-items: center;
+  gap: clamp(24px, 5vw, 48px);
+  margin-bottom: 32px;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--gray-light);
 }
 .about-logo {
   flex-shrink: 0;
-  width: clamp(72px, 16vw, 120px);
+  width: clamp(88px, 18vw, 140px);
   height: auto;
   object-fit: contain;
+  align-self: center;
 }
 .about-head-text { flex: 1; min-width: 0; }
-.about-head-text .section-tag { margin-bottom: 16px; }
-.about-head-text .section-title { margin-bottom: 0; }
+.about-head-text .section-tag { margin-bottom: 14px; }
+.about-head-text .section-tag span { letter-spacing: 0.22em; font-size: 12px; }
+/* About-specific title: clear hierarchy (no awkward line breaks mid-phrase) */
+.about-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--navy);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.about-title-lead {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+.about-title-accent {
+  display: block;
+  font-size: clamp(34px, 5vw, 56px);
+  font-weight: 500;
+  line-height: 1.12;
+}
+.about-title-accent em {
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 500;
+}
 html[data-lang="ar"] .about-head-row { flex-direction: row-reverse; }
-.about-body { font-size: 15px; line-height: 1.85; color: var(--gray); margin-bottom: 16px; max-width: 62ch; }
+html[data-lang="ar"] .about-title-lead { letter-spacing: 0; text-transform: none; font-family: 'Cairo', sans-serif; font-size: clamp(14px, 1.6vw, 17px); font-weight: 700; color: var(--navy-mid); }
+html[data-lang="ar"] .about-title-accent { font-family: 'Cairo', sans-serif; font-weight: 700; letter-spacing: 0; }
+html[data-lang="ar"] .about-title-accent em { font-style: normal; }
+.about-body { font-size: 15px; line-height: 1.85; color: var(--gray); margin-bottom: 16px; max-width: 58ch; }
 .about-bold { font-weight: 600; color: var(--navy); }
-.about-bullets { list-style: none; margin: 0 0 16px 0; padding: 0; max-width: 62ch; }
+.about-bullets { list-style: none; margin: 0 0 16px 0; padding: 0; max-width: 58ch; }
 .about-bullets li { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 10px; padding-left: 20px; position: relative; }
 .about-bullets li::before { content: ''; position: absolute; left: 0; top: 12px; width: 8px; height: 2px; background: var(--gold); }
-.about-principle { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; color: var(--navy); border-left: 3px solid var(--gold); padding: 12px 16px; margin-top: 24px; background: var(--offwhite); border-radius: 0 4px 4px 0; max-width: 62ch; }
+.about-principle { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-style: italic; color: var(--navy); border-left: 3px solid var(--gold); padding: 12px 16px; margin-top: 24px; background: var(--offwhite); border-radius: 0 4px 4px 0; max-width: 58ch; }
+
+@media (max-width: 680px) {
+  .about-head-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 24px;
+  }
+  html[data-lang="ar"] .about-head-row { flex-direction: column; }
+  .about-head-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+  .about-head-text .section-tag { justify-content: center; }
+  html[data-lang="ar"] .about-head-text .section-tag { flex-direction: row-reverse; }
+  .about-title { width: 100%; }
+}
 
 /* ═══════════════════════════════════════════════
    SERVICES
@@ -1345,7 +1403,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
         <img src="/logo2.png" alt="ROSHD Professional" class="about-logo" width="120" height="120">
         <div class="about-head-text">
           <div class="section-tag"><div class="section-tag-line"></div><span>About Us</span></div>
-          <h2 class="section-title">We are an <em>Enablement Partner</em></h2>
+          <h2 class="about-title"><span class="about-title-lead">We are an</span><span class="about-title-accent"><em>Enablement Partner</em></span></h2>
         </div>
       </div>
       <div class="reveal">
@@ -1368,7 +1426,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
         <img src="/logo2.png" alt="روشد" class="about-logo" width="120" height="120">
         <div class="about-head-text">
           <div class="section-tag"><div class="section-tag-line"></div><span>من نحن</span></div>
-          <h2 class="section-title">شريككم في <em>تمكين الأداء وتحقيق النتائج</em></h2>
+          <h2 class="about-title"><span class="about-title-lead">شريككم في</span><span class="about-title-accent"><em>تمكين الأداء وتحقيق النتائج</em></span></h2>
         </div>
       </div>
       <div class="reveal">
