@@ -1247,7 +1247,7 @@ html[data-lang="ar"] .db-overviewviz-mini-row { font-family: 'Cairo', sans-serif
 }
 .db-overviewviz-donut--r2 { width: 80px; height: 80px; }
 
-/* Hide KPI strip on Pilot & Questionnaire (replaced by in-panel visuals) */
+/* Hide KPI strip on Pilot tab only (in-panel flow + analysis) */
 #customerDashboard.db-panel-no-kpi #dbKpiStrip {
   display: none !important;
 }
@@ -1885,6 +1885,7 @@ html[data-lang="ar"] .db-str-msg { font-family: 'Cairo', sans-serif; }
 .db-kpi-trend.up { color: #22C55E; }
 .db-kpi-trend.down { color: #ef4444; }
 .db-kpi-trend.neutral { color: var(--db-muted); }
+.db-kpi-trend-icon svg { display: block; }
 
 .db-kpi-val { font-family: 'Cormorant Garamond', serif; font-size: clamp(20px, 2.2vw, 36px); font-weight: 600; color: var(--white); line-height: 1.15; margin-bottom: 4px; overflow: hidden; word-break: break-word; }
 html[data-lang="ar"] .db-kpi-val { font-family: 'Cairo', sans-serif; font-size: clamp(18px, 1.8vw, 28px); }
@@ -1957,9 +1958,32 @@ html[data-lang="ar"] .db-bubble { font-family: 'Cairo', sans-serif; }
 }
 
 /* ── Demographics mini-charts ── */
-.db-demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 900px) { .db-demo-grid { grid-template-columns: 1fr; } }
-.db-mini-chart { border: 1px solid var(--db-border-subtle); border-radius: 12px; padding: 16px 18px; background: rgba(255,255,255,0.02); }
+.db-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(12px, 2vw, 16px);
+  min-width: 0;
+}
+/* Odd last row: span full width so 5 tiles do not leave a blank cell */
+@media (min-width: 721px) {
+  .db-demo-grid .db-mini-chart:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 720px) {
+  .db-demo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.db-mini-chart {
+  border: 1px solid var(--db-border-subtle);
+  border-radius: 12px;
+  padding: 16px 18px;
+  background: rgba(255,255,255,0.02);
+  min-width: 0;
+  container-type: inline-size;
+  container-name: dbdemo-mini;
+}
 .db-mini-title { font-weight: 700; font-size: 13px; color: var(--white); margin: 0 0 12px; }
 html[data-lang="ar"] .db-mini-title { font-family: 'Cairo', sans-serif; }
 .db-demo-chart { display: flex; flex-direction: column; gap: 10px; }
@@ -1985,7 +2009,7 @@ html[data-lang="en"] .db-demo-kicker .ar { display: none; }
 html[data-lang="ar"] .db-demo-donut-shell { flex-direction: row-reverse; }
 .db-demo-donut-wrap { flex-shrink: 0; position: relative; }
 .db-demo-donut {
-  width: clamp(90px, 24vw, 118px);
+  width: clamp(76px, min(118px, 40cqi), 118px);
   aspect-ratio: 1;
   border-radius: 50%;
   flex-shrink: 0;
@@ -1994,6 +2018,11 @@ html[data-lang="ar"] .db-demo-donut-shell { flex-direction: row-reverse; }
     0 0 0 1px rgba(255, 255, 255, 0.06);
   -webkit-mask: radial-gradient(farthest-side, transparent calc(50% - 12px), #000 calc(50% - 11px));
   mask: radial-gradient(farthest-side, transparent calc(50% - 12px), #000 calc(50% - 11px));
+}
+@supports not (width: 1cqi) {
+  .db-demo-donut {
+    width: clamp(80px, 28vw, 118px);
+  }
 }
 .db-demo-mini-legend { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
 html[data-lang="ar"] .db-demo-mini-legend { align-items: flex-end; text-align: right; }
@@ -2036,6 +2065,9 @@ html[data-lang="en"] .db-demo-legend-lbl .ar { display: none; }
 .db-demo-svg-wrap {
   width: 100%;
   margin: -2px 0 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 .db-demo-svg-wrap svg {
   width: 100%;
@@ -2043,6 +2075,21 @@ html[data-lang="en"] .db-demo-legend-lbl .ar { display: none; }
   max-height: 120px;
   display: block;
   overflow: visible;
+}
+/* Stack donut + legend when the mini-card is narrow (split view, small tablets, etc.) */
+@container dbdemo-mini (max-width: 420px) {
+  .db-demo-donut-shell {
+    flex-direction: column !important;
+    align-items: center;
+    gap: 12px;
+  }
+  html[data-lang="ar"] .db-demo-donut-shell {
+    flex-direction: column !important;
+  }
+  .db-demo-mini-legend {
+    width: 100%;
+    max-width: 288px;
+  }
 }
 .db-demo-col-grid {
   display: grid;
@@ -2065,6 +2112,70 @@ html[data-lang="en"] .db-demo-col-grid .ar { display: none; }
 html[data-lang="ar"] .db-demo-row { grid-template-columns: minmax(0, 120px) 1fr 36px; font-family: 'Cairo', sans-serif; }
 .db-demo-track { height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
 .db-demo-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+
+@media (max-width: 720px) {
+  .db-mini-chart {
+    padding: 12px 14px;
+  }
+  .db-demo-row {
+    grid-template-columns: minmax(0, 34%) minmax(0, 1fr) 34px;
+    gap: 8px;
+    font-size: 11px;
+  }
+  html[data-lang="ar"] .db-demo-row {
+    grid-template-columns: minmax(0, 34%) minmax(0, 1fr) 32px;
+  }
+  .db-demo-svg-wrap svg {
+    max-height: 100px;
+  }
+  #db-panel-demographics .db-card-body {
+    padding: 16px 14px 18px;
+  }
+  #db-panel-demographics .db-card-header {
+    padding: 14px 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Phones: stack donut + legend where @container is unsupported or layout is cramped */
+@media (max-width: 480px) {
+  .db-demo-donut-shell {
+    flex-direction: column;
+    align-items: center;
+  }
+  html[data-lang="ar"] .db-demo-donut-shell {
+    flex-direction: column;
+  }
+  .db-demo-mini-legend {
+    width: 100%;
+    max-width: 300px;
+  }
+  html[data-lang="ar"] .db-demo-mini-legend {
+    align-items: flex-end;
+  }
+}
+
+@media (max-width: 400px) {
+  .db-demo-row {
+    grid-template-columns: minmax(0, 30%) minmax(0, 1fr) 30px;
+    gap: 6px;
+    font-size: 10px;
+  }
+  .db-demo-col-grid {
+    font-size: 9px;
+    gap: 2px;
+  }
+  html[data-lang="ar"] .db-demo-col-grid {
+    font-size: 9px;
+  }
+  .db-demo-legend-row {
+    font-size: 11px;
+  }
+  .db-demo-kicker {
+    font-size: 9px;
+  }
+}
 
 /* ── Questionnaire blocks ── */
 .db-q-item {
@@ -3086,83 +3197,50 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
     <!-- Scrollable Content -->
     <div class="db-content">
 
-    <!-- KPI snapshot: sample representativeness + CX + donut metrics -->
+    <!-- KPI strip (hidden on Pilot only via .db-panel-no-kpi) -->
       <div id="dbKpiStrip">
-        <section class="db-overviewviz" aria-label="Executive KPI snapshot">
-          <div class="db-overviewviz-head">
-            <div class="db-overviewviz-title"><span class="en">Data &amp; quality snapshot</span><span class="ar">لمحة البيانات والجودة</span></div>
-            <span class="db-kpi-pill"><span class="en">Live filters</span><span class="ar">مرشّحات مباشرة</span></span>
-          </div>
-
-          <div class="db-overviewviz-card">
-            <div class="db-overviewviz-card-hd"><span class="en">Sample representativeness indicator</span><span class="ar">مؤشّر تمثيل العيّنة</span></div>
-            <div id="dbOverviewFunnel" class="db-overviewviz-funnel db-overviewviz-funnel--rep" dir="ltr"></div>
-          </div>
-
-          <div class="db-overviewviz-metrics">
-            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:var(--gold);--kpi-bg:rgba(184,150,46,0.15)">
+        <section class="db-kpi-strip" aria-label="Executive KPI snapshot">
+          <div class="db-kpi-grid">
+            <div class="db-kpi-card" style="--kpi-color:var(--gold);--kpi-bg:rgba(184,150,46,0.15)">
               <div class="db-kpi-header">
                 <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
                 <span class="db-kpi-trend up" id="kpiTrend1">↑ +0.3</span>
               </div>
-              <div class="db-overviewviz-chart-area">
-                <svg viewBox="0 0 120 64" aria-hidden="true">
-                  <path d="M 14 54 A 46 46 0 0 1 106 54" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="10" stroke-linecap="round"/>
-                  <path id="dbKpiCxGaugePath" d="M 14 54 A 46 46 0 0 1 106 54" fill="none" stroke="url(#cxGrad)" stroke-width="10" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
-                  <defs><linearGradient id="cxGrad" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="var(--gold)"/><stop offset="100%" stop-color="#fcd34d"/></linearGradient></defs>
-                </svg>
-              </div>
-              <div class="db-overviewviz-spark-wrap" id="dbOverviewCxSpark" aria-hidden="true"></div>
-              <div class="db-kpi-val" id="kpiScore">3.8 (76%)</div>
-              <div class="db-kpi-label"><span class="en">Customer Experience Score / 5</span><span class="ar">درجة تجربة العميل / 5</span></div>
+              <div class="db-kpi-val" id="kpiScore">3.8</div>
+              <div class="db-kpi-label"><span class="en">Overall Satisfaction / 5</span><span class="ar">الرضا الإجمالي / 5</span></div>
             </div>
-            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:#3b82f6;--kpi-bg:rgba(59,130,246,0.12)">
+            <div class="db-kpi-card" style="--kpi-color:#3b82f6;--kpi-bg:rgba(59,130,246,0.12)">
               <div class="db-kpi-header">
-                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.98 14.98 0 0 1 10 26"/></svg></div>
-                <span class="db-kpi-trend neutral"><span class="en">Profile slice</span><span class="ar">قطاع الملف</span></span>
+                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                <span class="db-kpi-trend up"><span class="en">↑ 2%</span><span class="ar">↑ ٢٪</span></span>
               </div>
-              <div class="db-overviewviz-chart-area">
-                <div id="dbKpiR2Donut" class="db-overviewviz-donut db-overviewviz-donut--r2" style="background:conic-gradient(rgba(59,130,246,0.2) 0deg 360deg)"></div>
-              </div>
-              <div class="db-kpi-val" id="kpiExplanatory">—</div>
-              <div class="db-kpi-label"><span class="en">Sample profile</span><span class="ar">ملف العيّنة</span></div>
-              <div class="db-kpi-sublabel" id="kpiSampleProfileSub"><span class="en">Demographic composition</span><span class="ar">التركيب الديموغرافي</span></div>
+              <div class="db-kpi-val" id="kpiStripR2">72%</div>
+              <div class="db-kpi-label"><span class="en">Model Explanatory Power</span><span class="ar">القدرة التفسيرية للنموذج</span></div>
             </div>
-            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:#22C55E;--kpi-bg:rgba(34,197,94,0.12)">
+            <div class="db-kpi-card" style="--kpi-color:#22C55E;--kpi-bg:rgba(34,197,94,0.12)">
               <div class="db-kpi-header">
                 <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#22C55E" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-                <span class="db-kpi-trend neutral"><span class="en">Effect share</span><span class="ar">حصة الأثر</span></span>
+                <span class="db-kpi-trend neutral">—</span>
               </div>
-              <div class="db-overviewviz-chart-area">
-                <div id="dbKpiDomDonut" class="db-overviewviz-donut db-overviewviz-donut--r2" style="background:conic-gradient(rgba(34,197,94,0.35) 0deg 180deg,rgba(255,255,255,0.08) 180deg 360deg)"></div>
-              </div>
-              <div class="db-kpi-val" id="kpiDomSharePct">—</div>
-              <div class="db-kpi-label"><span class="en">Driver dominance</span><span class="ar">هيمنة المحركات</span></div>
-              <div class="db-kpi-sublabel" id="kpiDomLead"><span class="en">Leading construct</span><span class="ar">البُنية الأقوى</span></div>
+              <div class="db-kpi-val" id="kpiTopDriver"><span class="en">Quality</span><span class="ar">الجودة</span></div>
+              <div class="db-kpi-label"><span class="en">Top Driver</span><span class="ar">أقوى محرّك</span></div>
             </div>
-            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:#9333ea;--kpi-bg:rgba(147,51,234,0.12)">
+            <div class="db-kpi-card" style="--kpi-color:#ef4444;--kpi-bg:rgba(239,68,68,0.12)">
               <div class="db-kpi-header">
-                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#c4b5fd" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/><path d="M12 12c-3 0-5.5 2.2-6 5 1.2-.8 2.8-1.3 6-1.3s4.8.5 6 1.3c-.5-2.8-3-5-6-5z"/><path d="M12 12c3 0 5.5-2.2 6-5-1.2.8-2.8 1.3-6 1.3s-4.8-.5-6-1.3c.5 2.8 3 5 6 5"/></svg></div>
-                <span class="db-kpi-trend neutral"><span class="en">Mix</span><span class="ar">التوزيع</span></span>
+                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="#f87171" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                <span class="db-kpi-trend down db-kpi-trend-icon" aria-hidden="true"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></span>
               </div>
-              <div class="db-overviewviz-chart-area">
-                <div id="dbKpiImpDonut" class="db-overviewviz-donut db-overviewviz-donut--r2" style="background:conic-gradient(var(--gold) 0deg 72deg,#38bdf8 72deg 144deg,#eab308 144deg 216deg,#a855f7 216deg 288deg,#ef4444 288deg 360deg)"></div>
-              </div>
-              <div class="db-kpi-val" id="kpiImpMassPct">—</div>
-              <div class="db-kpi-label"><span class="en">Driver importance</span><span class="ar">أهمية المحركات</span></div>
-              <div class="db-kpi-sublabel" id="kpiImpDetail"><span class="en">Effect mass across constructs</span><span class="ar">كتلة الأثر على البُنيات</span></div>
+              <div class="db-kpi-val" id="kpiRisk"><span class="en">Speed</span><span class="ar">السرعة</span></div>
+              <div class="db-kpi-label"><span class="en">Waste Risk</span><span class="ar">مخاطر الهدر</span></div>
             </div>
-            <div class="db-kpi-card db-overviewviz-tile" style="--kpi-color:var(--gold-light);--kpi-bg:rgba(255,255,255,0.06)">
+            <div class="db-kpi-card" style="--kpi-color:var(--gold-light);--kpi-bg:rgba(255,255,255,0.06)">
               <div class="db-kpi-header">
-                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                 <span class="db-kpi-pill"><span class="en">Filtered N</span><span class="ar">عيّنة مرشَّحة</span></span>
               </div>
-              <div class="db-overviewviz-chart-area">
-                <div id="dbKpiSampleDonut" class="db-overviewviz-donut" style="background:conic-gradient(var(--gold) 0deg 270deg, rgba(255,255,255,0.08) 270deg 360deg)"></div>
-              </div>
               <div class="db-kpi-val" id="kpiSampleN">300</div>
-              <div class="db-kpi-label"><span class="en">Segment coverage</span><span class="ar">تغطية الشريحة</span></div>
-              <div class="db-kpi-sublabel" id="kpiSampleShare"><span class="en">100% of full sample</span><span class="ar">100% من العينة الكاملة</span></div>
+              <div class="db-kpi-label"><span class="en">Segment Sample</span><span class="ar">عينة الشريحة</span></div>
+              <div class="db-kpi-sublabel" id="kpiSampleShare"><span class="en">100% of full sample (300)</span><span class="ar">100% من العينة الكاملة (300)</span></div>
             </div>
           </div>
         </section>
@@ -4400,10 +4478,7 @@ function dbShowPanel(id, btn) {
 
   const dash = document.getElementById('customerDashboard');
   if (dash)
-    dash.classList.toggle(
-      'db-panel-no-kpi',
-      id === 'pilot' || id === 'questionnaire'
-    );
+    dash.classList.toggle('db-panel-no-kpi', id === 'pilot');
 
   document.querySelectorAll('.db-nav-item').forEach(b => b.classList.remove('active'));
   const navBtn = document.querySelector(`.db-nav-item[data-panel="${id}"]`) || btn;
@@ -4831,150 +4906,6 @@ function dbImpactPct(impact, decimals) {
   return decimals !== undefined ? `${pct.toFixed(decimals)}%` : `${Math.round(pct)}%`;
 }
 
-
-/** Build conic-gradient from positive weights. */
-function dbKpiConicFromWeights(items) {
-  const sum = items.reduce((acc, x) => acc + Math.max(0, x.w), 0) || 1;
-  let cur = 0;
-  const parts = [];
-  for (const it of items) {
-    const ww = Math.max(0, it.w) / sum;
-    if (ww < 0.002) continue;
-    const d = ww * 360;
-    parts.push(`${it.color} ${cur}deg ${cur + d}deg`);
-    cur += d;
-  }
-  if (!parts.length) return 'conic-gradient(rgba(255,255,255,0.08) 0deg 360deg)';
-  return `conic-gradient(${parts.join(',')})`;
-}
-
-function dbRepresentScore(n, sharePct) {
-  if (n <= 0) return 0;
-  let s = 50 + Math.min(30, Math.round((n / DB_SAMPLE_TOTAL) * 30));
-  s += n >= 60 ? 10 : n >= 30 ? 4 : 0;
-  s += sharePct >= 90 ? 8 : sharePct >= 50 ? 4 : 0;
-  return Math.min(98, Math.max(42, s));
-}
-
-/** KPI strip: sample representativeness + CX gauge + donuts (profile / dominance / importance / coverage). */
-function dbFillOverviewVisualizations(d, segmentN, sharePct, fc) {
-  const funnelEl = document.getElementById('dbOverviewFunnel');
-  const repPct = dbRepresentScore(segmentN, sharePct);
-  const repGaugeOff = Math.max(0.25, Math.min(100, 100 - repPct));
-  if (funnelEl) {
-    funnelEl.innerHTML =
-      `<div class="db-overview-rep">
-        <div class="db-overview-rep-gauge">
-          <div class="db-overview-rep-g">
-            <svg viewBox="0 0 120 74" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <defs>
-                <linearGradient id="dbRepGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#2dd4bf"/><stop offset="100%" stop-color="#6366f1"/></linearGradient>
-              </defs>
-              <path d="M 14 62 A 46 46 0 0 1 106 62" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10" stroke-linecap="round"/>
-              <path d="M 14 62 A 46 46 0 0 1 106 62" fill="none" stroke="url(#dbRepGrad)" stroke-width="10" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${repGaugeOff}" />
-            </svg>
-          </div>
-          <div class="db-overview-rep-val">
-            <div class="db-overview-rep-num">${repPct}%</div>
-            <div class="db-overview-rep-lbl"><span class="en">Representative</span><span class="ar">تمثيل</span></div>
-          </div>
-        </div>
-        <div class="db-overview-rep-copy">
-          <span class="en"><b>Slice alignment</b> with the study frame (effective N, filters, coverage). Higher = safer executive readouts.</span>
-          <span class="ar"><b>انسجام الشريحة</b> مع إطار الدراسة (العبء الفعلي للعينة، المرشّحات، التغطية). ارتفع الرقم = قراءات أوثق تنفيذيًا.</span>
-          <div class="db-overview-rep-stat">
-            <span><span class="en">Segment <b>N=${segmentN}</b></span><span class="ar">شريحة <b>N=${segmentN}</b></span></span>
-            <span><span class="en"><b>${sharePct}%</b> of study benchmark</span><span class="ar"><b>${sharePct}%</b> من مرجع الدراسة</span></span>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  const cxPct = dbPctOf5(d.score);
-  const gaugePath = document.getElementById('dbKpiCxGaugePath');
-  if (gaugePath) gaugePath.style.strokeDashoffset = String(100 - cxPct);
-
-  const sparkWrap = document.getElementById('dbOverviewCxSpark');
-  if (sparkWrap) {
-    const pts = [];
-    let yy = 40;
-    for (let i = 0; i < 8; i++) {
-      yy += -cxPct * 0.058 + Math.sin(i * 0.7) * 1.8;
-      pts.push(`${6 + i * 15},${Math.max(4, Math.min(50, yy))}`);
-    }
-    sparkWrap.innerHTML =
-      `<svg viewBox="0 0 120 54" aria-hidden="true"><defs><linearGradient id="dbSparkFill" x1="0%" y1="100%" x2="0%" y2="0%"><stop offset="0%" stop-color="rgba(212,175,85,0.15)"/><stop offset="100%" stop-color="rgba(252,211,77,0.95)"/></linearGradient></defs>
-        <polygon fill="url(#dbSparkFill)" fill-opacity="0.18" points="6,54 ${pts.join(' ')} 114,54" />
-        <polyline fill="none" stroke="rgba(253,224,138,0.45)" stroke-width="1.2" stroke-linecap="round" points="${pts.join(' ')}" />
-        <polyline fill="none" stroke="url(#dbSparkFill)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" points="${pts.join(' ')}" /></svg>`;
-  }
-
-  const branchMeta = [
-    { key: 'Riyadh', en: 'Riyadh', ar: 'الرياض', color: '#60a5fa' },
-    { key: 'Jeddah', en: 'Jeddah', ar: 'جدة', color: '#a78bfa' },
-    { key: 'Dammam', en: 'Dammam', ar: 'الدمام', color: '#34d399' }
-  ];
-  const nSeg = segmentN || 1;
-  const bCounts = branchMeta.map(b => ({ ...b, n: fc.filter(r => r[1] === b.key).length }));
-  const profileItems = bCounts.map(x => ({ w: x.n, color: x.color }));
-  const r2El = document.getElementById('dbKpiR2Donut');
-  if (r2El) r2El.style.background = dbKpiConicFromWeights(profileItems);
-
-  let topIdx = 0;
-  let topN = bCounts[0].n;
-  bCounts.forEach((x, i) => {
-    if (x.n > topN) {
-      topN = x.n;
-      topIdx = i;
-    }
-  });
-  const profilePct = Math.round((topN / nSeg) * 100);
-  const profileSub = document.getElementById('kpiSampleProfileSub');
-  const kpiProf = document.getElementById('kpiExplanatory');
-  const topBr = branchMeta[topIdx];
-  if (kpiProf) kpiProf.textContent = `${profilePct}%`;
-  if (profileSub)
-    profileSub.innerHTML = `<span class="en">Largest branch share: ${topBr.en}</span><span class="ar">أكبر حصة فرع: ${topBr.ar}</span>`;
-
-  const sortedD = [...(d.drivers || [])].sort((a, b) => b.impact - a.impact);
-  const sumI = sortedD.reduce((a, x) => a + x.impact, 0) || 1;
-  const dom = sortedD[0] ? sortedD[0].impact / sumI : 0;
-  const domEl = document.getElementById('dbKpiDomDonut');
-  if (domEl)
-    domEl.style.background = dbKpiConicFromWeights([
-      { w: dom, color: '#22c55e' },
-      { w: Math.max(0, 1 - dom), color: 'rgba(255,255,255,0.08)' }
-    ]);
-  const domShareEl = document.getElementById('kpiDomSharePct');
-  if (domShareEl) domShareEl.textContent = `${Math.round(dom * 100)}%`;
-  const domLead = document.getElementById('kpiDomLead');
-  if (domLead)
-    domLead.innerHTML = sortedD[0]
-      ? `<span class="en">${sortedD[0].name}</span><span class="ar">${sortedD[0].nameAr || sortedD[0].name}</span>`
-      : '<span class="en">—</span><span class="ar">—</span>';
-
-  const impCols = ['#22c55e', '#38bdf8', '#eab308', '#a855f7', '#f97316'];
-  const impItems = sortedD.map((dr, i) => ({ w: dr.impact, color: impCols[i % impCols.length] }));
-  const impEl = document.getElementById('dbKpiImpDonut');
-  if (impEl) impEl.style.background = dbKpiConicFromWeights(impItems);
-  const top2 = sortedD.length
-    ? ((sortedD[0].impact || 0) + (sortedD[1]?.impact || 0)) / sumI
-    : 0;
-  const impPctEl = document.getElementById('kpiImpMassPct');
-  if (impPctEl) impPctEl.textContent = `${Math.round(top2 * 100)}%`;
-  const impDet = document.getElementById('kpiImpDetail');
-  if (impDet)
-    impDet.innerHTML =
-      `<span class="en">Top 2 drivers hold <b>${Math.round(top2 * 100)}%</b> of modeled effect</span>` +
-      `<span class="ar">أعلى محرّكين يحملان <b>${Math.round(top2 * 100)}%</b> من الأثر النموذجي</span>`;
-
-  const donut = document.getElementById('dbKpiSampleDonut');
-  if (donut) {
-    const p = Math.max(0.5, Math.min(sharePct, 100));
-    donut.style.background = `conic-gradient(var(--gold) 0deg ${p * 3.6}deg, rgba(255,255,255,0.08) ${p * 3.6}deg 360deg)`;
-  }
-}
-
 function dbRender() {
   // Persist current filter state so it survives refresh / reopen
   try {
@@ -4995,8 +4926,27 @@ function dbRender() {
   const freqVal = document.getElementById('dbFrequency')?.value || 'All Frequencies';
   const ageSel = document.getElementById('dbAge')?.value || 'All Ages';
 
-  document.getElementById('kpiScore').textContent       = dbFormatMean5(d.score, 1);
-  document.getElementById('mqR2').textContent           = d.explanatory + '%';
+  const kScore = document.getElementById('kpiScore');
+  if (kScore) {
+    const sv = Number(d.score);
+    kScore.textContent = Number.isNaN(sv) ? String(d.score) : sv.toFixed(1);
+  }
+  const mq = document.getElementById('mqR2');
+  if (mq) mq.textContent = d.explanatory + '%';
+  const stripR2 = document.getElementById('kpiStripR2');
+  if (stripR2) stripR2.textContent = d.explanatory + '%';
+
+  const sortedKpi = [...(d.drivers || [])].sort((a, b) => b.impact - a.impact);
+  const kpiTopDrv = document.getElementById('kpiTopDriver');
+  if (kpiTopDrv) {
+    kpiTopDrv.innerHTML = sortedKpi[0]
+      ? `<span class="en">${sortedKpi[0].name}</span><span class="ar">${sortedKpi[0].nameAr || sortedKpi[0].name}</span>`
+      : '<span class="en">—</span><span class="ar">—</span>';
+  }
+  const kpiRiskEl = document.getElementById('kpiRisk');
+  if (kpiRiskEl)
+    kpiRiskEl.innerHTML =
+      `<span class="en">${d.risk}</span><span class="ar">${d.riskAr || d.risk}</span>`;
 
   const sampleNEl = document.getElementById('kpiSampleN');
   const sampleShareEl = document.getElementById('kpiSampleShare');
@@ -5006,7 +4956,6 @@ function dbRender() {
       `<span class="en">${sharePct}% of full sample (${DB_SAMPLE_TOTAL})</span><span class="ar">${sharePct}% من العينة الكاملة (${DB_SAMPLE_TOTAL})</span>`;
   }
 
-  dbFillOverviewVisualizations(d, segmentN, sharePct, fc);
 
   const warnEl = document.getElementById('dbSegmentWarning');
   if (warnEl) {
