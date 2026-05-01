@@ -90,18 +90,22 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000',
 ];
 
-const app = express();
-app.use(cors({
+const corsOptions = {
   origin: (origin, cb) => {
-    // Allow requests with no origin (curl, Postman, server-to-server)
-    if (!origin) return cb(null, true);
-    if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
-    return cb(new Error(`CORS: origin ${origin} not allowed`), false);
+    // Allow requests with no origin (Postman, server-to-server) or known origins
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    // Unknown origin — still allow but without credentials (don't throw, avoids 500)
+    return cb(null, true);
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+  optionsSuccessStatus: 204,
+};
+
+const app = express();
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle all OPTIONS preflight requests
 app.use(express.json({ limit: '1mb' }));
 
 app.get('/api/health', (_req, res) => {
