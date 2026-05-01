@@ -1,8 +1,7 @@
 /**
- * Vercel Node.js serverless adapter.
- * serverless-http bridges Express <-> Vercel Lambda runtime.
+ * Vercel serverless handler.
+ * Vercel natively supports Express apps as default exports — no wrapper needed.
  */
-import serverless from "serverless-http";
 import app from "../server.js";
 
-export default serverless(app);
+export default app;
