@@ -14,10 +14,6 @@
 
 11-demographic: remove top all cards kpi
 
-     remove scroller  from data collection funnel  reduce space and make it llengthy in height 
+remove scroller  from data collection funnel  reduce space and make it llengthy in height 
 
-
-12-remove complete from data collection funnel  replace completed with excluded 
-
-
-
+12-remove complete from data collection funnel  replace completed with excluded

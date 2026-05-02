@@ -1341,6 +1341,61 @@ html[data-lang="ar"] .db-pilot-alpha-row { font-family: 'Cairo', sans-serif; }
 .db-q-viz-card {
   margin-bottom: 20px;
 }
+#db-panel-questionnaire .db-q-panel-viz.db-q-viz-card {
+  margin-bottom: 0;
+}
+
+/* Questionnaire panel: items (tall left) · narrow instrument map atop structure (right) */
+.db-q-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(240px, 380px);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    'items viz'
+    'items struct';
+  gap: 20px;
+  margin-bottom: 20px;
+  align-items: start;
+}
+.db-q-panel-items {
+  grid-area: items;
+  min-width: 0;
+}
+.db-q-panel-viz {
+  grid-area: viz;
+  min-width: 0;
+}
+.db-q-panel-struct {
+  grid-area: struct;
+  min-width: 0;
+}
+@media (max-width: 960px) {
+  .db-q-panel-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'items'
+      'viz'
+      'struct';
+  }
+  #db-panel-questionnaire .db-q-panel-viz.db-q-viz-card {
+    margin-bottom: 0;
+  }
+}
+html[data-lang='ar'] #db-panel-questionnaire .db-q-panel-grid {
+  grid-template-columns: minmax(240px, 380px) minmax(0, 1.2fr);
+  grid-template-areas:
+    'viz items'
+    'struct items';
+}
+@media (max-width: 960px) {
+  html[data-lang='ar'] #db-panel-questionnaire .db-q-panel-grid {
+    grid-template-areas:
+      'items'
+      'viz'
+      'struct';
+  }
+}
+
 .db-q-viz-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -1372,6 +1427,38 @@ html[data-lang="ar"] .db-q-viz-legend { font-family: 'Cairo', sans-serif; }
   color: var(--db-muted);
 }
 html[data-lang="ar"] .db-q-viz-note { font-family: 'Cairo', sans-serif; }
+
+/* Questionnaire panel: wrap structure table instead of horizontal scroll (narrow grid column) */
+#db-panel-questionnaire .db-q-panel-struct .db-table-wrap {
+  overflow-x: visible;
+}
+#db-panel-questionnaire .db-q-panel-struct table.db-table {
+  table-layout: fixed;
+  width: 100%;
+}
+#db-panel-questionnaire .db-q-panel-struct table.db-table th,
+#db-panel-questionnaire .db-q-panel-struct table.db-table td {
+  white-space: normal;
+  vertical-align: top;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+#db-panel-questionnaire .db-q-panel-struct table.db-table th:nth-child(1),
+#db-panel-questionnaire .db-q-panel-struct table.db-table td:nth-child(1) {
+  width: 32%;
+}
+#db-panel-questionnaire .db-q-panel-struct table.db-table th:nth-child(2),
+#db-panel-questionnaire .db-q-panel-struct table.db-table td:nth-child(2) {
+  width: 10%;
+}
+/* Instrument map schematic: scale down without sideways scroll in slim column */
+#db-panel-questionnaire .db-q-panel-viz .db-q-viz-wrap {
+  overflow-x: visible;
+}
+#db-panel-questionnaire .db-q-panel-viz .db-q-viz-svg {
+  max-width: 100%;
+  min-width: 0 !important;
+}
 
 /* Model Quality — measurement illustration (antecedents → Customer Experience Score) */
 .db-mq-measure-card { margin-bottom: 20px; }
@@ -1564,6 +1651,16 @@ html[data-lang="ar"] .db-mq-diagram-caption { font-family: 'Cairo', sans-serif; 
   letter-spacing: 0.02em;
 }
 html[data-lang="ar"] .db-demo-qcard-title { font-family: 'Cairo', sans-serif; }
+.db-demo-qcard-head-copy { flex: 1; min-width: 0; }
+.db-demo-qcard--strength .db-demo-qcard-hd { align-items: flex-start; }
+.db-demo-qcard-desc {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.48;
+  color: var(--db-muted);
+  font-weight: 500;
+}
+html[data-lang="ar"] .db-demo-qcard-desc { font-family: 'Cairo', sans-serif; letter-spacing: 0; font-size: 12px; }
 .db-demo-funnel-scroll {
   overflow-x: hidden;
   overflow-y: visible;
@@ -2000,6 +2097,61 @@ html[data-lang="ar"] .db-str-msg { font-family: 'Cairo', sans-serif; }
 .db-str-msg.ok { color: #4ade80; }
 .db-str-msg.warn { color: #fcd34d; }
 .db-str-msg.bad { color: #fca5a5; }
+.db-str-gauge-cap {
+  margin-top: 6px;
+  padding: 0 4px;
+  font-size: 10px;
+  line-height: 1.45;
+  color: rgba(148, 163, 184, 0.88);
+  text-align: center;
+  max-width: 220px;
+  margin-inline: auto;
+}
+html[data-lang="ar"] .db-str-gauge-cap { font-family: 'Cairo', sans-serif; font-size: 11px; }
+.db-str-box-hint {
+  margin-top: 8px;
+  font-size: 10px;
+  line-height: 1.35;
+  color: rgba(148, 163, 184, 0.85);
+  font-weight: 600;
+}
+html[data-lang="ar"] .db-str-box-hint { font-family: 'Cairo', sans-serif; font-size: 11px; }
+.db-str-legend {
+  margin-top: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  background: rgba(15, 23, 42, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.db-str-leg-row {
+  display: grid;
+  grid-template-columns: minmax(0, 112px) 1fr;
+  gap: 10px 14px;
+  align-items: start;
+  font-size: 11px;
+  line-height: 1.45;
+}
+@media (max-width: 520px) {
+  .db-str-leg-row { grid-template-columns: 1fr; gap: 4px; }
+}
+.db-str-leg-k {
+  font-weight: 800;
+  color: rgba(196, 181, 253, 0.95);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 9px;
+}
+html[data-lang="ar"] .db-str-leg-k {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 10px;
+}
+.db-str-leg-v { color: var(--db-muted); font-weight: 600; }
+html[data-lang="ar"] .db-str-leg-v { font-family: 'Cairo', sans-serif; }
 
 .db-kpi-card {
   background: var(--db-card);
@@ -2652,6 +2804,23 @@ html[data-lang="ar"] .db-exec-card li { font-family: 'Cairo', sans-serif; }
 
 /* ── Info box ── */
 .db-info-box { padding: 14px 18px; border-radius: 8px; font-size: 13px; line-height: 1.65; display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; }
+#db-panel-model .db-model-mgmt-text {
+  flex: 1;
+  min-width: 0;
+  color: rgba(226, 232, 240, 0.9);
+}
+#db-panel-model .db-model-mgmt-sec {
+  margin: 0 0 1rem;
+}
+#db-panel-model .db-model-mgmt-sec:last-child {
+  margin-bottom: 0;
+}
+#db-panel-model .db-model-mgmt-sec strong {
+  display: block;
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 13.5px;
+}
 .db-info-box.gold { background: rgba(184,150,46,0.1); border: 1px solid rgba(184,150,46,0.25); color: var(--gold-light); }
 .db-info-box.info { background: rgba(37,99,235,0.1); border: 1px solid rgba(37,99,235,0.25); color: #93c5fd; }
 .db-info-box.warning { background: rgba(217,119,6,0.1); border: 1px solid rgba(217,119,6,0.25); color: #fbbf24; }
@@ -3461,7 +3630,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
       </button>
       <button class="db-nav-item" data-panel="segments" onclick="dbShowPanel('segments', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
-        <span class="en">Segments</span><span class="ar">الشرائح</span>
+        <span class="en">Units Performance</span><span class="ar">أداء الوحدات</span>
       </button>
       <button class="db-nav-item" data-panel="demographics" onclick="dbShowPanel('demographics', this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
@@ -3569,7 +3738,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 <div class="db-kpi-icon"><svg width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
                 <span class="db-kpi-trend up" id="kpiTrend1">↑ +0.3</span>
               </div>
-              <div class="db-kpi-val" id="kpiScore">3.8</div>
+              <div class="db-kpi-val" id="kpiScore">76% (3.8)</div>
               <div class="db-kpi-label"><span class="en">Overall Satisfaction / 5</span><span class="ar">الرضا الإجمالي / 5</span></div>
             </div>
             <div class="db-kpi-card" style="--kpi-color:#3b82f6;--kpi-bg:rgba(59,130,246,0.12)">
@@ -3689,8 +3858,8 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 </table>
               </div>
               <div class="db-drivers-interpret" role="note">
-                <span class="en"><b>Interpretation:</b> Thresholds as share of explanatory contribution: ~2% small · ~15% medium · ~35% large (same logic as coefficients 0.02 / 0.15 / 0.35). Business judgment still matters.</span>
-                <span class="ar"><b>التفسير:</b> العتبات كنسبة من المساهمة التفسيرية: ~٢٪ صغير · ~١٥٪ متوسط · ~٣٥٪ كبير (مطابقة لمعاملات ٠٫٠٢ / ٠٫١٥ / ٠٫٣٥). الحكم التجاري لا يزال مهمًا.</span>
+                <span class="en"><b>Interpretation:</b> Effect size is the practical impact—how much a factor actually changes the outcome.<br/>Small ≈ 0.02 (low), medium ≈ 0.15 (moderate), large ≈ 0.35 (high impact).</span>
+                <span class="ar"><b>التفسير:</b> حجم الأثر هو الأثر العملي — مقدار ما يُغيّر به العامل النتيجة فعلًا.<br/>صغير ≈ ٠٫٠٢ (منخفض)، متوسط ≈ ٠٫١٥ (معتدل)، كبير ≈ ٠٫٣٥ (أثر عالٍ).</span>
               </div>
             </div>
           </div>
@@ -3749,7 +3918,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
       <div class="db-panel" id="db-panel-segments">
         <div class="db-card" id="dbSegmentDetail">
           <div class="db-card-header">
-            <div><div class="db-card-title" id="dbSegDetailTitle"><span class="en">Segment analysis</span><span class="ar">تحليل الشريحة</span></div><div class="db-card-subtitle" id="dbSegDetailSub"><span class="en">Reflects branch and demographics filters applied on the dashboard</span><span class="ar">يعكس مرشّح الفرع ومرشّحات الديموغرافيا المفعّلة في لوحة القيادة</span></div></div>
+            <div><div class="db-card-title" id="dbSegDetailTitle"><span class="en">Units Performance</span><span class="ar">أداء الوحدات</span></div><div class="db-card-subtitle" id="dbSegDetailSub"><span class="en">Reflects branch and demographics filters applied on the dashboard</span><span class="ar">يعكس مرشّح الفرع ومرشّحات الديموغرافيا المفعّلة في لوحة القيادة</span></div></div>
           </div>
           <div class="db-card-body" id="dbSegDetailBody"></div>
         </div>
@@ -3870,11 +4039,11 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                     <text x="432" y="188" text-anchor="middle" fill="rgba(255,255,255,0.95)" font-size="13.5" font-weight="700">Score</text>
                     <text x="432" y="226" text-anchor="middle" fill="#e8c65c" font-size="11.5" font-weight="700">3 indicators (OS1–OS3)</text>
 
-                    <!-- Curves: staggered Bézier controls → separated ribbons before they meet the CES box -->
-                    <path d="M 184 51 C 272 46 296 148 338 156" stroke="#60a5fa" stroke-width="2.15" fill="none" marker-end="url(#dbMqMb)"/>
-                    <path d="M 184 147 C 260 142 294 174 338 184" stroke="#34d399" stroke-width="2.15" fill="none" marker-end="url(#dbMqMg)"/>
-                    <path d="M 184 243 C 276 284 298 218 338 208" stroke="#eab308" stroke-width="2.15" fill="none" marker-end="url(#dbMqMy)"/>
-                    <path d="M 184 339 C 289 382 292 274 338 232" stroke="#a78bfa" stroke-width="2.15" fill="none" marker-end="url(#dbMqMv)"/>
+                    <!-- Straight connectors: driver midpoint (right edge) → CES left edge -->
+                    <path d="M 184 51 L 338 156" stroke="#60a5fa" stroke-width="2.15" fill="none" stroke-linecap="round" marker-end="url(#dbMqMb)"/>
+                    <path d="M 184 147 L 338 184" stroke="#34d399" stroke-width="2.15" fill="none" stroke-linecap="round" marker-end="url(#dbMqMg)"/>
+                    <path d="M 184 243 L 338 208" stroke="#eab308" stroke-width="2.15" fill="none" stroke-linecap="round" marker-end="url(#dbMqMy)"/>
+                    <path d="M 184 339 L 338 232" stroke="#a78bfa" stroke-width="2.15" fill="none" stroke-linecap="round" marker-end="url(#dbMqMv)"/>
                   </svg>
                 </div>
                 <p class="db-mq-diagram-caption">
@@ -3912,7 +4081,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 <div class="db-model-metric-desc"><span class="en">Convergent validity</span><span class="ar">صحة التقارب</span></div>
               </div>
               <div class="db-model-metric">
-                <div class="db-model-metric-val">✓ OK</div>
+                <div class="db-model-metric-val">0.78</div>
                 <div class="db-model-metric-label"><span class="en">HTMT</span><span class="ar">HTMT</span></div>
                 <div class="db-model-metric-desc"><span class="en">Discriminant validity</span><span class="ar">صحة التمييز</span></div>
               </div>
@@ -3922,12 +4091,22 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
         <div class="db-card">
           <div class="db-card-header"><div class="db-card-title"><span class="en">Management Explanation</span><span class="ar">الشرح للإدارة</span></div></div>
           <div class="db-card-body">
-            <div class="db-info-box info">
+            <div class="db-info-box info" style="margin-top:0">
               <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>
-                <span class="en">Explanatory Power tells us how much of satisfaction is explained by the full model. It does NOT tell us which factor matters most. Factor priority comes from path coefficients and effect size. Therefore, a low-scoring factor like Speed can be low priority if its Impact is weak.</span>
-                <span class="ar">القوة التفسيرية تُخبرنا بمقدار ما يفسره النموذج الكامل من الرضا. لا تُخبرنا بالعامل الأهم. أولوية العامل تأتي من معاملات المسار وحجم التأثير. لذلك، عامل منخفض الدرجة كالسرعة قد يكون أولوية منخفضة إذا كان تأثيره ضعيفًا.</span>
-              </span>
+              <div class="db-model-mgmt-text">
+                <div class="en">
+                  <p class="db-model-mgmt-sec"><strong>Explanatory Power (69%)</strong> Shows how much of Customer Experience (CX) is explained by the model. At 69%, it demonstrates strong explanatory power—above benchmarks (≈0.25 weak, 0.50 moderate, 0.75 substantial)—capturing most key drivers and enabling confident decisions. The remaining 31% reflects external or unmeasured factors.</p>
+                  <p class="db-model-mgmt-sec"><strong>Alpha (0.88) &amp; Composite Reliability (0.91)</strong> Confirm consistency. Both exceed the 0.70 minimum threshold (0.70–0.95 acceptable), indicating high internal consistency. Results are stable, reliable, and suitable for decision-making.</p>
+                  <p class="db-model-mgmt-sec"><strong>AVE (0.64)</strong> Confirms validity. Above the 0.50 benchmark, meaning each factor explains more than half of its indicators. Constructs are well-defined with strong signal and low noise.</p>
+                  <p class="db-model-mgmt-sec"><strong>HTMT (0.78)</strong> Confirms separation. Below the 0.85 strict threshold (and 0.90 lenient), indicating factors are clearly distinct with no overlap. Each driver represents an independent lever for improving CX.</p>
+                </div>
+                <div class="ar">
+                  <p class="db-model-mgmt-sec"><strong>القوة التفسيرية (٦٩٪)</strong> توضّح مقدار ما يفسره النموذج من تجربة العميل (CX). عند ٦٩٪ تدلّ على قدرة تفسيرية قوية—فوق مرجعيات شائعة (‏≈‏٠٫٢٥ ضعيف، ٠٫٥٠ متوسط، ٠٫٧٥ جوهري)—فتمثّل أغلب المحفّزات الرئيسة وتدعم قرارات أوضح. النسبة المتبقية ٣١٪ تعكس عوامل خارجية أو غير مقاسة في النموذج.</p>
+                  <p class="db-model-mgmt-sec"><strong>ألفا (٠٫٨٨) والموثوقية المركبة (٠٫٩١)</strong> يؤكّدان الاتّساق الداخلي. كلاهما فوق الحدّ الأدنى ٠٫٧٠ (ومن ٠٫٧٠ إلى ٠٫٩٥ مقبول عمومًا)، ما يدلّ على اتّساق عالٍ. النتائج مستقرة وموثوقة ومناسبة لاتّخاذ القرار.</p>
+                  <p class="db-model-mgmt-sec"><strong>AVE (٠٫٦٤)</strong> يؤكّد الصحة التجميعية. أعلى من معيار ٠٫٥٠، أي أن كل عاملاً يفسر أكثر من نصف تبايُن مؤشّراته. المستحدَثات واضحة بإشارة قوية وضجيج منخفض.</p>
+                  <p class="db-model-mgmt-sec"><strong>HTMT (٠٫٧٨)</strong> يؤكّد التميّز بين العوامل. دون العتبة الصارمة ٠٫٨٥ (والمرنة ٠٫٩٠)، ما يدلّ على أنّ العوامل متميّزة دون تداخل عملي بينها. كلّ محرّك يمثّل رافعة مستقلّة لتحسين تجربة العميل.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -3935,68 +4114,8 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 
       <!-- ── QUESTIONNAIRE PANEL ── -->
       <div class="db-panel" id="db-panel-questionnaire">
-        <div class="db-card db-q-viz-card">
-          <div class="db-card-header">
-            <div>
-              <div class="db-card-title"><span class="en">Instrument map</span><span class="ar">خريطة الأداة القياسية</span></div>
-              <div class="db-card-subtitle">
-                <span class="en">Nineteen items grouped into five constructs before pilot refinement (conceptual schematic).</span>
-                <span class="ar">تسعة عشر بندًا في خمس مستحدَثات قبل ضبط التجربة (مخطط مفاهيمي).</span>
-              </div>
-            </div>
-          </div>
-          <div class="db-card-body">
-            <div class="db-q-viz-wrap" dir="ltr">
-              <svg class="db-q-viz-svg" viewBox="0 0 512 168" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="dbQChip" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stop-color="rgba(212,175,85,0.92)" />
-                    <stop offset="100%" stop-color="rgba(184,150,46,0.45)" />
-                  </linearGradient>
-                </defs>
-                <rect x="12" y="8" width="488" height="32" rx="10" stroke="rgba(212,175,85,0.35)" stroke-width="1.2" fill="rgba(184,150,46,0.06)" />
-                <text x="256" y="20" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-weight="700" font-family="'DM Sans', sans-serif">19 items · 5 constructs</text>
-                <text x="256" y="34" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9.5" font-weight="600" font-family="'DM Sans', sans-serif">neutral mapping — prior to pilot</text>
-                <g stroke="rgba(212,175,85,0.28)" stroke-width="1">
-                  <rect x="48" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="48" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="48" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="48" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="136" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="136" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="136" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="136" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="224" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="224" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="224" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="224" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="312" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="312" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="312" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="312" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="392" y="54" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
-                  <rect x="392" y="68" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
-                  <rect x="392" y="82" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
-                </g>
-                <text x="78" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">Q×4</text>
-                <text x="166" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">C×4</text>
-                <text x="254" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">P×4</text>
-                <text x="342" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">S×4</text>
-                <text x="428" y="124" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">CES×3</text>
-                <text x="256" y="152" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-weight="600" font-family="'DM Sans', sans-serif">each chip = one questionnaire item</text>
-              </svg>
-            </div>
-            <div class="db-q-viz-legend">
-              <span><span class="en"><b>Q</b> Quality · <b>C</b> Communication · <b>P</b> Price · <b>S</b> Speed · <b>OS</b> Customer Experience Score</span><span class="ar"><b>Q</b> جودة · <b>C</b> تواصل · <b>P</b> سعر · <b>S</b> سرعة · <b>OS</b> درجة تجربة العميل</span></span>
-            </div>
-            <p class="db-q-viz-note">
-              <span class="en">Schematic only; item wording lives in the cards below. Pilot-driven changes are documented under Pilot Test Analysis.</span>
-              <span class="ar">مخطط فقط؛ نص البنود في البطاقات أدناه. تعديلات التجربة تُعرَف ضمن تحليل الاختبار التجريبي.</span>
-            </p>
-          </div>
-        </div>
-        <div class="db-grid-2">
-          <div class="db-card">
+        <div class="db-q-panel-grid">
+          <div class="db-card db-q-panel-items">
             <div class="db-card-header"><div><div class="db-card-title"><span class="en">Questionnaire Items</span><span class="ar">عناصر الاستبيان</span></div><div class="db-card-subtitle"><span class="en">Neutral mapping — no accept/reject classification</span><span class="ar">ربط محايد دون تصنيف قبول/رفض</span></div></div></div>
             <div class="db-card-body">
               <div class="db-q-item"><b><span class="en">Quality</span><span class="ar">الجودة</span></b>
@@ -4021,7 +4140,67 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               </div>
             </div>
           </div>
-          <div class="db-card">
+          <div class="db-card db-q-viz-card db-q-panel-viz">
+            <div class="db-card-header">
+              <div>
+                <div class="db-card-title"><span class="en">Instrument map</span><span class="ar">خريطة الأداة القياسية</span></div>
+                <div class="db-card-subtitle">
+                  <span class="en">Nineteen items grouped into five constructs before pilot refinement (conceptual schematic).</span>
+                  <span class="ar">تسعة عشر بندًا في خمس مستحدَثات قبل ضبط التجربة (مخطط مفاهيمي).</span>
+                </div>
+              </div>
+            </div>
+            <div class="db-card-body">
+              <div class="db-q-viz-wrap" dir="ltr">
+                <svg class="db-q-viz-svg" viewBox="0 0 512 168" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="dbQChip" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="rgba(212,175,85,0.92)" />
+                      <stop offset="100%" stop-color="rgba(184,150,46,0.45)" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="12" y="8" width="488" height="32" rx="10" stroke="rgba(212,175,85,0.35)" stroke-width="1.2" fill="rgba(184,150,46,0.06)" />
+                  <text x="256" y="20" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-weight="700" font-family="'DM Sans', sans-serif">19 items · 5 constructs</text>
+                  <text x="256" y="34" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9.5" font-weight="600" font-family="'DM Sans', sans-serif">neutral mapping — prior to pilot</text>
+                  <g stroke="rgba(212,175,85,0.28)" stroke-width="1">
+                    <rect x="48" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="48" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="48" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="48" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="136" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="136" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="136" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="136" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="224" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="224" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="224" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="224" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="312" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="312" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="312" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="312" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="392" y="54" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                    <rect x="392" y="68" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                    <rect x="392" y="82" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                  </g>
+                  <text x="78" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">Q×4</text>
+                  <text x="166" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">C×4</text>
+                  <text x="254" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">P×4</text>
+                  <text x="342" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">S×4</text>
+                  <text x="428" y="124" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">CES×3</text>
+                  <text x="256" y="152" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-weight="600" font-family="'DM Sans', sans-serif">each chip = one questionnaire item</text>
+                </svg>
+              </div>
+              <div class="db-q-viz-legend">
+                <span><span class="en"><b>Q</b> Quality · <b>C</b> Communication · <b>P</b> Price · <b>S</b> Speed · <b>OS</b> Customer Experience Score</span><span class="ar"><b>Q</b> جودة · <b>C</b> تواصل · <b>P</b> سعر · <b>S</b> سرعة · <b>OS</b> درجة تجربة العميل</span></span>
+              </div>
+              <p class="db-q-viz-note">
+                <span class="en">Schematic only; full item wording is in the adjoining Questionnaire Items card. Pilot-driven changes are documented under Pilot Test Analysis.</span>
+                <span class="ar">مخطط فقط؛ الصياغة الكاملة للبنود في بطاقة «عناصر الاستبيان» المجاورة. تعديلات التجربة تُعرَف ضمن تحليل الاختبار التجريبي.</span>
+              </p>
+            </div>
+          </div>
+          <div class="db-card db-q-panel-struct">
             <div class="db-card-header"><div><div class="db-card-title"><span class="en">Questionnaire Structure</span><span class="ar">هيكل الاستبيان</span></div><div class="db-card-subtitle"><span class="en">Instrument map before pilot / SEM</span><span class="ar">خريطة الأداة قبل التجريب ونمذجة المعادلات</span></div></div></div>
             <div class="db-card-body">
               <div class="db-table-wrap">
@@ -4206,7 +4385,13 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               <div class="db-demo-qcard-icon" aria-hidden="true">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
               </div>
-              <div class="db-demo-qcard-title"><span class="en">3 · Sample strength</span><span class="ar">٣ · قوّة العيّنة</span></div>
+              <div class="db-demo-qcard-head-copy">
+                <div class="db-demo-qcard-title"><span class="en">3 · Sample strength</span><span class="ar">٣ · قوّة العيّنة</span></div>
+                <p class="db-demo-qcard-desc">
+                  <span class="en">Explains how far your <b>current filtered</b> cohort is from a stability benchmark—separate from funnel response rates or % of the full file.</span>
+                  <span class="ar">يوضّح مدى قرب <b>المصفّى الحالي</b> من حدّ استقرار مرجعي—منفصل عن معدّلات الاستجابة في القمع أو نسبة الملف الكامل.</span>
+                </p>
+              </div>
             </div>
             <div id="dbDemoQualityStrength"></div>
           </div>
@@ -4232,7 +4417,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
             </div>
           </div>
           <div class="db-card db-demo-profile-span">
-            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Age bands</span><span class="ar">شرائح العمر</span></div><div class="db-card-subtitle"><span class="en">Population spread by age cohort · full layout width</span><span class="ar">توزيع الأعمار على كامل العرض لهذه الشريحة</span></div></div></div>
+            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Age Categories</span><span class="ar">فئات العمر</span></div><div class="db-card-subtitle"><span class="en">Population spread by age category · full layout width</span><span class="ar">توزيع الأعمار حسب الفئة على كامل العرض لهذه الشريحة</span></div></div></div>
             <div class="db-card-body">
               <div id="dbAgeDemoChart" class="db-demo-chart"></div>
             </div>
@@ -4841,7 +5026,7 @@ function dbRenderCustomerPatterns(fc) {
         ${svg}
         ${legendHtml}
         <div class="db-dist-meta">
-          <span><b>μ</b>&nbsp;${mean.toFixed(2)}</span><span><b>σ</b>&nbsp;${std.toFixed(2)}</span>
+          <span><b>μ</b>&nbsp;${m.idx === 10 ? dbFormatMean5(mean, 2) : mean.toFixed(2)}</span><span><b>σ</b>&nbsp;${std.toFixed(2)}</span>
           <span><span class="en"><b>P(≥3)</b> ${(passFrac * 100).toFixed(0)}%</span><span class="ar"><b>احتمال ≥3</b> ${(passFrac * 100).toFixed(0)}٪</span></span>
         </div>
       </div>`;
@@ -5108,7 +5293,7 @@ function dbShowPanel(id, btn) {
   const titles = {
     executive:       { en:'Executive View',       ar:'العرض التنفيذي' },
     drivers:         { en:'CX Drivers Analysis', ar:'تحليل محركات تجربة العميل' },
-    segments:        { en:'Segments',             ar:'الشرائح' },
+    segments:        { en:'Units Performance',    ar:'أداء الوحدات' },
     customers:       { en:'Customer Patterns',    ar:'أنماط العملاء' },
     model:           { en:'Model Quality',        ar:'جودة النموذج' },
     questionnaire:   { en:'Questionnaire Items', ar:'عناصر الاستبيان' },
@@ -5382,7 +5567,7 @@ function dbFillDemographicsQualityCards(segmentN, sharePct) {
   const str = document.getElementById('dbDemoQualityStrength');
   if (str) {
     str.innerHTML =
-      `<div class="db-str-body">
+      `      <div class="db-str-body">
       <div class="db-str-gauge">
         <svg class="db-str-gauge-svg" viewBox="0 0 120 78" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M 14 64 A 46 46 0 0 1 106 64" fill="none" stroke="rgba(255,255,255,0.09)" stroke-width="11" stroke-linecap="round"/>
@@ -5394,18 +5579,38 @@ function dbFillDemographicsQualityCards(segmentN, sharePct) {
           <div class="db-str-val-num">${covGauge}%</div>
           <div class="db-str-val-lbl"><span class="en">Coverage</span><span class="ar">التغطية</span></div>
         </div>
+        <p class="db-str-gauge-cap">
+          <span class="en">Arc = progress to the <b>60-complete</b> stability target (100% when filtered N ≥ 60). Axis is <b>not</b> filtered ÷ total database.</span>
+          <span class="ar">القوس = التقدّم نحو هدف استقرار <b>٦٠ مكتملًا</b> (١٠٠٪ عندما يكون N المصفّى ≥ ٦٠). المحور <b>ليس</b> نسبة المصفّى إلى قاعدة البيانات كلها.</span>
+        </p>
       </div>
       <div class="db-str-aside">
         <div>
           <div class="db-str-aside-sub"><span class="en">Sample size</span><span class="ar">حجم العيّنة</span></div>
           <div class="db-str-twin">
             <div class="db-str-box">
-              <div class="l"><span class="en">Total valid sample (N)</span><span class="ar">الإجمالي الصالح</span></div>
+              <div class="l"><span class="en">Total valid sample (N)</span><span class="ar">إجمالي العينة الصالحة (N)</span></div>
               <div class="n">${studyN}</div>
+              <div class="db-str-box-hint"><span class="en">After exclusions; fixed study pool for this dashboard.</span><span class="ar">بعد الاستبعاد؛ مرجع ثابت لهذه اللوحة.</span></div>
             </div>
             <div class="db-str-box">
-              <div class="l"><span class="en">Current filtered (N)</span><span class="ar">المصفّى الحالي</span></div>
+              <div class="l"><span class="en">Current filtered (N)</span><span class="ar">المصفّى الحالي (N)</span></div>
               <div class="n">${segmentN}</div>
+              <div class="db-str-box-hint"><span class="en">Matches Branch + demographics now; Coverage &amp; KPIs use this slice · <strong>${sharePct}%</strong> of valid sample.</span><span class="ar">يطابق الفرع والديموغرافيا الآن؛ التغطية والمؤشرات على هذه الشريحة · <strong>${sharePct}%</strong> من العينة الصالحة.</span></div>
+            </div>
+          </div>
+          <div class="db-str-legend" role="group" aria-label="Sample strength legend">
+            <div class="db-str-leg-row">
+              <div class="db-str-leg-k"><span class="en">Coverage gauge</span><span class="ar">التغطية</span></div>
+              <div class="db-str-leg-v"><span class="en">Purple fill shows how close filtered N is to the benchmark above; use it alongside the alert—not as participation rate.</span><span class="ar">يشير التعبئة البنفسجيّة مدى تقرّب N المصفّى من المرجع أعلاه؛ استخدمها مع التنبيه—وليس كمعدّل مشاركة.</span></div>
+            </div>
+            <div class="db-str-leg-row">
+              <div class="db-str-leg-k"><span class="en">Total valid</span><span class="ar">إجمالي صالح</span></div>
+              <div class="db-str-leg-v"><span class="en">Denominator anchor; compare any slice against this ceiling to see how narrow filters get.</span><span class="ar">مرجع المقام؛ قارِن أي شريحة بهذا الحدّ لفهم ضيق المرشّحات.</span></div>
+            </div>
+            <div class="db-str-leg-row">
+              <div class="db-str-leg-k"><span class="en">Filtered N</span><span class="ar">N المصفّى</span></div>
+              <div class="db-str-leg-v"><span class="en">When small, swings in charts/KPIs are normal noise—weight the directional message instead of decimals.</span><span class="ar">مع صغر الحجم، تذبذب الرسوم والمؤشرات طبيعي—أعطِ الأولوية للاتجاه لا للكسور العشرية.</span></div>
             </div>
           </div>
         </div>
@@ -5504,8 +5709,8 @@ function dbRenderDemographics(d, segmentN, sharePct, freqVal, ageSel) {
       ['35–44', '<span class="en">35–44</span><span class="ar">35–44</span>'],
       ['45+', '<span class="en">45+</span><span class="ar">45+</span>']
     ],
-    'Bars · age band spread',
-    'أعمدة · شرائح العمر'
+    'Bars · age category spread',
+    'أعمدة · فئات العمر'
   );
 }
 
@@ -5554,7 +5759,9 @@ function dbRender() {
   const kScore = document.getElementById('kpiScore');
   if (kScore) {
     const sv = Number(d.score);
-    kScore.textContent = Number.isNaN(sv) ? String(d.score) : sv.toFixed(1);
+    kScore.textContent = Number.isNaN(sv)
+      ? String(d.score)
+      : `${dbPctOf5(sv)}% (${sv.toFixed(1)})`;
   }
   const mq = document.getElementById('mqR2');
   if (mq) mq.textContent = d.explanatory + '%';
@@ -5767,7 +5974,7 @@ function dbRenderSegments() {
   };
   const lbl = labels[branchVal] || [branchVal, branchVal];
 
-  titleEl.innerHTML = `<span class="en">${lbl[0]} — Segment Analysis</span><span class="ar">${lbl[1]} — تحليل الشريحة</span>`;
+  titleEl.innerHTML = `<span class="en">${lbl[0]} — Units Performance</span><span class="ar">${lbl[1]} — أداء الوحدات</span>`;
   subEl.innerHTML   = `${d.explanatory}% · <span class="en">Top driver:</span><span class="ar">المحرك الأول:</span> <span class="en">${d.top}</span><span class="ar">${d.topAr||d.top}</span> · ${dbFormatMean5(d.score, 1)}`;
 
   bodyEl.innerHTML = `
