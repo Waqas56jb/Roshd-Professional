@@ -1337,9 +1337,175 @@ html[data-lang="ar"] .db-pilot-alpha-row { font-family: 'Cairo', sans-serif; }
   text-align: end;
 }
 
-/* Questionnaire instrument map */
-.db-q-viz-card {
+/* Questionnaire: Items | Instrument map — equal columns (structure + legend under diagram) */
+.db-q-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: 'items viz';
+  column-gap: 12px;
+  row-gap: 16px;
   margin-bottom: 20px;
+  align-items: start;
+}
+.db-q-panel-grid > .db-card {
+  margin-bottom: 0;
+}
+.db-q-panel-grid > .db-q-panel-items {
+  grid-area: items;
+}
+.db-q-panel-grid > .db-q-panel-viz {
+  grid-area: viz;
+  align-self: start;
+  width: 100%;
+}
+html[data-lang="ar"] .db-q-panel-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: 'viz items';
+}
+
+#customerDashboard:has(#db-panel-questionnaire.active) .db-content {
+  padding-left: clamp(12px, 2vw, 22px);
+  padding-right: clamp(12px, 2vw, 22px);
+}
+
+#db-panel-questionnaire .db-q-panel-items.db-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#db-panel-questionnaire .db-q-panel-viz.db-card {
+  display: flex;
+  flex-direction: column;
+}
+
+#db-panel-questionnaire .db-q-panel-viz .db-card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+#db-panel-questionnaire .db-q-panel-viz .db-q-viz-wrap {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 10px 8px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(212, 175, 85, 0.1);
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+}
+#db-panel-questionnaire .db-q-panel-viz .db-q-viz-svg {
+  max-width: 100%;
+  width: 100%;
+  min-width: 260px;
+  height: auto;
+}
+#db-panel-questionnaire .db-q-panel-viz .db-q-viz-legend {
+  margin-top: 12px;
+  flex-shrink: 0;
+}
+#db-panel-questionnaire .db-q-panel-viz .db-q-viz-note {
+  margin-top: 10px;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+#db-panel-questionnaire .db-q-panel-viz .db-q-panel-struct--nested {
+  margin-top: 16px;
+  margin-bottom: 0;
+  border: 1px solid rgba(212, 175, 85, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.35);
+}
+#db-panel-questionnaire .db-q-panel-viz .db-q-panel-struct--nested .db-card-header {
+  padding: 14px 16px;
+}
+#db-panel-questionnaire .db-q-panel-viz .db-q-panel-struct--nested .db-card-body {
+  padding: 16px 16px 18px;
+}
+html[data-lang="ar"] #db-panel-questionnaire .db-q-panel-viz .db-q-viz-legend,
+html[data-lang="ar"] #db-panel-questionnaire .db-q-panel-viz .db-q-viz-note {
+  direction: rtl;
+  text-align: right;
+}
+
+.db-q-panel-items .db-q-items-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.db-q-section {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--db-border-subtle);
+  background: rgba(15, 23, 42, 0.5);
+}
+.db-q-section-head {
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gold-light);
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid rgba(212, 175, 85, 0.22);
+  background: rgba(184, 150, 46, 0.1);
+}
+html[data-lang="ar"] .db-q-section-head {
+  font-family: 'Cairo', sans-serif;
+  font-size: 16px;
+  text-align: right;
+  direction: rtl;
+}
+.db-q-lines {
+  list-style: none;
+  margin: 0;
+  padding: 12px 16px 14px;
+  display: flex;
+  flex-direction: column;
+}
+.db-q-lines li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 12px 14px;
+  align-items: start;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(248, 250, 252, 0.9);
+}
+.db-q-lines li:last-child {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+html[data-lang="ar"] .db-q-lines li {
+  font-family: 'Cairo', sans-serif;
+  grid-template-columns: minmax(0, 1fr) 48px;
+  text-align: right;
+  direction: rtl;
+}
+.db-q-tag {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  align-self: start;
+  min-height: 32px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+  background: rgba(184, 150, 46, 0.14);
+  border: 1px solid rgba(212, 175, 85, 0.38);
+  color: var(--gold-light);
+}
+.db-q-lines-txt span {
+  display: block;
+}
+html[data-lang="ar"] .db-q-tag {
+  font-family: 'Cairo', sans-serif;
 }
 .db-q-viz-wrap {
   overflow-x: auto;
@@ -1350,7 +1516,7 @@ html[data-lang="ar"] .db-pilot-alpha-row { font-family: 'Cairo', sans-serif; }
 .db-q-viz-svg {
   display: block;
   width: 100%;
-  min-width: 440px;
+  min-width: 280px;
   max-width: 560px;
   height: auto;
   margin: 0 auto;
@@ -1373,27 +1539,27 @@ html[data-lang="ar"] .db-q-viz-legend { font-family: 'Cairo', sans-serif; }
 }
 html[data-lang="ar"] .db-q-viz-note { font-family: 'Cairo', sans-serif; }
 
-/* Questionnaire two-column: wrap structure table (no horizontal scroll when narrow) */
-#db-panel-questionnaire .db-grid-2 .db-table-wrap {
+/* Questionnaire structure table */
+#db-panel-questionnaire .db-q-panel-struct .db-table-wrap {
   overflow-x: visible;
 }
-#db-panel-questionnaire .db-grid-2 table.db-table {
+#db-panel-questionnaire .db-q-panel-struct table.db-table {
   table-layout: fixed;
   width: 100%;
 }
-#db-panel-questionnaire .db-grid-2 table.db-table th,
-#db-panel-questionnaire .db-grid-2 table.db-table td {
+#db-panel-questionnaire .db-q-panel-struct table.db-table th,
+#db-panel-questionnaire .db-q-panel-struct table.db-table td {
   white-space: normal;
   vertical-align: top;
   overflow-wrap: break-word;
   word-break: break-word;
 }
-#db-panel-questionnaire .db-grid-2 table.db-table th:nth-child(1),
-#db-panel-questionnaire .db-grid-2 table.db-table td:nth-child(1) {
+#db-panel-questionnaire .db-q-panel-struct table.db-table th:nth-child(1),
+#db-panel-questionnaire .db-q-panel-struct table.db-table td:nth-child(1) {
   width: 32%;
 }
-#db-panel-questionnaire .db-grid-2 table.db-table th:nth-child(2),
-#db-panel-questionnaire .db-grid-2 table.db-table td:nth-child(2) {
+#db-panel-questionnaire .db-q-panel-struct table.db-table th:nth-child(2),
+#db-panel-questionnaire .db-q-panel-struct table.db-table td:nth-child(2) {
   width: 10%;
 }
 .db-mq-measure-card { margin-bottom: 20px; }
@@ -2414,20 +2580,6 @@ html[data-lang="ar"] .db-demo-row { grid-template-columns: minmax(0, 120px) 1fr 
   }
 }
 
-/* ── Questionnaire blocks ── */
-.db-q-item {
-  border: 1px solid var(--db-border-subtle);
-  border-radius: 12px;
-  padding: 16px 18px;
-  margin-bottom: 12px;
-  background: rgba(255,255,255,0.02);
-  font-size: 13px;
-  line-height: 1.55;
-  color: rgba(255,255,255,0.82);
-}
-html[data-lang="ar"] .db-q-item { font-family: 'Cairo', sans-serif; text-align: right; }
-.db-q-item b { display: block; margin-bottom: 8px; color: var(--gold-light); font-size: 14px; }
-
 /* ── Cards ── */
 .db-card {
   background: var(--db-card);
@@ -2991,6 +3143,19 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .db-sim-grid { grid-template-columns: 1fr; }
   .db-model-grid:not(.db-model-grid--wrap) { grid-template-columns: repeat(3, 1fr); }
   .db-grid-2 { grid-template-columns: 1fr; }
+  .db-q-panel-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'items'
+      'viz';
+    column-gap: 0;
+  }
+  html[data-lang="ar"] .db-q-panel-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'items'
+      'viz';
+  }
   .db-dist-dash { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -4134,110 +4299,136 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 
       <!-- ── QUESTIONNAIRE PANEL ── -->
       <div class="db-panel" id="db-panel-questionnaire">
-        <div class="db-card db-q-viz-card">
-          <div class="db-card-header">
-            <div>
-              <div class="db-card-title"><span class="en">Instrument map</span><span class="ar">خريطة الأداة القياسية</span></div>
-              <div class="db-card-subtitle">
-                <span class="en">Nineteen items grouped into five constructs before pilot refinement (conceptual schematic).</span>
-                <span class="ar">تسعة عشر بندًا في خمس مستحدَثات قبل ضبط التجربة (مخطط مفاهيمي).</span>
-              </div>
-            </div>
-          </div>
-          <div class="db-card-body">
-            <div class="db-q-viz-wrap" dir="ltr">
-              <svg class="db-q-viz-svg" viewBox="0 0 512 168" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <defs>
-                  <linearGradient id="dbQChip" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stop-color="rgba(212,175,85,0.92)" />
-                    <stop offset="100%" stop-color="rgba(184,150,46,0.45)" />
-                  </linearGradient>
-                </defs>
-                <rect x="12" y="8" width="488" height="32" rx="10" stroke="rgba(212,175,85,0.35)" stroke-width="1.2" fill="rgba(184,150,46,0.06)" />
-                <text x="256" y="20" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-weight="700" font-family="'DM Sans', sans-serif">19 items · 5 constructs</text>
-                <text x="256" y="34" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9.5" font-weight="600" font-family="'DM Sans', sans-serif">neutral mapping — prior to pilot</text>
-                <g stroke="rgba(212,175,85,0.28)" stroke-width="1">
-                  <rect x="48" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="48" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="48" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="48" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="136" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="136" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="136" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="136" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="224" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="224" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="224" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="224" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="312" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="312" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="312" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="312" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
-                  <rect x="392" y="54" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
-                  <rect x="392" y="68" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
-                  <rect x="392" y="82" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
-                </g>
-                <text x="78" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">Q×4</text>
-                <text x="166" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">C×4</text>
-                <text x="254" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">P×4</text>
-                <text x="342" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">S×4</text>
-                <text x="428" y="124" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">CES×3</text>
-                <text x="256" y="152" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-weight="600" font-family="'DM Sans', sans-serif">each chip = one questionnaire item</text>
-              </svg>
-            </div>
-            <div class="db-q-viz-legend">
-              <span><span class="en"><b>Q</b> Quality · <b>C</b> Communication · <b>P</b> Price · <b>S</b> Speed · <b>OS</b> Customer Experience Score</span><span class="ar"><b>Q</b> جودة · <b>C</b> تواصل · <b>P</b> سعر · <b>S</b> سرعة · <b>OS</b> درجة تجربة العميل</span></span>
-            </div>
-            <p class="db-q-viz-note">
-              <span class="en">Schematic only; item wording lives in the cards below. Pilot-driven changes are documented under Pilot Test Analysis.</span>
-              <span class="ar">مخطط فقط؛ نص البنود في البطاقات أدناه. تعديلات التجربة تُعرَف ضمن تحليل الاختبار التجريبي.</span>
-            </p>
-          </div>
-        </div>
-        <div class="db-grid-2">
-          <div class="db-card">
+        <div class="db-q-panel-grid">
+          <div class="db-card db-q-panel-items">
             <div class="db-card-header"><div><div class="db-card-title"><span class="en">Questionnaire Items</span><span class="ar">عناصر الاستبيان</span></div><div class="db-card-subtitle"><span class="en">Neutral mapping — no accept/reject classification</span><span class="ar">ربط محايد دون تصنيف قبول/رفض</span></div></div></div>
             <div class="db-card-body">
-              <div class="db-q-item"><b><span class="en">Quality</span><span class="ar">الجودة</span></b>
-                <span class="en">Q1: The repair/service was completed correctly the first time.<br>Q2: The delivered work met my expectations.<br>Q3: The vehicle was returned in good condition.<br>Q4: The quality of work increased my confidence in the service center.</span>
-                <span class="ar">Q1: تم إكمال الإصلاح من أول مرة بشكل صحيح.<br>Q2: العمل المُسلَّم كان بمستوى توقّعاتي.<br>Q3: عُادت المركبة بحالة جيدة.<br>Q4: الجودة زادت ثقتي بالمركز.</span>
-              </div>
-              <div class="db-q-item"><b><span class="en">Communication</span><span class="ar">التواصل</span></b>
-                <span class="en">C1: I received clear updates during the service process.<br>C2: The advisor explained the required work clearly.<br>C3: I was informed before any major change or delay.<br>C4: Communication was easy to understand.</span>
-                <span class="ar">C1: تلقيت تحديثات واضحة أثناء الخدمة.<br>C2: أوضح المستشار العمل المطلوب بوضوح.<br>C3: أُبلِغت قبل أي تغيير كبير أو تأخير.<br>C4: التواصل كان سهل الفهم.</span>
-              </div>
-              <div class="db-q-item"><b><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></b>
-                <span class="en">P1: The price was fair compared with the service.<br>P2: The estimate was clear before approval.<br>P3: The final invoice matched what was explained.<br>P4: The value justified the amount paid.</span>
-                <span class="ar">P1: السعر كان عادلًا مقارنة بالخدمة.<br>P2: التقدير كان واضحًا قبل الموافقة.<br>P3: الفاتورة النهائية طابقت الشرح.<br>P4: القيمة برّرت المبلغ المدفوع.</span>
-              </div>
-              <div class="db-q-item"><b><span class="en">Speed</span><span class="ar">السرعة</span></b>
-                <span class="en">S1: The service was completed within a reasonable time.<br>S2: Waiting time was acceptable.<br>S3: Delivery matched the promised timing.<br>S4: Total process time was convenient.</span>
-                <span class="ar">S1: أُنجزت الخدمة في وقت معقول.<br>S2: وقت الانتظار مقبول.<br>S3: التسليم طابق الموعد المُعلَن.<br>S4: وقت العملية كان مناسبًا.</span>
-              </div>
-              <div class="db-q-item"><b><span class="en">Customer Experience Score</span><span class="ar">درجة تجربة العميل</span></b>
-                <span class="en">OS1: Overall I am satisfied with the service experience.<br>OS2: The experience met my expectations.<br>OS3: I would consider returning.</span>
-                <span class="ar">OS1: بشكل عام راضٍ عن تجربة الخدمة.<br>OS2: التجربة نالت توقّعاتي.<br>OS3: قد أعود لنفس المركز.</span>
+              <div class="db-q-items-inner">
+                <section class="db-q-section" aria-labelledby="db-q-sh-q">
+                  <header class="db-q-section-head" id="db-q-sh-q"><span class="en">Quality</span><span class="ar">الجودة</span></header>
+                  <ol class="db-q-lines">
+                    <li><div class="db-q-tag">Q1</div><div class="db-q-lines-txt"><span class="en">The repair/service was completed correctly the first time.</span><span class="ar">تم إكمال الإصلاح من أول مرة بشكل صحيح.</span></div></li>
+                    <li><div class="db-q-tag">Q2</div><div class="db-q-lines-txt"><span class="en">The delivered work met my expectations.</span><span class="ar">العمل المُسلَّم كان بمستوى توقّعاتي.</span></div></li>
+                    <li><div class="db-q-tag">Q3</div><div class="db-q-lines-txt"><span class="en">The vehicle was returned in good condition.</span><span class="ar">عُادت المركبة بحالة جيدة.</span></div></li>
+                    <li><div class="db-q-tag">Q4</div><div class="db-q-lines-txt"><span class="en">The quality of work increased my confidence in the service center.</span><span class="ar">الجودة زادت ثقتي بالمركز.</span></div></li>
+                  </ol>
+                </section>
+                <section class="db-q-section" aria-labelledby="db-q-sh-c">
+                  <header class="db-q-section-head" id="db-q-sh-c"><span class="en">Communication</span><span class="ar">التواصل</span></header>
+                  <ol class="db-q-lines">
+                    <li><div class="db-q-tag">C1</div><div class="db-q-lines-txt"><span class="en">I received clear updates during the service process.</span><span class="ar">تلقيت تحديثات واضحة أثناء الخدمة.</span></div></li>
+                    <li><div class="db-q-tag">C2</div><div class="db-q-lines-txt"><span class="en">The advisor explained the required work clearly.</span><span class="ar">أوضح المستشار العمل المطلوب بوضوح.</span></div></li>
+                    <li><div class="db-q-tag">C3</div><div class="db-q-lines-txt"><span class="en">I was informed before any major change or delay.</span><span class="ar">أُبلِغت قبل أي تغيير كبير أو تأخير.</span></div></li>
+                    <li><div class="db-q-tag">C4</div><div class="db-q-lines-txt"><span class="en">Communication was easy to understand.</span><span class="ar">التواصل كان سهل الفهم.</span></div></li>
+                  </ol>
+                </section>
+                <section class="db-q-section" aria-labelledby="db-q-sh-p">
+                  <header class="db-q-section-head" id="db-q-sh-p"><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></header>
+                  <ol class="db-q-lines">
+                    <li><div class="db-q-tag">P1</div><div class="db-q-lines-txt"><span class="en">The price was fair compared with the service.</span><span class="ar">السعر كان عادلًا مقارنة بالخدمة.</span></div></li>
+                    <li><div class="db-q-tag">P2</div><div class="db-q-lines-txt"><span class="en">The estimate was clear before approval.</span><span class="ar">التقدير كان واضحًا قبل الموافقة.</span></div></li>
+                    <li><div class="db-q-tag">P3</div><div class="db-q-lines-txt"><span class="en">The final invoice matched what was explained.</span><span class="ar">الفاتورة النهائية طابقت الشرح.</span></div></li>
+                    <li><div class="db-q-tag">P4</div><div class="db-q-lines-txt"><span class="en">The value justified the amount paid.</span><span class="ar">القيمة برّرت المبلغ المدفوع.</span></div></li>
+                  </ol>
+                </section>
+                <section class="db-q-section" aria-labelledby="db-q-sh-s">
+                  <header class="db-q-section-head" id="db-q-sh-s"><span class="en">Speed</span><span class="ar">السرعة</span></header>
+                  <ol class="db-q-lines">
+                    <li><div class="db-q-tag">S1</div><div class="db-q-lines-txt"><span class="en">The service was completed within a reasonable time.</span><span class="ar">أُنجزت الخدمة في وقت معقول.</span></div></li>
+                    <li><div class="db-q-tag">S2</div><div class="db-q-lines-txt"><span class="en">Waiting time was acceptable.</span><span class="ar">وقت الانتظار مقبول.</span></div></li>
+                    <li><div class="db-q-tag">S3</div><div class="db-q-lines-txt"><span class="en">Delivery matched the promised timing.</span><span class="ar">التسليم طابق الموعد المُعلَن.</span></div></li>
+                    <li><div class="db-q-tag">S4</div><div class="db-q-lines-txt"><span class="en">Total process time was convenient.</span><span class="ar">وقت العملية كان مناسبًا.</span></div></li>
+                  </ol>
+                </section>
+                <section class="db-q-section" aria-labelledby="db-q-sh-os">
+                  <header class="db-q-section-head" id="db-q-sh-os"><span class="en">Customer Experience Score</span><span class="ar">درجة تجربة العميل</span></header>
+                  <ol class="db-q-lines">
+                    <li><div class="db-q-tag">OS1</div><div class="db-q-lines-txt"><span class="en">Overall I am satisfied with the service experience.</span><span class="ar">بشكل عام راضٍ عن تجربة الخدمة.</span></div></li>
+                    <li><div class="db-q-tag">OS2</div><div class="db-q-lines-txt"><span class="en">The experience met my expectations.</span><span class="ar">التجربة نالت توقّعاتي.</span></div></li>
+                    <li><div class="db-q-tag">OS3</div><div class="db-q-lines-txt"><span class="en">I would consider returning.</span><span class="ar">قد أعود لنفس المركز.</span></div></li>
+                  </ol>
+                </section>
               </div>
             </div>
           </div>
-          <div class="db-card">
-            <div class="db-card-header"><div><div class="db-card-title"><span class="en">Questionnaire Structure</span><span class="ar">هيكل الاستبيان</span></div><div class="db-card-subtitle"><span class="en">Instrument map before pilot / SEM</span><span class="ar">خريطة الأداة قبل التجريب ونمذجة المعادلات</span></div></div></div>
+          <div class="db-card db-q-viz-card db-q-panel-viz">
+            <div class="db-card-header">
+              <div>
+                <div class="db-card-title"><span class="en">Instrument map</span><span class="ar">خريطة الأداة القياسية</span></div>
+                <div class="db-card-subtitle">
+                  <span class="en">Nineteen items grouped into five constructs before pilot refinement (conceptual schematic).</span>
+                  <span class="ar">تسعة عشر بندًا في خمس مستحدَثات قبل ضبط التجربة (مخطط مفاهيمي).</span>
+                </div>
+              </div>
+            </div>
             <div class="db-card-body">
-              <div class="db-table-wrap">
-                <table class="db-table">
-                  <thead><tr><th><span class="en">Variable</span><span class="ar">المتغيّر</span></th><th><span class="en">Items</span><span class="ar">البنود</span></th><th><span class="en">Measurement focus</span><span class="ar">التركيز القياسي</span></th></tr></thead>
-                  <tbody>
-                    <tr><td><span class="en">Quality</span><span class="ar">الجودة</span></td><td>4</td><td><span class="en">Repair correctness, expectations, condition, confidence</span><span class="ar">صحة الإصلاح، التوقعات، الحالة، الثقة</span></td></tr>
-                    <tr><td><span class="en">Communication</span><span class="ar">التواصل</span></td><td>4</td><td><span class="en">Updates, explanation, delay notification, clarity</span><span class="ar">تحديثات، شرح، إشعار التأخير، الوضوح</span></td></tr>
-                    <tr><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td>4</td><td><span class="en">Fairness, estimate, invoice, value</span><span class="ar">العدالة، التقدير، الفاتورة، القيمة</span></td></tr>
-                    <tr><td><span class="en">Speed</span><span class="ar">السرعة</span></td><td>4</td><td><span class="en">Completion time, waiting, promised timing, convenience</span><span class="ar">الإنجاز، الانتظار، الموعد، الملاءمة</span></td></tr>
-                    <tr><td><span class="en">Customer Experience Score</span><span class="ar">درجة تجربة العميل</span></td><td>3</td><td><span class="en">CX evaluation, expectations, return intention</span><span class="ar">تقييم التجربة، التوقعات، نية العودة</span></td></tr>
-                  </tbody>
-                </table>
+              <div class="db-q-viz-wrap" dir="ltr">
+                <svg class="db-q-viz-svg" viewBox="0 0 512 168" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="dbQChip" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stop-color="rgba(212,175,85,0.92)" />
+                      <stop offset="100%" stop-color="rgba(184,150,46,0.45)" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="12" y="8" width="488" height="32" rx="10" stroke="rgba(212,175,85,0.35)" stroke-width="1.2" fill="rgba(184,150,46,0.06)" />
+                  <text x="256" y="20" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="11" font-weight="700" font-family="'DM Sans', sans-serif">19 items · 5 constructs</text>
+                  <text x="256" y="34" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9.5" font-weight="600" font-family="'DM Sans', sans-serif">neutral mapping — prior to pilot</text>
+                  <g stroke="rgba(212,175,85,0.28)" stroke-width="1">
+                    <rect x="48" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="48" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="48" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="48" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="136" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="136" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="136" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="136" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="224" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="224" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="224" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="224" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="312" y="48" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="312" y="62" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="312" y="76" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="312" y="90" width="60" height="11" rx="3" fill="url(#dbQChip)" />
+                    <rect x="392" y="54" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                    <rect x="392" y="68" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                    <rect x="392" y="82" width="72" height="11" rx="3" fill="url(#dbQChip)" opacity="0.95" />
+                  </g>
+                  <text x="78" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">Q×4</text>
+                  <text x="166" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">C×4</text>
+                  <text x="254" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">P×4</text>
+                  <text x="342" y="124" text-anchor="middle" fill="rgba(255,255,255,0.45)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">S×4</text>
+                  <text x="428" y="124" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="10" font-weight="700" font-family="'DM Sans', sans-serif">CES×3</text>
+                  <text x="256" y="152" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="9" font-weight="600" font-family="'DM Sans', sans-serif">each chip = one questionnaire item</text>
+                </svg>
               </div>
-              <div class="db-info-box info" style="margin-top:14px">
-                <span><span class="en"><b>Governance:</b> Item removal is documented only under Pilot Test Analysis.</span><span class="ar"><b>الحوكمة:</b> حذف البنود موثّق فقط في تحليل الاختبار التجريبي.</span></span>
+              <div class="db-card db-q-panel-struct db-q-panel-struct--nested">
+                <div class="db-card-header"><div><div class="db-card-title"><span class="en">Questionnaire Structure</span><span class="ar">هيكل الاستبيان</span></div><div class="db-card-subtitle"><span class="en">Instrument map before pilot / SEM</span><span class="ar">خريطة الأداة قبل التجريب ونمذجة المعادلات</span></div></div></div>
+                <div class="db-card-body">
+                  <div class="db-table-wrap">
+                    <table class="db-table">
+                      <thead><tr><th><span class="en">Variable</span><span class="ar">المتغيّر</span></th><th><span class="en">Items</span><span class="ar">البنود</span></th><th><span class="en">Measurement focus</span><span class="ar">التركيز القياسي</span></th></tr></thead>
+                      <tbody>
+                        <tr><td><span class="en">Quality</span><span class="ar">الجودة</span></td><td>4</td><td><span class="en">Repair correctness, expectations, condition, confidence</span><span class="ar">صحة الإصلاح، التوقعات، الحالة، الثقة</span></td></tr>
+                        <tr><td><span class="en">Communication</span><span class="ar">التواصل</span></td><td>4</td><td><span class="en">Updates, explanation, delay notification, clarity</span><span class="ar">تحديثات، شرح، إشعار التأخير، الوضوح</span></td></tr>
+                        <tr><td><span class="en">Price Fairness</span><span class="ar">عدالة السعر</span></td><td>4</td><td><span class="en">Fairness, estimate, invoice, value</span><span class="ar">العدالة، التقدير، الفاتورة، القيمة</span></td></tr>
+                        <tr><td><span class="en">Speed</span><span class="ar">السرعة</span></td><td>4</td><td><span class="en">Completion time, waiting, promised timing, convenience</span><span class="ar">الإنجاز، الانتظار، الموعد، الملاءمة</span></td></tr>
+                        <tr><td><span class="en">Customer Experience Score</span><span class="ar">درجة تجربة العميل</span></td><td>3</td><td><span class="en">CX evaluation, expectations, return intention</span><span class="ar">تقييم التجربة، التوقعات، نية العودة</span></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="db-info-box info" style="margin-top:14px">
+                    <span><span class="en"><b>Governance:</b> Item removal is documented only under Pilot Test Analysis.</span><span class="ar"><b>الحوكمة:</b> حذف البنود موثّق فقط في تحليل الاختبار التجريبي.</span></span>
+                  </div>
+                </div>
               </div>
+              <div class="db-q-viz-legend">
+                <span><span class="en"><b>Q</b> Quality · <b>C</b> Communication · <b>P</b> Price · <b>S</b> Speed · <b>OS</b> Customer Experience Score</span><span class="ar"><b>Q</b> الجودة · <b>C</b> التواصل · <b>P</b> السعر · <b>S</b> السرعة · <b>OS</b> درجة تجربة العميل</span></span>
+              </div>
+              <p class="db-q-viz-note">
+                <span class="en"><b>Schematic only.</b> Tags (Q, C, P, S, OS) match the sections in <b>Questionnaire Items</b> beside this card. Pilot-driven edits are tracked under <b>Pilot Test Analysis</b>.</span>
+                <span class="ar"><b>لمخطّط مرجعي فقط:</b> الوسوم (Q‏، C‏، P‏، S‏، OS‏) تطابق الفقرات في «عناصر الاستبيان» بجانب هذه البطاقة. تعديلات التجربة تُتابع ضمن «<b>تحليل الاختبار التجريبي</b>».</span>
+              </p>
             </div>
           </div>
         </div>
