@@ -2729,7 +2729,39 @@ html[data-lang="ar"] .db-drivers-interpret {
 }
 
 /* ── Simulation ── */
-.db-sim-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; }
+.db-sim-grid { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; align-items: start; }
+.db-sim-sliders-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.db-sim-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+html[data-lang="ar"] .db-sim-toolbar { justify-content: flex-start; }
+.db-sim-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(184,150,46,0.38);
+  background: rgba(255,255,255,0.04);
+  color: rgba(248,250,252,0.92);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+.db-sim-reset-btn:hover {
+  border-color: var(--gold-light);
+  background: rgba(184,150,46,0.1);
+  color: var(--white);
+}
+.db-sim-reset-btn svg { flex-shrink: 0; opacity: 0.9; stroke: currentColor; }
+html[data-lang="ar"] .db-sim-reset-btn { font-family: 'Cairo', sans-serif; letter-spacing: 0; text-transform: none; font-size: 13px; }
 .db-slider-wrap { margin-bottom: 22px; }
 .db-slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
 .db-slider-name { font-size: 14px; font-weight: 600; color: var(--db-text); }
@@ -3916,7 +3948,15 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
           </div>
           <div class="db-card-body">
             <div class="db-sim-grid">
-              <div id="dbSimSliders"></div>
+              <div class="db-sim-sliders-col">
+                <div class="db-sim-toolbar">
+                  <button type="button" class="db-sim-reset-btn" onclick="dbSimReset()" title="Restore levers from current driver scores">
+                    <svg width="16" height="16" fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-7"/><path d="M3 3v6h6"/></svg>
+                    <span class="en">Reset to current</span><span class="ar">إعادة للحالي</span>
+                  </button>
+                </div>
+                <div id="dbSimSliders"></div>
+              </div>
               <div class="db-sim-result">
                 <div class="db-sim-label"><span class="en">Expected Satisfaction</span><span class="ar">الرضا المتوقع</span></div>
                 <div class="db-sim-score" id="dbSimExpected"><span class="db-sim-expected-lead">79%</span> <span class="db-sim-expected-br">(3.9)</span></div>
@@ -4053,11 +4093,11 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                     <text x="432" y="188" text-anchor="middle" fill="rgba(255,255,255,0.95)" font-size="13.5" font-weight="700">Score</text>
                     <text x="432" y="226" text-anchor="middle" fill="#e8c65c" font-size="11.5" font-weight="700">3 indicators (OS1–OS3)</text>
 
-                    <!-- Straight connectors: driver midpoint (right edge) → CES left edge -->
-                    <path d="M 184 51 L 338 156" stroke="#60a5fa" stroke-width="2.15" fill="none" stroke-linecap="round" marker-end="url(#dbMqMb)"/>
-                    <path d="M 184 147 L 338 184" stroke="#34d399" stroke-width="2.15" fill="none" stroke-linecap="round" marker-end="url(#dbMqMg)"/>
-                    <path d="M 184 243 L 338 208" stroke="#eab308" stroke-width="2.15" fill="none" stroke-linecap="round" marker-end="url(#dbMqMy)"/>
-                    <path d="M 184 339 L 338 232" stroke="#a78bfa" stroke-width="2.15" fill="none" stroke-linecap="round" marker-end="url(#dbMqMv)"/>
+                    <!-- Orthogonal elbows: horizontal from source → short run → diagonal to staggered CES left edge -->
+                    <path d="M 184 51 L 276 51 L 338 156" stroke="#60a5fa" stroke-width="1.85" fill="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8" marker-end="url(#dbMqMb)"/>
+                    <path d="M 184 147 L 276 147 L 338 184" stroke="#34d399" stroke-width="1.85" fill="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8" marker-end="url(#dbMqMg)"/>
+                    <path d="M 184 243 L 276 243 L 338 208" stroke="#eab308" stroke-width="1.85" fill="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8" marker-end="url(#dbMqMy)"/>
+                    <path d="M 184 339 L 276 339 L 338 232" stroke="#a78bfa" stroke-width="1.85" fill="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8" marker-end="url(#dbMqMv)"/>
                   </svg>
                 </div>
                 <p class="db-mq-diagram-caption">
@@ -5091,6 +5131,15 @@ function dbSimSpanId(name) {
   let s = '';
   for (let i = 0; i < name.length; i++) s += '_' + name.charCodeAt(i);
   return 'dbSimV' + s;
+}
+
+/** Snap simulation levers to defaults from current cohort driver averages (top 4). */
+function dbSimReset() {
+  const d = dbGetData();
+  d.drivers.slice(0, 4).forEach(dr => {
+    dbSimValues[dr.name] = dbSimDefaultV(dr);
+  });
+  dbRenderSimulation();
 }
 
 function dbSimSliderInput(inp) {
