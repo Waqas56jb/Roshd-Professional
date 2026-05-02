@@ -5874,18 +5874,18 @@ function dbFillDemographicsQualityCards(segmentN, sharePct) {
               <div class="db-str-box-hint"><span class="en">Matches Branch + demographics now; Coverage &amp; KPIs use this slice · <strong>${sharePct}%</strong> of valid sample.</span><span class="ar">يطابق الفرع والديموغرافيا الآن؛ التغطية والمؤشرات على هذه الشريحة · <strong>${sharePct}%</strong> من العينة الصالحة.</span></div>
             </div>
           </div>
-          <div class="db-str-legend" role="group" aria-label="Sample strength legend">
+            <div class="db-str-legend" role="group" aria-label="Sample strength legend">
             <div class="db-str-leg-row">
-              <div class="db-str-leg-k"><span class="en">Coverage gauge</span><span class="ar">التغطية</span></div>
-              <div class="db-str-leg-v"><span class="en">Purple fill shows how close filtered N is to the benchmark above; use it alongside the alert—not as participation rate.</span><span class="ar">يشير التعبئة البنفسجيّة مدى تقرّب N المصفّى من المرجع أعلاه؛ استخدمها مع التنبيه—وليس كمعدّل مشاركة.</span></div>
+              <div class="db-str-leg-k"><span class="en">COVERAGE GAUGE</span><span class="ar">مؤشر التغطية</span></div>
+              <div class="db-str-leg-v"><span class="en">Shows how close your current sample is to the minimum required for reliable insights. It reflects data confidence—not participation rate.</span><span class="ar">يوضح مدى اقتراب حجم العينة الحالية من الحد الأدنى المطلوب للحصول على نتائج موثوقة. يعكس مستوى الثقة في البيانات وليس نسبة المشاركة.</span></div>
             </div>
             <div class="db-str-leg-row">
-              <div class="db-str-leg-k"><span class="en">Total valid</span><span class="ar">إجمالي صالح</span></div>
-              <div class="db-str-leg-v"><span class="en">Denominator anchor; compare any slice against this ceiling to see how narrow filters get.</span><span class="ar">مرجع المقام؛ قارِن أي شريحة بهذا الحدّ لفهم ضيق المرشّحات.</span></div>
+              <div class="db-str-leg-k"><span class="en">TOTAL VALID</span><span class="ar">إجمالي العينة المعتمدة</span></div>
+              <div class="db-str-leg-v"><span class="en">Full dataset after cleaning. Use as the reference base.</span><span class="ar">يمثل كامل البيانات بعد التنقية، ويُستخدم كمرجع أساسي للمقارنة.</span></div>
             </div>
             <div class="db-str-leg-row">
-              <div class="db-str-leg-k"><span class="en">Filtered N</span><span class="ar">N المصفّى</span></div>
-              <div class="db-str-leg-v"><span class="en">When small, swings in charts/KPIs are normal noise—weight the directional message instead of decimals.</span><span class="ar">مع صغر الحجم، تذبذب الرسوم والمؤشرات طبيعي—أعطِ الأولوية للاتجاه لا للكسور العشرية.</span></div>
+              <div class="db-str-leg-k"><span class="en">FILTERED N</span><span class="ar">حجم العينة المُرشَّحة (الحالية)</span></div>
+              <div class="db-str-leg-v"><span class="en">Current segment size. Smaller samples may show more fluctuation—focus on overall direction, not small differences.</span><span class="ar">يمثل حجم الشريحة قيد التحليل. عند صِغر العينة، قد تظهر تقلبات في النتائج، لذا يُفضَّل التركيز على الاتجاه العام بدل الفروقات البسيطة.</span></div>
             </div>
           </div>
         </div>
