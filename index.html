@@ -2735,13 +2735,36 @@ html[data-lang="ar"] .db-drivers-interpret {
 .db-slider-name { font-size: 14px; font-weight: 600; color: var(--db-text); }
 html[data-lang="ar"] .db-slider-name { font-family: 'Cairo', sans-serif; }
 .db-slider-val { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--gold-light); }
+.db-sim-range-ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  padding: 0 2px;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(148, 163, 184, 0.75);
+  font-variant-numeric: tabular-nums;
+}
+html[data-lang="ar"] .db-sim-range-ticks { font-family: 'Cairo', sans-serif; }
 
 input[type=range].db-range {
   width: 100%;
   -webkit-appearance: none;
   appearance: none;
-  height: 5px; border-radius: 99px;
-  background: rgba(255,255,255,0.1); outline: none; cursor: pointer;
+  height: 5px;
+  border-radius: 99px;
+  outline: none;
+  cursor: pointer;
+  /* Track + gold tick at 50% (center of 0–100 scale) */
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.1) calc(50% - 1px),
+    rgba(184, 150, 46, 0.45) 50%,
+    rgba(184, 150, 46, 0.45) calc(50% + 1px),
+    rgba(255, 255, 255, 0.1) calc(50% + 1px),
+    rgba(255, 255, 255, 0.1) 100%
+  );
 }
 input[type=range].db-range::-webkit-slider-thumb {
   -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
@@ -2763,26 +2786,21 @@ input[type=range].db-range::-webkit-slider-thumb:hover { background: var(--gold)
   display: flex; flex-direction: column; gap: 16px;
 }
 .db-sim-score { font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300; color: var(--white); line-height: 1; }
-.db-sim-score span { color: var(--gold-light); }
-.db-sim-pct-mark {
-  font-size: clamp(18px, 3.2vw, 28px);
+.db-sim-expected-lead { font-weight: 700; color: var(--gold-light); }
+.db-sim-expected-br {
+  font-size: clamp(20px, 3vw, 34px);
   font-weight: 600;
-  color: rgba(212, 175, 85, 0.95);
-  vertical-align: baseline;
+  color: rgba(212, 175, 85, 0.88);
   white-space: nowrap;
 }
 html[data-lang="ar"] .db-sim-score { font-family: 'Cairo', sans-serif; font-size: 52px; }
-html[data-lang="ar"] .db-sim-pct-mark { font-size: clamp(16px, 2.6vw, 24px); font-family: 'Cairo', sans-serif; }
+html[data-lang="ar"] .db-sim-expected-br { font-family: 'Cairo', sans-serif; }
 .db-sim-label { font-size: 11px; color: var(--db-muted); text-transform: uppercase; letter-spacing: 0.15em; }
 html[data-lang="ar"] .db-sim-label { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
 .db-sim-baseline { font-size: 13px; color: var(--db-muted); }
 html[data-lang="ar"] .db-sim-baseline { font-family: 'Cairo', sans-serif; }
 .db-sim-advice { background: rgba(255,255,255,0.05); border: 1px solid var(--db-border-subtle); border-radius: 8px; padding: 14px; font-size: 13px; color: var(--db-muted); line-height: 1.6; }
 html[data-lang="ar"] .db-sim-advice { font-family: 'Cairo', sans-serif; text-align: right; }
-.db-sim-roi { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: rgba(184,150,46,0.1); border: 1px solid var(--db-border); border-radius: 8px; }
-.db-sim-roi-label { font-size: 12px; color: var(--db-muted); }
-html[data-lang="ar"] .db-sim-roi-label { font-family: 'Cairo', sans-serif; }
-.db-sim-roi-val { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--gold-light); }
 
 /* ── Executive cards ── */
 .db-exec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -3901,13 +3919,9 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               <div id="dbSimSliders"></div>
               <div class="db-sim-result">
                 <div class="db-sim-label"><span class="en">Expected Satisfaction</span><span class="ar">الرضا المتوقع</span></div>
-                <div class="db-sim-score" id="dbSimExpected">4.<span>20</span><span class="db-sim-pct-mark"> (84%)</span></div>
+                <div class="db-sim-score" id="dbSimExpected"><span class="db-sim-expected-lead">79%</span> <span class="db-sim-expected-br">(3.9)</span></div>
                 <div class="db-sim-baseline"><span class="en">Baseline: </span><span class="ar">الأساس: </span><span id="dbSimBaseline">3.80 (76%)</span> / 5</div>
                 <div class="db-sim-advice" id="dbSimAdvice"></div>
-                <div class="db-sim-roi">
-                  <span class="db-sim-roi-label"><span class="en">ROI Index</span><span class="ar">مؤشر العائد</span></span>
-                  <span class="db-sim-roi-val" id="dbSimROI">142</span>
-                </div>
               </div>
             </div>
           </div>
@@ -5082,10 +5096,11 @@ function dbSimSpanId(name) {
 function dbSimSliderInput(inp) {
   const name = decodeURIComponent(inp.getAttribute('data-driver') || '');
   if (!name) return;
-  dbSimValues[name] = +inp.value || 0;
+  const raw = inp.valueAsNumber;
+  dbSimValues[name] = Number.isFinite(raw) ? Math.min(100, Math.max(0, raw)) : 0;
   const lid = inp.getAttribute('data-lab');
   const labEl = lid ? document.getElementById(lid) : null;
-  if (labEl) labEl.textContent = inp.value + '%';
+  if (labEl) labEl.textContent = dbSimLeverLabel(dbSimValues[name]);
   dbUpdateSimulation();
 }
 
@@ -5121,9 +5136,11 @@ function showDashboard(user) {
     }
   } catch(_) {}
 
-  // Init simulation values
+  // Seed simulation levers from each driver's avg (top 4 only); dbRenderSimulation does the same if missing
   const d = dbGetData();
-  d.drivers.forEach(dr => { if (dbSimValues[dr.name] === undefined) dbSimValues[dr.name] = 10; });
+  d.drivers.slice(0, 4).forEach(dr => {
+    if (dbSimValues[dr.name] === undefined) dbSimValues[dr.name] = dbSimDefaultV(dr);
+  });
 
   dbRender();
 
@@ -5721,6 +5738,21 @@ function dbPctOf5(score) {
   if (Number.isNaN(v)) return 0;
   return Math.min(100, Math.max(0, Math.round((v / 5) * 100)));
 }
+/** Simulation slider 0–100 → implied mean on 0–5 scale (for labels). */
+function dbSimLeverMeanFromV(vRaw) {
+  const n = Number(vRaw);
+  if (Number.isNaN(n)) return 0;
+  return Math.min(5, Math.max(0, (n / 100) * 5));
+}
+/** Beside slider: "68% (3.4)" (% of scale, then implied /5 mean). */
+function dbSimLeverLabel(sliderV) {
+  const mean = dbSimLeverMeanFromV(sliderV);
+  return `${dbPctOf5(mean)}% (${mean.toFixed(1)})`;
+}
+/** Default knob = driver's current avg score as % of 5-point ceiling. */
+function dbSimDefaultV(dr) {
+  return dbPctOf5(dr.avg);
+}
 /** e.g. 3.8 → "3.8 (76%)" */
 function dbFormatMean5(score, decimals) {
   const d = decimals === undefined ? 1 : decimals;
@@ -5919,21 +5951,28 @@ function dbRenderSimulation() {
   const d = dbGetData();
   const container = document.getElementById('dbSimSliders');
   if (!container) return;
-  d.drivers.slice(0, 4).forEach(dr => {
-    if (dbSimValues[dr.name] === undefined) dbSimValues[dr.name] = 10;
+  const top4 = d.drivers.slice(0, 4);
+  if (top4.length && top4.every(dr => dbSimValues[dr.name] === 10))
+    top4.forEach(dr => {
+      dbSimValues[dr.name] = dbSimDefaultV(dr);
+    });
+  top4.forEach(dr => {
+    if (dbSimValues[dr.name] === undefined) dbSimValues[dr.name] = dbSimDefaultV(dr);
   });
   const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
   container.innerHTML = d.drivers.slice(0, 4).map(dr => {
     const spId = dbSimSpanId(dr.name);
     const dName = isAr ? (dr.nameAr||dr.name) : dr.name;
     const encName = encodeURIComponent(dr.name);
+    const v = dbSimValues[dr.name];
     return `<div class="db-slider-wrap">
       <div class="db-slider-header">
         <span class="db-slider-name">${dName} ${t('Improvement','تحسين')}</span>
-        <span class="db-slider-val" id="${spId}">${dbSimValues[dr.name]||10}%</span>
+        <span class="db-slider-val" id="${spId}">${dbSimLeverLabel(v)}</span>
       </div>
-      <input type="range" class="db-range" data-driver="${encName}" data-lab="${spId}" min="0" max="20" value="${dbSimValues[dr.name]||10}"
+      <input type="range" class="db-range" data-driver="${encName}" data-lab="${spId}" min="0" max="100" step="1" value="${v}"
         oninput="dbSimSliderInput(this)">
+      <div class="db-sim-range-ticks"><span>0</span><span>50</span><span>100</span></div>
     </div>`;
   }).join('');
   dbUpdateSimulation();
@@ -5942,22 +5981,21 @@ function dbRenderSimulation() {
 function dbUpdateSimulation() {
   const d = dbGetData();
   let lift = 0;
+  const liftScale = 20;
   d.drivers.slice(0, 4).forEach(dr => {
     const mult = dr.name === 'Speed' ? 0.08 : 0.11;
-    lift += (dbSimValues[dr.name] || 0) * dr.impact * mult;
+    const v = dbSimValues[dr.name] !== undefined ? dbSimValues[dr.name] : dbSimDefaultV(dr);
+    const v0 = dbSimDefaultV(dr);
+    lift += ((v - v0) / 100) * liftScale * dr.impact * mult;
   });
-  const expected = Math.min(5, d.score + lift);
-  const whole = Math.floor(expected);
-  const dec   = expected.toFixed(2).split('.')[1];
+  const expected = Math.min(5, Math.max(1, d.score + lift));
   const expEl = document.getElementById('dbSimExpected');
-  if (expEl) expEl.innerHTML = `${whole}.<span>${dec}</span><span class="db-sim-pct-mark"> (${dbPctOf5(expected)}%)</span>`;
+  if (expEl)
+    expEl.innerHTML = `<span class="db-sim-expected-lead">${dbPctOf5(expected)}%</span> <span class="db-sim-expected-br">(${expected.toFixed(1)})</span>`;
   const baseEl = document.getElementById('dbSimBaseline');
   if (baseEl) baseEl.textContent = dbFormatMean5(d.score, 2);
   const advEl = document.getElementById('dbSimAdvice');
   if (advEl) advEl.innerHTML = `<span class="en">Strongest lever: <b>${d.top}</b>. Speed remains low-impact unless its effect size changes.</span><span class="ar">الرافعة الأقوى: <b>${d.topAr||d.top}</b>. السرعة تظل ضعيفة الأثر ما لم يتغيّر حجم تأثيرها.</span>`;
-  const roi = Math.round(d.drivers.slice(0, 4).reduce((acc, dr) => acc + (dbSimValues[dr.name]||0) * dr.impact, 0) * 100);
-  const roiEl = document.getElementById('dbSimROI');
-  if (roiEl) roiEl.textContent = roi;
 }
 
 /* ── Segments ── */
