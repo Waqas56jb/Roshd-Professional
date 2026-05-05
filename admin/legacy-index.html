@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -58,6 +58,34 @@ body {
   color: var(--text);
   overflow-x: hidden;
   min-height: 100vh;
+}
+
+html[data-lang="ar"] {
+  direction: rtl;
+}
+
+html[data-lang="ar"] body,
+html[data-lang="ar"] .btn,
+html[data-lang="ar"] .form-input,
+html[data-lang="ar"] .filter-select,
+html[data-lang="ar"] .nav-item,
+html[data-lang="ar"] .page-title,
+html[data-lang="ar"] .topbar-title {
+  font-family: var(--font-ar);
+}
+
+html[data-lang="ar"] .main {
+  margin-left: 0;
+  margin-right: var(--sidebar-w);
+}
+
+html[data-lang="ar"] .sidebar {
+  left: auto;
+  right: 0;
+}
+
+html[data-lang="ar"] .topbar-menu-btn svg {
+  transform: scaleX(-1);
 }
 
 /* Match customer dashboard typography (lighter than old admin) */
@@ -546,6 +574,20 @@ textarea.form-input { resize: vertical; min-height: 100px; }
 .topbar-breadcrumb span { color: var(--gold); }
 
 .topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.lang-toggle-btn {
+  border: 1px solid var(--border2);
+  background: var(--bg2);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.lang-toggle-btn:hover { border-color: var(--gold); color: var(--gold-light); }
 
 .topbar-search {
   display: flex;
@@ -1496,6 +1538,7 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
         </div>
       </div>
       <div class="topbar-right">
+        <button class="lang-toggle-btn" id="langToggleBtn" onclick="toggleAdminLanguage()">AR</button>
         <div class="topbar-search">
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <input type="text" placeholder="Search users, data…" id="globalSearch" oninput="handleGlobalSearch(this.value)">
@@ -2452,6 +2495,193 @@ let editingBranchId = null;
 let contentTabActive = 'questionnaire';
 let scheduledExportsList = [];
 let reportHistory = [];
+let currentLang = 'en';
+
+const I18N = {
+  en: {
+    panelMeta: {
+      overview: { title: 'Overview', crumb: 'Dashboard' },
+      analytics: { title: 'Live Analytics', crumb: 'Intelligence' },
+      users: { title: 'User Management', crumb: 'Management' },
+      branches: { title: 'Branch Management', crumb: 'Management' },
+      data: { title: 'Data Management', crumb: 'Management' },
+      content: { title: 'Content & Questionnaire', crumb: 'Management' },
+      model: { title: 'Model & Weights', crumb: 'Intelligence' },
+      reports: { title: 'Reports & Export', crumb: 'Output' },
+      settings: { title: 'Settings', crumb: 'System' },
+      audit: { title: 'Audit Log', crumb: 'System' }
+    },
+    labels: {
+      searchGlobal: 'Search users, data…',
+      navOverview: 'Overview',
+      navAnalytics: 'Live Analytics',
+      navUsers: 'User Management',
+      navBranches: 'Branch Management',
+      navData: 'Data Management',
+      navContent: 'Content & Questionnaire',
+      navModel: 'Model & Weights Control',
+      navReports: 'Reports & Export',
+      navSettings: 'Settings',
+      navAudit: 'Audit Log',
+      logout: 'Logout',
+      dashboardHeader: 'Dashboard',
+      loginTitle: 'Admin Sign In',
+      loginSubtitle: 'Restricted access — authorized administrators only',
+      loginBtn: 'Access Admin Panel'
+    },
+    messages: {
+      loginMissing: 'Please enter your email and password.',
+      signingIn: 'Signing in…',
+      invalidCreds: 'Invalid admin credentials.',
+      serverDown: 'Cannot reach server. Use demo credentials: admin@roshd.com / admin123',
+      welcome: (name) => `Welcome, ${name}!`,
+      logoutDone: 'Logged out successfully.',
+      notif: '3 new notifications — feature connects to your backend.',
+      refreshOverview: 'Overview refreshed.'
+    }
+  },
+  ar: {
+    panelMeta: {
+      overview: { title: 'نظرة عامة', crumb: 'لوحة التحكم' },
+      analytics: { title: 'التحليلات المباشرة', crumb: 'الذكاء' },
+      users: { title: 'إدارة المستخدمين', crumb: 'الإدارة' },
+      branches: { title: 'إدارة الفروع', crumb: 'الإدارة' },
+      data: { title: 'إدارة البيانات', crumb: 'الإدارة' },
+      content: { title: 'المحتوى والاستبيان', crumb: 'الإدارة' },
+      model: { title: 'النموذج والأوزان', crumb: 'الذكاء' },
+      reports: { title: 'التقارير والتصدير', crumb: 'المخرجات' },
+      settings: { title: 'الإعدادات', crumb: 'النظام' },
+      audit: { title: 'سجل التدقيق', crumb: 'النظام' }
+    },
+    labels: {
+      searchGlobal: 'ابحث في المستخدمين والبيانات…',
+      navOverview: 'نظرة عامة',
+      navAnalytics: 'التحليلات المباشرة',
+      navUsers: 'إدارة المستخدمين',
+      navBranches: 'إدارة الفروع',
+      navData: 'إدارة البيانات',
+      navContent: 'المحتوى والاستبيان',
+      navModel: 'التحكم في النموذج والأوزان',
+      navReports: 'التقارير والتصدير',
+      navSettings: 'الإعدادات',
+      navAudit: 'سجل التدقيق',
+      logout: 'تسجيل الخروج',
+      dashboardHeader: 'لوحة التحكم',
+      loginTitle: 'تسجيل دخول المشرف',
+      loginSubtitle: 'وصول مقيّد — للمشرفين المصرّح لهم فقط',
+      loginBtn: 'الدخول إلى لوحة المشرف'
+    },
+    messages: {
+      loginMissing: 'يرجى إدخال البريد الإلكتروني وكلمة المرور.',
+      signingIn: 'جارٍ تسجيل الدخول…',
+      invalidCreds: 'بيانات دخول المشرف غير صحيحة.',
+      serverDown: 'تعذر الوصول إلى الخادم. استخدم بيانات العرض: admin@roshd.com / admin123',
+      welcome: (name) => `مرحبًا، ${name}!`,
+      logoutDone: 'تم تسجيل الخروج بنجاح.',
+      notif: 'لديك 3 إشعارات جديدة — هذه الميزة تتصل بالخادم.',
+      refreshOverview: 'تم تحديث النظرة العامة.'
+    }
+  }
+};
+
+function tx(path) {
+  const parts = path.split('.');
+  let value = I18N[currentLang];
+  for (const part of parts) value = value?.[part];
+  return value ?? path;
+}
+
+function applyAdminLanguage() {
+  const root = document.documentElement;
+  const isAr = currentLang === 'ar';
+  root.setAttribute('data-lang', currentLang);
+  root.setAttribute('lang', currentLang);
+  root.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+
+  const langBtn = document.getElementById('langToggleBtn');
+  if (langBtn) langBtn.textContent = isAr ? 'EN' : 'AR';
+
+  const search = document.getElementById('globalSearch');
+  if (search) search.placeholder = tx('labels.searchGlobal');
+
+  const navTextByPanel = {
+    overview: tx('labels.navOverview'),
+    analytics: tx('labels.navAnalytics'),
+    users: tx('labels.navUsers'),
+    branches: tx('labels.navBranches'),
+    data: tx('labels.navData'),
+    content: tx('labels.navContent'),
+    model: tx('labels.navModel'),
+    reports: tx('labels.navReports'),
+    settings: tx('labels.navSettings'),
+    audit: tx('labels.navAudit')
+  };
+
+  document.querySelectorAll('.nav-item[data-panel]').forEach((el) => {
+    const panel = el.getAttribute('data-panel');
+    const firstTextNode = [...el.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    if (firstTextNode && navTextByPanel[panel]) firstTextNode.textContent = ` ${navTextByPanel[panel]} `;
+  });
+
+  const logout = document.querySelector('.logout-btn');
+  if (logout) {
+    const txt = [...logout.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    if (txt) txt.textContent = ` ${tx('labels.logout')} `;
+  }
+
+  const loginTitle = document.querySelector('.login-title');
+  const loginSub = document.querySelector('.login-subtitle');
+  const loginBtn = document.getElementById('loginBtn');
+  if (loginTitle) loginTitle.textContent = tx('labels.loginTitle');
+  if (loginSub) loginSub.textContent = tx('labels.loginSubtitle');
+  if (loginBtn) loginBtn.lastChild.textContent = ` ${tx('labels.loginBtn')}`;
+
+  const activeNav = document.querySelector('.nav-item.active');
+  const activePanel = activeNav?.getAttribute('data-panel') || 'overview';
+  const meta = I18N[currentLang].panelMeta[activePanel] || { title: activePanel, crumb: activePanel };
+  const topTitle = document.getElementById('topbarTitle');
+  const topCrumb = document.getElementById('topbarCrumb');
+  if (topTitle) topTitle.textContent = meta.title;
+  if (topCrumb) topCrumb.textContent = meta.crumb;
+
+  const breadcrumb = document.querySelector('.topbar-breadcrumb');
+  if (breadcrumb) {
+    const firstText = [...breadcrumb.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    if (firstText) firstText.textContent = currentLang === 'ar' ? ' لوحة المشرف ' : ' ROSHD Admin ';
+  }
+
+  const sections = document.querySelectorAll('.nav-section');
+  const navSections = currentLang === 'ar'
+    ? ['لوحة التحكم', 'الإدارة', 'الذكاء', 'النظام']
+    : ['Dashboard', 'Management', 'Intelligence', 'System'];
+  sections.forEach((sec, i) => { if (navSections[i]) sec.textContent = navSections[i]; });
+
+  const overviewPanel = document.getElementById('panel-overview');
+  if (overviewPanel) {
+    const eyebrow = overviewPanel.querySelector('.page-eyebrow');
+    const title = overviewPanel.querySelector('.page-title');
+    const subtitle = overviewPanel.querySelector('.page-subtitle');
+    if (eyebrow) eyebrow.textContent = currentLang === 'ar' ? 'نظرة عامة على النظام' : 'System Overview';
+    if (title) title.textContent = currentLang === 'ar' ? 'لوحة المشرف' : 'Admin Dashboard';
+    if (subtitle) subtitle.textContent = currentLang === 'ar'
+      ? 'صحة المنصة لحظيًا، وإحصاءات المستخدمين، ومؤشرات النظام — الربع الثاني 2026'
+      : 'Real-time platform health, user stats, and system KPIs — Q2 2026';
+  }
+}
+
+function toggleAdminLanguage() {
+  currentLang = currentLang === 'en' ? 'ar' : 'en';
+  applyAdminLanguage();
+  renderOverview();
+  renderAnalytics();
+  renderUsersTable();
+  renderBranchPanel();
+  renderDataPanel();
+  renderContentPanel();
+  renderModelWeights();
+  renderReports();
+  renderAuditLog();
+}
 
 /* ═══════════════════════════════════════════
    QUESTIONNAIRE DATA (from customer side)
@@ -2733,12 +2963,12 @@ async function handleAdminLogin() {
   errorEl.classList.remove('show');
 
   if (!email || !password) {
-    errorEl.textContent = 'Please enter your email and password.';
+    errorEl.textContent = tx('messages.loginMissing');
     errorEl.classList.add('show'); return;
   }
 
   const orig = btnEl.innerHTML;
-  btnEl.disabled = true; btnEl.textContent = 'Signing in…';
+  btnEl.disabled = true; btnEl.textContent = tx('messages.signingIn');
 
   /* Demo check */
   if (email === 'admin@roshd.com' && password === 'admin123') {
@@ -2755,11 +2985,11 @@ async function handleAdminLogin() {
       /* Accept any logged-in user as admin in demo — real deployment would check role */
       launchAdmin({name: data.user?.first_name ? `${data.user.first_name} ${data.user.last_name||''}`.trim() : email, email});
     } else {
-      errorEl.textContent = data.message || 'Invalid admin credentials.';
+      errorEl.textContent = data.message || tx('messages.invalidCreds');
       errorEl.classList.add('show');
     }
   } catch(_) {
-    errorEl.textContent = 'Cannot reach server. Use demo credentials: admin@roshd.com / admin123';
+    errorEl.textContent = tx('messages.serverDown');
     errorEl.classList.add('show');
   } finally {
     btnEl.disabled = false; btnEl.innerHTML = orig;
@@ -2774,7 +3004,8 @@ function launchAdmin(user) {
   document.getElementById('adminAvatar').textContent = user.name.charAt(0).toUpperCase();
   addAuditEntry('LOGIN','Admin Auth','Successful admin login');
   initAllPanels();
-  toast(`Welcome, ${user.name}!`,'success');
+  applyAdminLanguage();
+  toast(I18N[currentLang].messages.welcome(user.name),'success');
 }
 
 function handleLogout() {
@@ -2784,24 +3015,13 @@ function handleLogout() {
   document.getElementById('adminEmail').value = '';
   document.getElementById('adminPassword').value = '';
   currentAdmin = null;
-  toast('Logged out successfully.','info');
+  toast(tx('messages.logoutDone'),'info');
 }
 
 /* ═══════════════════════════════════════════
    PANEL NAVIGATION
 ═══════════════════════════════════════════ */
-const PANEL_META = {
-  overview:   {title:'Overview',              crumb:'Dashboard'},
-  analytics:  {title:'Live Analytics',        crumb:'Intelligence'},
-  users:      {title:'User Management',       crumb:'Management'},
-  branches:   {title:'Branch Management',     crumb:'Management'},
-  data:       {title:'Data Management',       crumb:'Management'},
-  content:    {title:'Content & Questionnaire',crumb:'Management'},
-  model:      {title:'Model & Weights',       crumb:'Intelligence'},
-  reports:    {title:'Reports & Export',      crumb:'Output'},
-  settings:   {title:'Settings',             crumb:'System'},
-  audit:      {title:'Audit Log',             crumb:'System'},
-};
+const PANEL_META = I18N.en.panelMeta;
 
 function showPanel(id, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -2810,7 +3030,7 @@ function showPanel(id, btn) {
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   const navBtn = document.querySelector(`[data-panel="${id}"]`) || btn;
   if (navBtn) navBtn.classList.add('active');
-  const meta = PANEL_META[id] || {title:id, crumb:id};
+  const meta = I18N[currentLang].panelMeta[id] || PANEL_META[id] || {title:id, crumb:id};
   document.getElementById('topbarTitle').textContent = meta.title;
   document.getElementById('topbarCrumb').textContent = meta.crumb;
   closeSidebar();
@@ -2850,17 +3070,19 @@ function initAllPanels() {
 /* ═══════════════════════════════════════════
    OVERVIEW PANEL
 ═══════════════════════════════════════════ */
-function refreshOverview() { renderOverview(); toast('Overview refreshed.','info'); }
+function refreshOverview() { renderOverview(); toast(tx('messages.refreshOverview'),'info'); }
 
 function renderOverview() {
+  const ar = currentLang === 'ar';
+  const branchName = (en, arName) => (ar ? arName : en);
   /* Stats */
   const stats = [
-    {label:'Total Users', value: usersData.length, trend:'+12', trendDir:'up', accent:'var(--gold)',    iconBg:'var(--gold-dim)',   icon:'👥'},
-    {label:'Active Users', value: usersData.filter(u=>u.status==='active').length, trend:'+5', trendDir:'up', accent:'var(--green)', iconBg:'var(--green-dim)', icon:'✓'},
-    {label:'Total Sample N', value:'300', trend:'0', trendDir:'neutral', accent:'var(--blue)', iconBg:'var(--blue-dim)', icon:'📊'},
-    {label:'Avg CX Score',  value:'76% (3.8)', trend:'+0.3', trendDir:'up', accent:'var(--purple)', iconBg:'var(--purple-dim)', icon:'⭐'},
-    {label:'Model Power',   value:'72%',  trend:'+2%', trendDir:'up', accent:'var(--teal)',   iconBg:'var(--teal-dim)',   icon:'🧠'},
-    {label:'Branches',      value: branchesData.length, trend:'0', trendDir:'neutral', accent:'var(--amber)', iconBg:'var(--amber-dim)', icon:'🏢'},
+    {label: ar ? 'إجمالي المستخدمين' : 'Total Users', value: usersData.length, trend:'+12', trendDir:'up', accent:'var(--gold)',    iconBg:'var(--gold-dim)',   icon:'👥'},
+    {label: ar ? 'المستخدمون النشطون' : 'Active Users', value: usersData.filter(u=>u.status==='active').length, trend:'+5', trendDir:'up', accent:'var(--green)', iconBg:'var(--green-dim)', icon:'✓'},
+    {label: ar ? 'حجم العينة الكلي' : 'Total Sample N', value:'300', trend:'0', trendDir:'neutral', accent:'var(--blue)', iconBg:'var(--blue-dim)', icon:'📊'},
+    {label: ar ? 'متوسط درجة CX' : 'Avg CX Score',  value:'76% (3.8)', trend:'+0.3', trendDir:'up', accent:'var(--purple)', iconBg:'var(--purple-dim)', icon:'⭐'},
+    {label: ar ? 'قوة النموذج' : 'Model Power',   value:'72%',  trend:'+2%', trendDir:'up', accent:'var(--teal)',   iconBg:'var(--teal-dim)',   icon:'🧠'},
+    {label: ar ? 'الفروع' : 'Branches',      value: branchesData.length, trend:'0', trendDir:'neutral', accent:'var(--amber)', iconBg:'var(--amber-dim)', icon:'🏢'},
   ];
   document.getElementById('overviewStats').innerHTML = stats.map(s =>
     `<div class="stat-card" style="--accent:${s.accent}">
@@ -2877,7 +3099,7 @@ function renderOverview() {
   document.getElementById('branchScoresBars').innerHTML = ['Riyadh','Jeddah','Dammam'].map(b => {
     const d = branchOverrides[b]; const w = pct(d.score);
     return `<div class="score-bar-row" style="margin-bottom:14px">
-      <span class="score-bar-label">${b}</span>
+      <span class="score-bar-label">${branchName(b, b==='Riyadh'?'الرياض':b==='Jeddah'?'جدة':'الدمام')}</span>
       <div class="score-bar-track"><div class="score-bar-fill" style="width:${w}%;background:linear-gradient(90deg,${scoreColor(d.score)},${scoreColor(d.score)}cc)"></div></div>
       <span class="score-bar-val">${formatScore(d.score)}</span>
     </div>`;
@@ -2924,11 +3146,11 @@ function renderOverview() {
 
   /* System health */
   const health = [
-    {name:'API Server',      status:'Operational', color:'var(--green)'},
-    {name:'Database',        status:'Operational', color:'var(--green)'},
-    {name:'Analytics Engine',status:'Operational', color:'var(--green)'},
-    {name:'Export Service',  status:'Degraded',    color:'var(--amber)'},
-    {name:'Email Service',   status:'Operational', color:'var(--green)'},
+    {name: ar ? 'خادم API' : 'API Server',      status: ar ? 'يعمل' : 'Operational', color:'var(--green)'},
+    {name: ar ? 'قاعدة البيانات' : 'Database',        status: ar ? 'يعمل' : 'Operational', color:'var(--green)'},
+    {name: ar ? 'محرك التحليلات' : 'Analytics Engine',status: ar ? 'يعمل' : 'Operational', color:'var(--green)'},
+    {name: ar ? 'خدمة التصدير' : 'Export Service',  status: ar ? 'متدهور' : 'Degraded',    color:'var(--amber)'},
+    {name: ar ? 'خدمة البريد' : 'Email Service',   status: ar ? 'يعمل' : 'Operational', color:'var(--green)'},
   ];
   document.getElementById('systemHealth').innerHTML = health.map(h =>
     `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
@@ -2942,16 +3164,17 @@ function renderOverview() {
    ANALYTICS PANEL
 ═══════════════════════════════════════════ */
 function renderAnalytics() {
+  const ar = currentLang === 'ar';
   const branch = document.getElementById('analyticsBranch')?.value || 'All Branches';
   const d = branchOverrides[branch] || branchOverrides['All Branches'];
   const drivers = (modelOverrides[branch] || modelOverrides['All Branches'] || []);
 
   /* KPIs */
   document.getElementById('analyticsKpis').innerHTML = [
-    {label:'CX Score',      value:formatScore(d.score),    color:'var(--gold)',   icon:'⭐'},
-    {label:'Model Power',   value:d.explanatory+'%',        color:'var(--blue)',   icon:'🧠'},
-    {label:'Top Driver',    value:d.top,                    color:'var(--green)',  icon:'🎯'},
-    {label:'Sample N',      value: d.n||300,               color:'var(--purple)', icon:'👥'},
+    {label: ar ? 'درجة CX' : 'CX Score',      value:formatScore(d.score),    color:'var(--gold)',   icon:'⭐'},
+    {label: ar ? 'قوة النموذج' : 'Model Power',   value:d.explanatory+'%',        color:'var(--blue)',   icon:'🧠'},
+    {label: ar ? 'العامل الأعلى' : 'Top Driver',    value: ar ? (d.topAr || d.top) : d.top,                    color:'var(--green)',  icon:'🎯'},
+    {label: ar ? 'حجم العينة' : 'Sample N',      value: d.n||300,               color:'var(--purple)', icon:'👥'},
   ].map(k =>
     `<div class="stat-card" style="--accent:${k.color}">
       <div class="stat-head"><div class="stat-icon" style="background:${k.color}22"><span style="font-size:18px">${k.icon}</span></div></div>
@@ -2981,9 +3204,9 @@ function renderAnalytics() {
   }).join('');
 
   /* Demo breakdown */
-  const demos = [{label:'Male',n:180},{label:'Female',n:120}];
+  const demos = [{label: ar ? 'ذكور' : 'Male',n:180},{label: ar ? 'إناث' : 'Female',n:120}];
   document.getElementById('analyticsDemoBreakdown').innerHTML =
-    `<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mute);margin-bottom:12px">Gender Split</div>` +
+    `<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mute);margin-bottom:12px">${ar ? 'توزيع الجنس' : 'Gender Split'}</div>` +
     demos.map(item => {
       const w = Math.round(item.n/300*100);
       return `<div class="score-bar-row" style="margin-bottom:12px">
@@ -2993,9 +3216,9 @@ function renderAnalytics() {
       </div>`;
     }).join('');
 
-  const ages = [{label:'<25',n:30},{label:'25–34',n:90},{label:'35–44',n:120},{label:'45+',n:60}];
+  const ages = [{label: ar ? 'أقل من 25' : '<25',n:30},{label:'25–34',n:90},{label:'35–44',n:120},{label: ar ? '45+' : '45+',n:60}];
   document.getElementById('analyticsAgeBreakdown').innerHTML =
-    `<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mute);margin-bottom:12px">Age Distribution</div>` +
+    `<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mute);margin-bottom:12px">${ar ? 'توزيع الأعمار' : 'Age Distribution'}</div>` +
     ages.map(item => {
       const w = Math.round(item.n/300*100);
       return `<div class="score-bar-row" style="margin-bottom:12px">
@@ -3877,7 +4100,7 @@ function exportAuditLog() { addAuditEntry('EXPORT','Audit Log','Full audit log e
 /* ═══════════════════════════════════════════
    NOTIFICATIONS
 ═══════════════════════════════════════════ */
-function toggleNotif() { toast('3 new notifications — feature connects to your backend.','info'); }
+function toggleNotif() { toast(tx('messages.notif'),'info'); }
 
 /* ═══════════════════════════════════════════
    KEYBOARD SHORTCUTS
@@ -3904,6 +4127,8 @@ function sortTable(table, field) {
     renderUsersTable();
   }
 }
+
+applyAdminLanguage();
 </script>
 </body>
 </html>
