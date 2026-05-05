@@ -1,0 +1,3866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>ROSHD Admin — Control Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   ROOT VARIABLES
+═══════════════════════════════════════════════════════════ */
+:root {
+  --bg:          #080c14;
+  --bg2:         #0d1220;
+  --surface:     #111827;
+  --surface2:    #1a2236;
+  --card:        #141e30;
+  --card2:       #1c2840;
+  --border:      rgba(255,255,255,0.07);
+  --border2:     rgba(255,255,255,0.12);
+  --gold:        #c9973a;
+  --gold-light:  #e5b55a;
+  --gold-dim:    rgba(201,151,58,0.18);
+  --gold-glow:   rgba(201,151,58,0.08);
+  --text:        rgba(255,255,255,0.92);
+  --text-dim:    rgba(255,255,255,0.55);
+  --text-mute:   rgba(255,255,255,0.30);
+  --green:       #22c55e;
+  --green-dim:   rgba(34,197,94,0.14);
+  --red:         #ef4444;
+  --red-dim:     rgba(239,68,68,0.14);
+  --blue:        #3b82f6;
+  --blue-dim:    rgba(59,130,246,0.14);
+  --amber:       #f59e0b;
+  --amber-dim:   rgba(245,158,11,0.14);
+  --purple:      #8b5cf6;
+  --purple-dim:  rgba(139,92,246,0.14);
+  --teal:        #14b8a6;
+  --teal-dim:    rgba(20,184,166,0.14);
+  --sidebar-w:   256px;
+  --topbar-h:    60px;
+  --radius:      10px;
+  --radius-sm:   6px;
+  --shadow:      0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg:   0 12px 48px rgba(0,0,0,0.55);
+  --font-main:   'DM Sans', sans-serif;
+  --font-ar:     'Cairo', sans-serif;
+  --font-mono:   'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Match customer dashboard typography (lighter than old admin) */
+.login-brand-text strong,
+.login-title,
+.sidebar-title,
+.admin-name,
+.topbar-title,
+.page-eyebrow,
+.page-title,
+.stat-value,
+.modal-title,
+.confirm-title {
+  font-weight: 600;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 800px 600px at 20% -10%, rgba(201,151,58,0.045) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 400px at 85% 90%, rgba(59,130,246,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOGIN SCREEN
+═══════════════════════════════════════════════════════════ */
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 20px;
+}
+
+#loginScreen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 700px 500px at 30% 30%, rgba(201,151,58,0.08) 0%, transparent 65%),
+    radial-gradient(ellipse 500px 400px at 70% 70%, rgba(59,130,246,0.06) 0%, transparent 60%);
+}
+
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(201,151,58,0.1);
+}
+
+.login-header {
+  background: linear-gradient(135deg, #0f1c3d 0%, #1a2952 100%);
+  padding: 36px 36px 28px;
+  position: relative;
+  border-bottom: 1px solid rgba(201,151,58,0.2);
+}
+
+.login-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.login-brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,151,58,0.35);
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.login-brand-text strong {
+  display: block;
+  font-family: var(--font-main);
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.12em;
+}
+
+.login-brand-text small {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.login-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.login-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 6px;
+}
+
+.login-body {
+  padding: 32px 36px 36px;
+}
+
+.login-error {
+  background: var(--red-dim);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 20px;
+  display: none;
+}
+.login-error.show { display: block; }
+
+.form-group { margin-bottom: 18px; }
+
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,151,58,0.12);
+}
+.form-input::placeholder { color: var(--text-mute); }
+
+textarea.form-input { resize: vertical; min-height: 100px; }
+
+.pw-wrap { position: relative; }
+.pw-wrap .form-input { padding-right: 46px; }
+.pw-eye {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dim);
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.pw-eye:hover { color: var(--gold); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-main);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  min-height: 42px;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: #0a0f1e;
+}
+.btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,151,58,0.3); }
+
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { background: var(--card2); border-color: var(--gold); color: var(--gold-light); }
+
+.btn-danger {
+  background: var(--red-dim);
+  color: #fca5a5;
+  border: 1px solid rgba(239,68,68,0.3);
+}
+.btn-danger:hover { background: rgba(239,68,68,0.25); }
+
+.btn-success {
+  background: var(--green-dim);
+  color: #86efac;
+  border: 1px solid rgba(34,197,94,0.3);
+}
+.btn-success:hover { background: rgba(34,197,94,0.22); }
+
+.btn-sm { padding: 7px 14px; font-size: 12px; min-height: 34px; }
+.btn-icon { padding: 8px; min-height: 36px; width: 36px; }
+.btn-full { width: 100%; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════════════════════ */
+#adminApp {
+  display: none;
+  min-height: 100vh;
+}
+#adminApp.open { display: flex; }
+
+/* ═══════════════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 200;
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(201,151,58,0.2); border-radius: 99px; }
+
+.sidebar-brand {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.sidebar-brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,151,58,0.3);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.sidebar-brand-text strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.1em;
+}
+
+.sidebar-brand-text .badge-admin {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--gold-dim);
+  border: 1px solid rgba(201,151,58,0.25);
+  border-radius: 4px;
+  padding: 2px 7px;
+  margin-top: 3px;
+}
+
+.sidebar-admin-strip {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.admin-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #0a0f1e;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.admin-info { overflow: hidden; }
+.admin-name { font-size: 13px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.admin-role {
+  font-size: 10px;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sidebar-nav { flex: 1; padding: 12px 10px; }
+
+.nav-section {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  padding: 12px 10px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 42px;
+  letter-spacing: 0.02em;
+}
+
+.nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+
+.nav-item.active {
+  background: var(--gold-glow);
+  color: var(--gold-light);
+  border: 1px solid rgba(201,151,58,0.18);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 3px;
+  background: var(--gold);
+  border-radius: 0 99px 99px 0;
+}
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--red);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 99px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.nav-badge.gold { background: var(--gold); color: #0a0f1e; }
+.nav-badge.green { background: var(--green); color: #fff; }
+
+.sidebar-footer {
+  padding: 12px 10px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  color: rgba(239,68,68,0.65);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.logout-btn:hover { background: var(--red-dim); color: #fca5a5; }
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN AREA
+═══════════════════════════════════════════════════════════ */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════════════════ */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 16px;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+
+.topbar-menu-btn {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.topbar-menu-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+
+.topbar-title { font-size: 17px; font-weight: 800; color: var(--text); }
+.topbar-breadcrumb { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
+.topbar-breadcrumb span { color: var(--gold); }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.topbar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.topbar-search:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,151,58,0.1); }
+.topbar-search input {
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 13px;
+  width: 180px;
+}
+.topbar-search input::placeholder { color: var(--text-mute); }
+
+.topbar-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--text-dim);
+  transition: all 0.2s;
+  position: relative;
+}
+.topbar-icon-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+
+.notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--red);
+  border: 1.5px solid var(--bg2);
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--green-dim);
+  border: 1px solid rgba(34,197,94,0.25);
+  color: #86efac;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ═══════════════════════════════════════════════════════════
+   CONTENT AREA
+═══════════════════════════════════════════════════════════ */
+.content {
+  flex: 1;
+  padding: 28px;
+  position: relative;
+  z-index: 1;
+  overflow-x: hidden;
+}
+
+.panel { display: none; animation: panelIn 0.3s ease; }
+.panel.active { display: block; }
+@keyframes panelIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ═══════════════════════════════════════════════════════════
+   PAGE HEADERS
+═══════════════════════════════════════════════════════════ */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.page-header-left {}
+.page-eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
+.page-title { font-size: 22px; font-weight: 800; color: var(--text); }
+.page-subtitle { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+.page-header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* ═══════════════════════════════════════════════════════════
+   STAT CARDS
+═══════════════════════════════════════════════════════════ */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.22s;
+}
+.stat-card:hover { transform: translateY(-2px); border-color: var(--border2); box-shadow: var(--shadow); }
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent, var(--gold));
+}
+
+.stat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--icon-bg, var(--gold-dim));
+}
+
+.stat-trend {
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.stat-trend.up { color: var(--green); }
+.stat-trend.down { color: var(--red); }
+.stat-trend.neutral { color: var(--text-dim); }
+
+.stat-value { font-size: 28px; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 4px; font-variant-numeric: tabular-nums; }
+.stat-label { font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em; font-weight: 600; }
+.stat-sub { font-size: 11px; color: var(--text-mute); margin-top: 6px; }
+
+/* ═══════════════════════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════════════════════ */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.card-subtitle { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.card-actions { display: flex; align-items: center; gap: 8px; }
+
+.card-body { padding: 22px; }
+.card-body-sm { padding: 16px 18px; }
+
+/* ═══════════════════════════════════════════════════════════
+   TABLES
+═══════════════════════════════════════════════════════════ */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 600px;
+}
+
+table.data-table thead tr { border-bottom: 1px solid var(--border2); }
+
+table.data-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  background: rgba(255,255,255,0.02);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s;
+}
+table.data-table th:hover { color: var(--gold-light); }
+table.data-table th .sort-icon { opacity: 0.4; margin-left: 4px; }
+table.data-table th.sorted { color: var(--gold); }
+table.data-table th.sorted .sort-icon { opacity: 1; }
+
+table.data-table td {
+  padding: 13px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.035);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+table.data-table tbody tr { transition: background 0.15s; }
+table.data-table tbody tr:hover td { background: rgba(255,255,255,0.025); }
+table.data-table tbody tr:last-child td { border-bottom: none; }
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.pagination-info { font-size: 12px; color: var(--text-dim); }
+.pagination-btns { display: flex; align-items: center; gap: 6px; }
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: var(--font-main);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: grid;
+  place-items: center;
+  padding: 0 8px;
+}
+.page-btn:hover { border-color: var(--gold); color: var(--gold-light); }
+.page-btn.active { background: var(--gold); color: #0a0f1e; border-color: var(--gold); }
+.page-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ═══════════════════════════════════════════════════════════
+   BADGES / CHIPS
+═══════════════════════════════════════════════════════════ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.badge-green  { background: var(--green-dim);  color: #86efac; border: 1px solid rgba(34,197,94,0.25); }
+.badge-red    { background: var(--red-dim);    color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+.badge-gold   { background: var(--gold-dim);   color: var(--gold-light); border: 1px solid rgba(201,151,58,0.3); }
+.badge-blue   { background: var(--blue-dim);   color: #93c5fd; border: 1px solid rgba(59,130,246,0.25); }
+.badge-purple { background: var(--purple-dim); color: #c4b5fd; border: 1px solid rgba(139,92,246,0.25); }
+.badge-amber  { background: var(--amber-dim);  color: #fcd34d; border: 1px solid rgba(245,158,11,0.25); }
+.badge-teal   { background: var(--teal-dim);   color: #5eead4; border: 1px solid rgba(20,184,166,0.25); }
+.badge-gray   { background: rgba(255,255,255,0.06); color: var(--text-dim); border: 1px solid var(--border2); }
+
+/* ═══════════════════════════════════════════════════════════
+   SEARCH / FILTER BAR
+═══════════════════════════════════════════════════════════ */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.015);
+  flex-wrap: wrap;
+}
+
+.filter-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  flex: 1;
+  min-width: 200px;
+  max-width: 320px;
+  transition: border-color 0.2s;
+}
+.filter-search:focus-within { border-color: var(--gold); }
+.filter-search input { background: none; border: none; outline: none; color: var(--text); font-family: var(--font-main); font-size: 13px; width: 100%; }
+.filter-search input::placeholder { color: var(--text-mute); }
+.filter-search svg { flex-shrink: 0; color: var(--text-mute); }
+
+.filter-select {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-main);
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 38px;
+}
+.filter-select:focus { border-color: var(--gold); }
+.filter-select option { background: var(--card); }
+
+.filter-actions { margin-left: auto; display: flex; gap: 8px; }
+
+/* ═══════════════════════════════════════════════════════════
+   MODALS
+═══════════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  z-index: 9000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: var(--shadow-lg);
+  animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  margin: auto;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-lg { max-width: 720px; }
+.modal-xl { max-width: 900px; }
+
+@keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.modal-header {
+  padding: 22px 28px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.modal-title { font-size: 18px; font-weight: 800; color: var(--text); }
+.modal-subtitle { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.modal-close:hover { background: var(--red-dim); color: #fca5a5; }
+
+.modal-body { padding: 24px 28px; overflow-y: auto; -webkit-overflow-scrolling: touch; flex: 1; }
+
+.modal-footer {
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.modal-error {
+  background: var(--red-dim);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 18px;
+  display: none;
+}
+.modal-error.show { display: block; }
+.modal-success {
+  background: var(--green-dim);
+  border: 1px solid rgba(34,197,94,0.3);
+  color: #86efac;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  margin-bottom: 18px;
+  display: none;
+}
+.modal-success.show { display: block; }
+
+/* ═══════════════════════════════════════════════════════════
+   FORM ELEMENTS
+═══════════════════════════════════════════════════════════ */
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  cursor: pointer;
+  min-height: 44px;
+}
+.form-select:focus { border-color: var(--gold); }
+.form-select option { background: var(--card); }
+
+.form-hint { font-size: 11px; color: var(--text-mute); margin-top: 6px; }
+
+.form-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.toggle-track {
+  width: 40px;
+  height: 22px;
+  border-radius: 99px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  position: relative;
+  transition: background 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.toggle-track.on { background: var(--gold); border-color: var(--gold); }
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.toggle-track.on .toggle-thumb { transform: translateX(18px); }
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════════════════ */
+.toast-container {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-left: 4px solid var(--gold);
+  color: var(--text);
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  max-width: 340px;
+  box-shadow: var(--shadow);
+  animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toast.success { border-left-color: var(--green); }
+.toast.error   { border-left-color: var(--red); }
+.toast.warning { border-left-color: var(--amber); }
+@keyframes toastIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ═══════════════════════════════════════════════════════════
+   SPECIFIC PANELS
+═══════════════════════════════════════════════════════════ */
+
+/* Overview sparklines */
+.mini-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 40px;
+}
+.mini-bar-chart .bar {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, var(--gold) 0%, rgba(201,151,58,0.3) 100%);
+  min-height: 4px;
+  transition: height 0.8s ease;
+}
+
+/* Activity feed */
+.activity-feed { display: flex; flex-direction: column; gap: 0; }
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background 0.15s;
+}
+.activity-item:hover { background: rgba(255,255,255,0.02); }
+.activity-item:last-child { border-bottom: none; }
+
+.activity-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.activity-content { flex: 1; min-width: 0; }
+.activity-text { font-size: 13px; color: var(--text); line-height: 1.45; }
+.activity-text b { color: var(--gold-light); font-weight: 700; }
+.activity-time { font-size: 11px; color: var(--text-mute); margin-top: 3px; font-family: var(--font-mono); }
+.activity-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+
+/* User table avatar */
+.user-cell { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #0a0f1e;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.user-avatar.blue { background: linear-gradient(135deg, #2563eb, #60a5fa); color: #fff; }
+.user-avatar.green { background: linear-gradient(135deg, #16a34a, #4ade80); color: #fff; }
+.user-avatar.purple { background: linear-gradient(135deg, #7c3aed, #c4b5fd); color: #fff; }
+.user-name { font-weight: 600; font-size: 13px; color: var(--text); }
+.user-email { font-size: 11px; color: var(--text-mute); margin-top: 1px; font-family: var(--font-mono); }
+
+/* Row action buttons */
+.row-actions { display: flex; align-items: center; gap: 6px; }
+
+/* Branch / KPI score bars */
+.score-bar-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.score-bar-label { width: 110px; flex-shrink: 0; font-weight: 600; color: var(--text); }
+.score-bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--gold-light)); transition: width 0.8s ease; }
+.score-bar-val { font-size: 12px; color: var(--gold-light); font-weight: 700; font-variant-numeric: tabular-nums; min-width: 52px; text-align: right; }
+
+/* Data upload zone */
+.upload-zone {
+  border: 2px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 48px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: rgba(255,255,255,0.015);
+}
+.upload-zone:hover { border-color: var(--gold); background: var(--gold-glow); }
+.upload-zone.drag-over { border-color: var(--gold-light); background: rgba(201,151,58,0.12); }
+.upload-icon { font-size: 42px; margin-bottom: 16px; opacity: 0.7; }
+.upload-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.upload-desc { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+.upload-input { display: none; }
+
+/* Questionnaire items editor */
+.q-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: rgba(255,255,255,0.02);
+  transition: border-color 0.15s;
+}
+.q-item:hover { border-color: var(--border2); }
+.q-item-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.q-code { font-family: var(--font-mono); font-size: 11px; font-weight: 600; background: var(--gold-dim); color: var(--gold-light); padding: 3px 8px; border-radius: 4px; flex-shrink: 0; }
+.q-actions { margin-left: auto; display: flex; gap: 6px; }
+.q-input { width: 100%; font-family: var(--font-main); font-size: 13px; background: var(--bg2); border: 1px solid var(--border2); border-radius: 5px; padding: 8px 12px; color: var(--text); outline: none; transition: border-color 0.2s; }
+.q-input:focus { border-color: var(--gold); }
+.q-status { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+.q-status.retained { background: var(--green-dim); color: #86efac; }
+.q-status.removed  { background: var(--red-dim);   color: #fca5a5; }
+
+/* Settings sections */
+.settings-section { margin-bottom: 28px; }
+.settings-section-title { font-size: 13px; font-weight: 800; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-info { flex: 1; }
+.setting-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.setting-desc { font-size: 12px; color: var(--text-dim); margin-top: 3px; line-height: 1.45; }
+
+/* Analytics control sliders */
+.driver-weight-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 60px 100px;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.driver-weight-row:last-child { border-bottom: none; }
+.driver-weight-name { font-size: 13px; font-weight: 700; color: var(--text); }
+input[type=range].admin-range {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range].admin-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 3px solid var(--gold-light);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--gold); }
+
+/* Audit log */
+.audit-row { font-family: var(--font-mono); }
+.audit-action { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; }
+
+/* Sidebar overlay mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 190;
+}
+
+/* Confirm modal */
+.confirm-modal { max-width: 400px; }
+.confirm-body { text-align: center; padding: 32px 28px 24px; }
+.confirm-icon { font-size: 48px; margin-bottom: 16px; }
+.confirm-title { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.confirm-message { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+/* Empty states */
+.empty-state { text-align: center; padding: 60px 20px; }
+.empty-icon { font-size: 48px; opacity: 0.4; margin-bottom: 16px; }
+.empty-title { font-size: 16px; font-weight: 700; color: var(--text-dim); margin-bottom: 8px; }
+.empty-desc { font-size: 13px; color: var(--text-mute); }
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+/* Info boxes */
+.info-box { padding: 14px 18px; border-radius: 8px; font-size: 13px; line-height: 1.65; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 16px; }
+.info-box.gold    { background: var(--gold-dim); border: 1px solid rgba(201,151,58,0.25); color: var(--gold-light); }
+.info-box.info    { background: var(--blue-dim);  border: 1px solid rgba(59,130,246,0.25); color: #93c5fd; }
+.info-box.warning { background: var(--amber-dim); border: 1px solid rgba(245,158,11,0.25); color: #fcd34d; }
+.info-box.success { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.25); color: #86efac; }
+.info-box.danger  { background: var(--red-dim);   border: 1px solid rgba(239,68,68,0.25); color: #fca5a5; }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay { display: block; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
+  .main { margin-left: 0; }
+  .topbar-menu-btn { display: flex; }
+  .topbar-search { display: none; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+  .driver-weight-row { grid-template-columns: 1fr; gap: 8px; }
+}
+
+@media (max-width: 768px) {
+  .content { padding: 16px; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .page-header { flex-direction: column; }
+  .topbar { padding: 0 16px; }
+  .modal { max-height: calc(100dvh - 24px); }
+}
+
+@media (max-width: 480px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .filter-bar { gap: 8px; }
+  .filter-select { flex: 1 1 calc(50% - 8px); min-width: 0; }
+  .modal-header, .modal-body, .modal-footer { padding-left: 18px; padding-right: 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+  LOGIN SCREEN
+════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-brand">
+        <div class="login-brand-icon">🛡️</div>
+        <div class="login-brand-text">
+          <strong>ROSHD</strong>
+          <small>Admin Control Center</small>
+        </div>
+      </div>
+      <div class="login-title">Admin Sign In</div>
+      <div class="login-subtitle">Restricted access — authorized administrators only</div>
+    </div>
+    <div class="login-body">
+      <div class="login-error" id="loginError"></div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" id="adminEmail" placeholder="admin@roshd-professional.com" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="pw-wrap">
+          <input type="password" class="form-input" id="adminPassword" placeholder="••••••••••" autocomplete="current-password">
+          <button class="pw-eye" onclick="togglePw('adminPassword', this)">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="handleAdminLogin()" id="loginBtn" style="margin-top:8px">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Access Admin Panel
+      </button>
+      <div style="margin-top:18px;text-align:center;font-size:12px;color:var(--text-mute)">
+        <span>Demo credentials: <code style="color:var(--gold-light);background:var(--gold-dim);padding:2px 6px;border-radius:3px">admin@roshd.com</code> / <code style="color:var(--gold-light);background:var(--gold-dim);padding:2px 6px;border-radius:3px">admin123</code></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+  ADMIN APP
+════════════════════════════════════════ -->
+<div id="adminApp">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🛡️</div>
+      <div class="sidebar-brand-text">
+        <strong>ROSHD</strong>
+        <span class="badge-admin">Admin</span>
+      </div>
+    </div>
+
+    <div class="sidebar-admin-strip">
+      <div class="admin-avatar" id="adminAvatar">A</div>
+      <div class="admin-info">
+        <div class="admin-name" id="adminDisplayName">Administrator</div>
+        <div class="admin-role">Super Admin</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">Dashboard</div>
+      <button class="nav-item active" data-panel="overview" onclick="showPanel('overview',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </button>
+      <button class="nav-item" data-panel="analytics" onclick="showPanel('analytics',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        Live Analytics
+        <span class="nav-badge gold">Live</span>
+      </button>
+
+      <div class="nav-section">Management</div>
+      <button class="nav-item" data-panel="users" onclick="showPanel('users',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        User Management
+        <span class="nav-badge" id="userBadge">300</span>
+      </button>
+      <button class="nav-item" data-panel="branches" onclick="showPanel('branches',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+        Branch Management
+      </button>
+      <button class="nav-item" data-panel="data" onclick="showPanel('data',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        Data Management
+        <span class="nav-badge green">CSV</span>
+      </button>
+      <button class="nav-item" data-panel="content" onclick="showPanel('content',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Content & Questionnaire
+      </button>
+
+      <div class="nav-section">Intelligence</div>
+      <button class="nav-item" data-panel="model" onclick="showPanel('model',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        Model & Weights Control
+      </button>
+      <button class="nav-item" data-panel="reports" onclick="showPanel('reports',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Reports & Export
+      </button>
+
+      <div class="nav-section">System</div>
+      <button class="nav-item" data-panel="settings" onclick="showPanel('settings',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
+      <button class="nav-item" data-panel="audit" onclick="showPanel('audit',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Audit Log
+        <span class="nav-badge" id="auditBadge">12</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="handleLogout()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Logout
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-menu-btn" onclick="toggleSidebar()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div>
+          <div class="topbar-title" id="topbarTitle">Overview</div>
+          <div class="topbar-breadcrumb">ROSHD Admin <span>›</span> <span id="topbarCrumb">Dashboard</span></div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-search">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" placeholder="Search users, data…" id="globalSearch" oninput="handleGlobalSearch(this.value)">
+        </div>
+        <div class="status-pill">
+          <div class="status-dot"></div>
+          <span>System Live</span>
+        </div>
+        <div class="topbar-icon-btn" onclick="toggleNotif()" title="Notifications">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="topbar-icon-btn" onclick="window.print()" title="Print / Export">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+
+      <!-- ══════════════ OVERVIEW PANEL ══════════════ -->
+      <div class="panel active" id="panel-overview">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">System Overview</div>
+            <div class="page-title">Admin Dashboard</div>
+            <div class="page-subtitle">Real-time platform health, user stats, and system KPIs — Q2 2026</div>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="refreshOverview()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-7"/><path d="M3 3v6h6"/></svg>
+              Refresh
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="showPanel('data',document.querySelector('[data-panel=data]'))">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Upload Data
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI Stats -->
+        <div class="stat-grid" id="overviewStats">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div class="grid-2">
+          <!-- CX Scores by Branch -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">CX Score by Branch</div>
+                <div class="card-subtitle">Live satisfaction scores (avg /5 · with % of scale)</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="showPanel('branches',document.querySelector('[data-panel=branches]'))">Manage Branches</button>
+            </div>
+            <div class="card-body" id="branchScoresBars"></div>
+          </div>
+
+          <!-- Activity Feed -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Recent Activity</div>
+                <div class="card-subtitle">Latest admin and system actions</div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="showPanel('audit',document.querySelector('[data-panel=audit]'))">View All</button>
+            </div>
+            <div class="activity-feed" id="activityFeed"></div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <!-- Driver Distribution -->
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">Driver Impact Summary</div><div class="card-subtitle">Effect sizes across all branches</div></div></div>
+            <div class="card-body" id="driverSummary"></div>
+          </div>
+
+          <!-- User Distribution -->
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">User Segments</div><div class="card-subtitle">Sample distribution breakdown</div></div></div>
+            <div class="card-body" id="userSegments"></div>
+          </div>
+
+          <!-- System Health -->
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">System Health</div><div class="card-subtitle">Platform and model status</div></div></div>
+            <div class="card-body" id="systemHealth"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ LIVE ANALYTICS PANEL ══════════════ -->
+      <div class="panel" id="panel-analytics">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">Intelligence Engine</div>
+            <div class="page-title">Live Analytics Control</div>
+            <div class="page-subtitle">Read-only real-time view of customer dashboard data across all branches</div>
+          </div>
+          <div class="page-header-actions">
+            <select class="filter-select" id="analyticsBranch" onchange="renderAnalytics()">
+              <option value="All Branches">All Branches</option>
+              <option value="Riyadh">Riyadh</option>
+              <option value="Jeddah">Jeddah</option>
+              <option value="Dammam">Dammam</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="exportAnalyticsReport()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+              Export Report
+            </button>
+          </div>
+        </div>
+
+        <div class="stat-grid" id="analyticsKpis"></div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">Driver Ranking</div><div class="card-subtitle">Impact effect sizes — current branch filter</div></div></div>
+            <div class="card-body" id="analyticsDriverBars"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">Branch Performance Comparison</div><div class="card-subtitle">Average CX Score — all branches</div></div></div>
+            <div class="card-body" id="analyticsBranchComp"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Sample Breakdown</div><div class="card-subtitle">300-respondent distribution across demographics</div></div>
+          </div>
+          <div class="card-body">
+            <div class="grid-2" style="margin:0">
+              <div id="analyticsDemoBreakdown"></div>
+              <div id="analyticsAgeBreakdown"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ USER MANAGEMENT ══════════════ -->
+      <div class="panel" id="panel-users">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">User Management</div>
+            <div class="page-title">All Users</div>
+            <div class="page-subtitle">Create, edit, suspend, and delete user accounts — full CRUD control</div>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="openImportUsers()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/></svg>
+              Import CSV
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="openCreateUser()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add User
+            </button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0">
+          <div class="filter-bar">
+            <div class="filter-search">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" placeholder="Search by name or email…" id="userSearch" oninput="filterUsers()">
+            </div>
+            <select class="filter-select" id="userRoleFilter" onchange="filterUsers()">
+              <option value="">All Roles</option>
+              <option value="admin">Admin</option>
+              <option value="customer">Customer</option>
+              <option value="analyst">Analyst</option>
+            </select>
+            <select class="filter-select" id="userStatusFilter" onchange="filterUsers()">
+              <option value="">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+              <option value="pending">Pending</option>
+            </select>
+            <select class="filter-select" id="userBranchFilter" onchange="filterUsers()">
+              <option value="">All Branches</option>
+              <option value="Riyadh">Riyadh</option>
+              <option value="Jeddah">Jeddah</option>
+              <option value="Dammam">Dammam</option>
+            </select>
+            <div class="filter-actions">
+              <button class="btn btn-secondary btn-sm" onclick="bulkAction('suspend')" id="bulkSuspendBtn" style="display:none">Suspend Selected</button>
+              <button class="btn btn-danger btn-sm"   onclick="bulkAction('delete')"  id="bulkDeleteBtn"  style="display:none">Delete Selected</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="usersTable">
+              <thead>
+                <tr>
+                  <th style="width:36px"><input type="checkbox" id="selectAllUsers" onchange="toggleSelectAll(this)"></th>
+                  <th onclick="sortTable('users','name')">User <span class="sort-icon">↕</span></th>
+                  <th onclick="sortTable('users','branch')">Branch <span class="sort-icon">↕</span></th>
+                  <th onclick="sortTable('users','role')">Role <span class="sort-icon">↕</span></th>
+                  <th onclick="sortTable('users','status')">Status <span class="sort-icon">↕</span></th>
+                  <th onclick="sortTable('users','loginCount')">Logins <span class="sort-icon">↕</span></th>
+                  <th onclick="sortTable('users','lastLogin')">Last Login <span class="sort-icon">↕</span></th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="usersTbody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="usersPagination"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════ BRANCH MANAGEMENT ══════════════ -->
+      <div class="panel" id="panel-branches">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">Branch Control</div>
+            <div class="page-title">Branch Management</div>
+            <div class="page-subtitle">Add, edit, and remove service branches — override CX scores and driver weights per branch</div>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary btn-sm" onclick="openCreateBranch()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Branch
+            </button>
+          </div>
+        </div>
+
+        <div id="branchCards" class="grid-3"></div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Branch CX Scores — Editable</div><div class="card-subtitle">Override scores used in customer dashboards</div></div>
+            <button class="btn btn-primary btn-sm" onclick="saveBranchScores()">Save Changes</button>
+          </div>
+          <div class="card-body">
+            <div id="branchScoreEditor"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ DATA MANAGEMENT ══════════════ -->
+      <div class="panel" id="panel-data">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">Data Control</div>
+            <div class="page-title">Data Management</div>
+            <div class="page-subtitle">Upload, validate, and manage survey datasets — full CSV/Excel import pipeline</div>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="downloadTemplate()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Template
+            </button>
+          </div>
+        </div>
+
+        <!-- Upload Zone -->
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header"><div class="card-title">Upload New Dataset</div><div class="card-subtitle">CSV / Excel — max 10MB. Columns: ID, Branch, Gender, Service, Frequency, Age, Q_Score, C_Score, P_Score, S_Score, CX_Score</div></div>
+          <div class="card-body">
+            <div class="upload-zone" id="uploadZone" onclick="triggerUpload()" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+              <div class="upload-icon">📂</div>
+              <div class="upload-title">Drop your dataset file here</div>
+              <div class="upload-desc">Supports CSV, XLSX, XLS — or click to browse</div>
+            </div>
+            <input type="file" class="upload-input" id="dataFileInput" accept=".csv,.xlsx,.xls" onchange="handleFileUpload(this)">
+            <div id="uploadProgress" style="margin-top:16px;display:none">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+                <span style="font-size:13px;font-weight:600;color:var(--text)" id="uploadFileName">file.csv</span>
+                <span style="font-size:12px;color:var(--gold-light)" id="uploadPct">0%</span>
+              </div>
+              <div style="height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden">
+                <div id="uploadBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:99px;transition:width 0.3s"></div>
+              </div>
+              <div id="uploadStatus" style="margin-top:8px;font-size:12px;color:var(--text-dim)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dataset Table -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Uploaded Datasets</div><div class="card-subtitle">Manage, validate, and activate survey datasets</div></div>
+            <div class="card-actions">
+              <button class="btn btn-secondary btn-sm" onclick="refreshDatasets()">Refresh</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Dataset Name</th>
+                  <th>Period</th>
+                  <th>Rows</th>
+                  <th>Status</th>
+                  <th>Uploaded By</th>
+                  <th>Upload Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="datasetsTbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Sample Records Preview -->
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Sample Records — Editable</div><div class="card-subtitle">Inline edit individual response records</div></div>
+            <button class="btn btn-primary btn-sm" onclick="saveRecordEdits()">Save Edits</button>
+          </div>
+          <div class="filter-bar">
+            <div class="filter-search">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" placeholder="Search records…" id="recordSearch" oninput="filterRecords()">
+            </div>
+            <select class="filter-select" id="recordBranchFilter" onchange="filterRecords()">
+              <option value="">All Branches</option>
+              <option value="Riyadh">Riyadh</option>
+              <option value="Jeddah">Jeddah</option>
+              <option value="Dammam">Dammam</option>
+            </select>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="recordsTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Branch</th>
+                  <th>Gender</th>
+                  <th>Service</th>
+                  <th>Frequency</th>
+                  <th>Age</th>
+                  <th>Q</th>
+                  <th>C</th>
+                  <th>P</th>
+                  <th>S</th>
+                  <th>CX</th>
+                  <th>Risk</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="recordsTbody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="recordsPagination"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════ CONTENT & QUESTIONNAIRE ══════════════ -->
+      <div class="panel" id="panel-content">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">Content Control</div>
+            <div class="page-title">Content & Questionnaire Editor</div>
+            <div class="page-subtitle">Edit questionnaire items, platform content, and service descriptions</div>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="resetContent()">Reset to Default</button>
+            <button class="btn btn-primary btn-sm" onclick="saveAllContent()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save All Changes
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab nav -->
+        <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px">
+          <button class="content-tab-btn active" onclick="switchContentTab('questionnaire',this)" style="padding:12px 22px;background:none;border:none;border-bottom:2px solid var(--gold);color:var(--gold);font-family:var(--font-main);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s">Questionnaire Items</button>
+          <button class="content-tab-btn" onclick="switchContentTab('platform',this)" style="padding:12px 22px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--font-main);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s">Platform Text</button>
+          <button class="content-tab-btn" onclick="switchContentTab('services',this)" style="padding:12px 22px;background:none;border:none;border-bottom:2px solid transparent;color:var(--text-dim);font-family:var(--font-main);font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s">Services</button>
+        </div>
+
+        <div id="content-tab-questionnaire">
+          <div class="info-box info">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><b>Governance:</b> Item removal is tracked in the Pilot section. Use the status toggle here to mark items as Retained or Removed for client-side display.</span>
+          </div>
+          <div id="questionnaireEditor"></div>
+          <button class="btn btn-primary" onclick="addQuestionnaireItem()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add New Item
+          </button>
+        </div>
+
+        <div id="content-tab-platform" style="display:none">
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header"><div class="card-title">Hero Section</div></div>
+              <div class="card-body">
+                <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-input" id="heroTitleEn" value="Clarity. Insight. Impact."></div>
+                <div class="form-group"><label class="form-label">Title (AR)</label><input class="form-input" id="heroTitleAr" value="وضوح. رؤية. تأثير." dir="rtl"></div>
+                <div class="form-group"><label class="form-label">Subtitle (EN)</label><textarea class="form-input" id="heroSubEn" rows="3">ROSHD Professional delivers data-driven consulting and executive training.</textarea></div>
+                <div class="form-group"><label class="form-label">Subtitle (AR)</label><textarea class="form-input" id="heroSubAr" rows="3" dir="rtl">تقدّم رُشد الاحتراف استشارات قائمة على البيانات.</textarea></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header"><div class="card-title">Contact & Footer</div></div>
+              <div class="card-body">
+                <div class="form-group"><label class="form-label">Contact Email</label><input class="form-input" id="contactEmail" value="info@roshd-professional.com"></div>
+                <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="contactPhone" value="+966 11 000 0000"></div>
+                <div class="form-group"><label class="form-label">Footer Tagline (EN)</label><input class="form-input" id="footerTagEn" value="Clarity. Insight. Impact."></div>
+                <div class="form-group"><label class="form-label">Footer Tagline (AR)</label><input class="form-input" id="footerTagAr" value="وضوح. رؤية. تأثير." dir="rtl"></div>
+                <div class="form-group"><label class="form-label">API Base URL</label><input class="form-input" id="apiBaseUrl" value="https://roshd-professional-s8lh.vercel.app" style="font-family:var(--font-mono);font-size:12px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="content-tab-services" style="display:none">
+          <div id="servicesEditor"></div>
+          <button class="btn btn-secondary" onclick="addService()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Service
+          </button>
+        </div>
+      </div>
+
+      <!-- ══════════════ MODEL & WEIGHTS ══════════════ -->
+      <div class="panel" id="panel-model">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">Intelligence Control</div>
+            <div class="page-title">Model & Weights Control</div>
+            <div class="page-subtitle">Override driver impact weights, explanatory power, and CX score calculations per branch</div>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="resetModelWeights()">Reset to Calculated</button>
+            <button class="btn btn-primary btn-sm" onclick="saveModelWeights()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Apply Changes
+            </button>
+          </div>
+        </div>
+
+        <div class="info-box warning">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span><b>Admin Override:</b> Changing driver weights will affect what customers see in their dashboards. Changes are logged. Use with care — always document the reason for overrides.</span>
+        </div>
+
+        <!-- Branch selector for model edit -->
+        <div style="margin-bottom:20px;display:flex;align-items:center;gap:12px">
+          <label class="form-label" style="margin:0">Edit weights for branch:</label>
+          <select class="filter-select" id="modelBranchSelect" onchange="renderModelWeights()" style="width:auto">
+            <option value="All Branches">All Branches (Global)</option>
+            <option value="Riyadh">Riyadh</option>
+            <option value="Jeddah">Jeddah</option>
+            <option value="Dammam">Dammam</option>
+          </select>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">Driver Impact Weights</div><div class="card-subtitle">Adjust the explanatory contribution of each driver</div></div></div>
+            <div class="card-body">
+              <div id="modelWeightsEditor"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div><div class="card-title">Model Quality Metrics</div><div class="card-subtitle">Edit displayed quality values</div></div></div>
+            <div class="card-body" id="modelMetricsEditor"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Decision Labels Override</div><div class="card-subtitle">Edit the decision text shown per driver in customer dashboards</div></div></div>
+          <div class="card-body" id="decisionLabelsEditor"></div>
+        </div>
+      </div>
+
+      <!-- ══════════════ REPORTS & EXPORT ══════════════ -->
+      <div class="panel" id="panel-reports">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">Output Center</div>
+            <div class="page-title">Reports & Export</div>
+            <div class="page-subtitle">Generate formatted reports, schedule exports, and manage delivery templates</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Generate Report</div><div class="card-subtitle">Custom report builder for any branch and period</div></div>
+            <div class="card-body">
+              <div class="form-group"><label class="form-label">Report Type</label>
+                <select class="form-select" id="reportType">
+                  <option value="executive">Executive Summary</option>
+                  <option value="cx_drivers">CX Drivers Deep Dive</option>
+                  <option value="branch_comparison">Branch Comparison</option>
+                  <option value="demographics">Demographics Profile</option>
+                  <option value="model_quality">Model Quality Report</option>
+                  <option value="full">Full Dashboard Export</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Branch</label>
+                <select class="form-select" id="reportBranch">
+                  <option>All Branches</option>
+                  <option>Riyadh</option>
+                  <option>Jeddah</option>
+                  <option>Dammam</option>
+                </select>
+              </div>
+              <div class="form-grid-2">
+                <div class="form-group"><label class="form-label">Period From</label><input type="date" class="form-input" id="reportFrom" value="2026-04-01"></div>
+                <div class="form-group"><label class="form-label">Period To</label><input type="date" class="form-input" id="reportTo" value="2026-06-30"></div>
+              </div>
+              <div class="form-group"><label class="form-label">Format</label>
+                <select class="form-select" id="reportFormat">
+                  <option>PDF</option>
+                  <option>Excel / CSV</option>
+                  <option>JSON (API)</option>
+                  <option>Print-ready HTML</option>
+                </select>
+              </div>
+              <div class="form-group"><label class="form-label">Language</label>
+                <select class="form-select" id="reportLang">
+                  <option>English</option>
+                  <option>Arabic</option>
+                  <option>Bilingual (EN + AR)</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-full" onclick="generateReport()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+                Generate & Download
+              </button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><div class="card-title">Scheduled Exports</div><div class="card-subtitle">Automated export schedule management</div></div>
+            <div class="card-body" id="scheduledExports"></div>
+            <div style="padding:0 22px 18px">
+              <button class="btn btn-secondary btn-sm" onclick="openScheduleModal()">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Schedule
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><div class="card-title">Export History</div><div class="card-subtitle">Previously generated reports and downloads</div></div></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Report Name</th><th>Type</th><th>Branch</th><th>Format</th><th>Generated By</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="reportHistoryTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ SETTINGS ══════════════ -->
+      <div class="panel" id="panel-settings">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">Configuration</div>
+            <div class="page-title">System Settings</div>
+            <div class="page-subtitle">Platform configuration, user permissions, email templates, and system preferences</div>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-primary btn-sm" onclick="saveSettings()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Settings
+            </button>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-body">
+              <div class="settings-section">
+                <div class="settings-section-title">Platform Configuration</div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">Maintenance Mode</div><div class="setting-desc">When enabled, clients see a maintenance page</div></div>
+                  <div class="toggle-track" id="toggleMaintenance" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">New Registrations</div><div class="setting-desc">Allow new users to self-register</div></div>
+                  <div class="toggle-track on" id="toggleRegistrations" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">Arabic Default Language</div><div class="setting-desc">Show Arabic as the default interface language</div></div>
+                  <div class="toggle-track on" id="toggleArabicDefault" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">Demo Mode</div><div class="setting-desc">Allow login without server verification (demo fallback)</div></div>
+                  <div class="toggle-track on" id="toggleDemoMode" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">Dashboard Filter Persistence</div><div class="setting-desc">Remember user filter selections across sessions</div></div>
+                  <div class="toggle-track on" id="toggleFilterPersist" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-section-title">Dashboard Display</div>
+                <div class="form-group"><label class="form-label">Current Quarter Label</label><input class="form-input" id="quarterLabel" value="Q2 2026"></div>
+                <div class="form-group"><label class="form-label">Total Sample Size (N)</label><input class="form-input" id="sampleSizeN" type="number" value="300"></div>
+                <div class="form-group"><label class="form-label">Model Explanatory Power (%)</label><input class="form-input" id="modelR2" type="number" value="72" min="0" max="100"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div class="settings-section">
+                <div class="settings-section-title">Security & Access</div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">Two-Factor Authentication</div><div class="setting-desc">Require 2FA for admin accounts</div></div>
+                  <div class="toggle-track" id="toggle2FA" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">Session Timeout (hours)</div><div class="setting-desc">Auto-logout after inactivity</div></div>
+                  <select class="filter-select" style="width:auto" id="sessionTimeout">
+                    <option value="1">1 hour</option>
+                    <option value="4">4 hours</option>
+                    <option value="8" selected>8 hours</option>
+                    <option value="24">24 hours</option>
+                  </select>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">Audit All Admin Actions</div><div class="setting-desc">Log every admin create/edit/delete operation</div></div>
+                  <div class="toggle-track on" id="toggleAudit" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+              </div>
+              <div class="settings-section">
+                <div class="settings-section-title">Email Notifications</div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">New User Registration Alert</div><div class="setting-desc">Email admin when a new user signs up</div></div>
+                  <div class="toggle-track on" id="toggleNewUserEmail" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="setting-row">
+                  <div class="setting-info"><div class="setting-name">Weekly Report Digest</div><div class="setting-desc">Automated weekly analytics summary</div></div>
+                  <div class="toggle-track" id="toggleWeeklyDigest" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+                </div>
+                <div class="form-group" style="margin-top:16px"><label class="form-label">Admin Email Recipients</label><input class="form-input" id="adminEmails" value="admin@roshd-professional.com"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">Danger Zone</div><div class="card-subtitle">Irreversible system-level operations</div></div>
+          <div class="card-body">
+            <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+              <button class="btn btn-danger btn-sm" onclick="confirmDanger('clear-cache','Clear System Cache','This will force all clients to reload fresh data. Users currently on the platform will experience a brief reload.')">Clear Cache</button>
+              <button class="btn btn-danger btn-sm" onclick="confirmDanger('reset-filters','Reset All User Filters','This will erase all stored filter preferences for every user account.')">Reset User Filters</button>
+              <button class="btn btn-danger btn-sm" onclick="confirmDanger('flush-sessions','Flush All Sessions','All active client sessions will be terminated. Users will need to log in again.')">Flush Sessions</button>
+              <button class="btn btn-danger btn-sm" onclick="confirmDanger('reset-model','Reset Model to Defaults','All manual driver weight overrides will be reverted to calculated defaults.')">Reset Model Overrides</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ AUDIT LOG ══════════════ -->
+      <div class="panel" id="panel-audit">
+        <div class="page-header">
+          <div class="page-header-left">
+            <div class="page-eyebrow">Security & Compliance</div>
+            <div class="page-title">Audit Log</div>
+            <div class="page-subtitle">Complete record of all admin actions — who did what, when, and on which resource</div>
+          </div>
+          <div class="page-header-actions">
+            <button class="btn btn-secondary btn-sm" onclick="exportAuditLog()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/></svg>
+              Export Log
+            </button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:0">
+          <div class="filter-bar">
+            <div class="filter-search">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="text" placeholder="Search actions, users…" id="auditSearch" oninput="filterAuditLog()">
+            </div>
+            <select class="filter-select" id="auditActionFilter" onchange="filterAuditLog()">
+              <option value="">All Actions</option>
+              <option value="CREATE">Create</option>
+              <option value="UPDATE">Update</option>
+              <option value="DELETE">Delete</option>
+              <option value="LOGIN">Login</option>
+              <option value="EXPORT">Export</option>
+              <option value="UPLOAD">Upload</option>
+              <option value="OVERRIDE">Override</option>
+            </select>
+            <select class="filter-select" id="auditAdminFilter" onchange="filterAuditLog()">
+              <option value="">All Admins</option>
+              <option value="Super Admin">Super Admin</option>
+              <option value="Manager">Manager</option>
+            </select>
+            <button class="btn btn-danger btn-sm" onclick="confirmDanger('clear-audit','Clear Audit Log','This will permanently delete all audit log entries. This action cannot be undone.')">Clear Log</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Admin</th>
+                  <th>Action</th>
+                  <th>Resource</th>
+                  <th>Details</th>
+                  <th>IP Address</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="auditTbody"></tbody>
+            </table>
+          </div>
+          <div class="table-pagination" id="auditPagination"></div>
+        </div>
+      </div>
+
+    </div><!-- end content -->
+  </div><!-- end main -->
+</div><!-- end adminApp -->
+
+<!-- ════════════════════════════════════════
+  MODALS
+════════════════════════════════════════ -->
+
+<!-- Create / Edit User Modal -->
+<div class="modal-overlay" id="userModal" onclick="closeModal('userModal',event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title" id="userModalTitle">Add New User</div><div class="modal-subtitle">Create a new client account with assigned branch and role</div></div>
+      <button class="modal-close" onclick="closeModalById('userModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-error" id="userModalError"></div>
+      <input type="hidden" id="editUserId">
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">First Name *</label><input class="form-input" id="uFirstName" placeholder="Ahmed"></div>
+        <div class="form-group"><label class="form-label">Last Name *</label><input class="form-input" id="uLastName" placeholder="Al-Rashidi"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email Address *</label><input type="email" class="form-input" id="uEmail" placeholder="ahmed@company.com"></div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Password *</label><div class="pw-wrap"><input type="password" class="form-input" id="uPassword" placeholder="Min. 8 characters"><button class="pw-eye" onclick="togglePw('uPassword',this)"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+        <div class="form-group"><label class="form-label">Role *</label>
+          <select class="form-select" id="uRole">
+            <option value="customer">Customer</option>
+            <option value="analyst">Analyst</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Branch</label>
+          <select class="form-select" id="uBranch">
+            <option value="All Branches">All Branches</option>
+            <option value="Riyadh">Riyadh</option>
+            <option value="Jeddah">Jeddah</option>
+            <option value="Dammam">Dammam</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Status</label>
+          <select class="form-select" id="uStatus">
+            <option value="active">Active</option>
+            <option value="pending">Pending</option>
+            <option value="suspended">Suspended</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Organization / Company</label><input class="form-input" id="uOrg" placeholder="Company name"></div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="form-input" id="uNotes" rows="2" placeholder="Internal notes about this user…"></textarea></div>
+      <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--border);margin-top:4px">
+        <label class="toggle-switch">
+          <div class="toggle-track on" id="uEmailVerified" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+          <span style="font-size:13px;color:var(--text-dim);font-weight:600">Email Verified</span>
+        </label>
+        <label class="toggle-switch">
+          <div class="toggle-track" id="uSendWelcome" onclick="toggleSetting(this)"><div class="toggle-thumb"></div></div>
+          <span style="font-size:13px;color:var(--text-dim);font-weight:600">Send Welcome Email</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModalById('userModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()" id="saveUserBtn">Create User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create / Edit Branch Modal -->
+<div class="modal-overlay" id="branchModal" onclick="closeModal('branchModal',event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title" id="branchModalTitle">Add Branch</div><div class="modal-subtitle">New service branch configuration</div></div>
+      <button class="modal-close" onclick="closeModalById('branchModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editBranchId">
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Branch Name (EN) *</label><input class="form-input" id="bNameEn" placeholder="e.g. Riyadh North"></div>
+        <div class="form-group"><label class="form-label">Branch Name (AR) *</label><input class="form-input" id="bNameAr" placeholder="مثال: الرياض الشمال" dir="rtl"></div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Region</label>
+          <select class="form-select" id="bRegion">
+            <option>Riyadh</option><option>Jeddah</option><option>Dammam</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Manager Name</label><input class="form-input" id="bManager" placeholder="Branch manager"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Address</label><input class="form-input" id="bAddress" placeholder="Full branch address"></div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">CX Score Override (/5)</label><input class="form-input" type="number" id="bCxScore" placeholder="3.8" min="1" max="5" step="0.1"></div>
+        <div class="form-group"><label class="form-label">Sample Size (N)</label><input class="form-input" type="number" id="bSampleN" placeholder="100" min="0"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Status</label>
+        <select class="form-select" id="bStatus">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="pilot">Pilot</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModalById('branchModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBranch()" id="saveBranchBtn">Save Branch</button>
+    </div>
+  </div>
+</div>
+
+<!-- View User Modal -->
+<div class="modal-overlay" id="viewUserModal" onclick="closeModal('viewUserModal',event)">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div><div class="modal-title" id="viewUserTitle">User Profile</div><div class="modal-subtitle" id="viewUserSub">Full account details</div></div>
+      <button class="modal-close" onclick="closeModalById('viewUserModal')">✕</button>
+    </div>
+    <div class="modal-body" id="viewUserBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModalById('viewUserModal')">Close</button>
+      <button class="btn btn-primary" onclick="editUserFromView()" id="editFromViewBtn">Edit User</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Danger Modal -->
+<div class="modal-overlay" id="confirmModal" onclick="closeModal('confirmModal',event)">
+  <div class="modal confirm-modal">
+    <div class="confirm-body">
+      <div class="confirm-icon" id="confirmIcon">⚠️</div>
+      <div class="confirm-title" id="confirmTitle">Are you sure?</div>
+      <div class="confirm-message" id="confirmMessage">This action cannot be undone.</div>
+    </div>
+    <div class="modal-footer" style="justify-content:center">
+      <button class="btn btn-secondary" onclick="closeModalById('confirmModal')">Cancel</button>
+      <button class="btn btn-danger" onclick="executeConfirmedAction()" id="confirmActionBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Schedule Export Modal -->
+<div class="modal-overlay" id="scheduleModal" onclick="closeModal('scheduleModal',event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">Schedule Export</div><div class="modal-subtitle">Set up automated periodic report generation</div></div>
+      <button class="modal-close" onclick="closeModalById('scheduleModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Report Name</label><input class="form-input" id="schedName" placeholder="Weekly CX Summary"></div>
+      <div class="form-grid-2">
+        <div class="form-group"><label class="form-label">Frequency</label>
+          <select class="form-select" id="schedFreq"><option>Weekly</option><option>Monthly</option><option>Quarterly</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Format</label>
+          <select class="form-select" id="schedFormat"><option>PDF</option><option>Excel</option><option>CSV</option></select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">Send To (email)</label><input class="form-input" id="schedEmail" placeholder="manager@company.com"></div>
+      <div class="form-group"><label class="form-label">Branch</label>
+        <select class="form-select" id="schedBranch"><option>All Branches</option><option>Riyadh</option><option>Jeddah</option><option>Dammam</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModalById('scheduleModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSchedule()">Create Schedule</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ════════════════════════════════════════
+  JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+/* ═══════════════════════════════════════════
+   CONSTANTS & STATE
+═══════════════════════════════════════════ */
+const API_BASE = 'https://roshd-professional-s8lh.vercel.app';
+
+const BRANCHES_DATA = {
+  'All Branches': { score:3.8, explanatory:72, top:'Quality',        topAr:'الجودة',        n:300 },
+  'Riyadh':       { score:3.7, explanatory:74, top:'Quality',        topAr:'الجودة',        n:100 },
+  'Jeddah':       { score:3.4, explanatory:69, top:'Communication',  topAr:'التواصل',       n:100 },
+  'Dammam':       { score:3.2, explanatory:63, top:'Price Fairness', topAr:'عدالة السعر',   n:100 }
+};
+
+const DRIVERS_DATA = {
+  'All Branches': [
+    {name:'Quality',        impact:0.34, avg:3.4, decision:'Invest'},
+    {name:'Communication',  impact:0.23, avg:3.0, decision:'Selective'},
+    {name:'Price Fairness', impact:0.12, avg:2.9, decision:'Monitor'},
+    {name:'Advisor Behavior',impact:0.10,avg:3.8, decision:'Maintain'},
+    {name:'Speed',          impact:0.01, avg:1.4, decision:'Do not overinvest'}
+  ],
+  'Riyadh': [
+    {name:'Quality',        impact:0.34, avg:3.5, decision:'Invest'},
+    {name:'Advisor Behavior',impact:0.15,avg:3.9, decision:'Optimize'},
+    {name:'Communication',  impact:0.11, avg:3.2, decision:'Selective'},
+    {name:'Price Fairness', impact:0.07, avg:3.0, decision:'Monitor'},
+    {name:'Speed',          impact:0.01, avg:1.5, decision:'Do not overinvest'}
+  ],
+  'Jeddah': [
+    {name:'Communication',  impact:0.26, avg:2.8, decision:'Invest'},
+    {name:'Quality',        impact:0.18, avg:3.4, decision:'Optimize'},
+    {name:'Price Fairness', impact:0.12, avg:2.7, decision:'Selective'},
+    {name:'Advisor Behavior',impact:0.08,avg:3.5, decision:'Monitor'},
+    {name:'Speed',          impact:0.01, avg:1.3, decision:'Do not overinvest'}
+  ],
+  'Dammam': [
+    {name:'Price Fairness', impact:0.22, avg:2.5, decision:'Invest'},
+    {name:'Communication',  impact:0.15, avg:3.0, decision:'Optimize'},
+    {name:'Quality',        impact:0.10, avg:3.3, decision:'Selective'},
+    {name:'Advisor Behavior',impact:0.06,avg:3.4, decision:'Monitor'},
+    {name:'Speed',          impact:0.01, avg:1.2, decision:'Do not overinvest'}
+  ]
+};
+
+/* Admin branch overrides (editable) */
+let branchOverrides = JSON.parse(JSON.stringify(BRANCHES_DATA));
+
+/* Model weight overrides */
+let modelOverrides = {};
+Object.keys(DRIVERS_DATA).forEach(b => {
+  modelOverrides[b] = DRIVERS_DATA[b].map(d => ({...d}));
+});
+
+/* State */
+let currentAdmin = null;
+let pendingDangerAction = null;
+let usersData = [];
+let branchesData = [];
+let auditLog = [];
+let sortState = {};
+let userPage = 1; const USER_PAGE_SIZE = 10;
+let recordPage = 1; const RECORD_PAGE_SIZE = 15;
+let auditPage = 1; const AUDIT_PAGE_SIZE = 20;
+let editingUserId = null;
+let editingBranchId = null;
+let contentTabActive = 'questionnaire';
+let scheduledExportsList = [];
+let reportHistory = [];
+
+/* ═══════════════════════════════════════════
+   QUESTIONNAIRE DATA (from customer side)
+═══════════════════════════════════════════ */
+let questionnaireItems = [
+  {code:'Q1', construct:'Quality',       status:'retained', en:'The repair/service was completed correctly the first time.',             ar:'تم إكمال الإصلاح من أول مرة بشكل صحيح.'},
+  {code:'Q2', construct:'Quality',       status:'retained', en:'The delivered work met my expectations.',                                ar:'العمل المُسلَّم كان بمستوى توقّعاتي.'},
+  {code:'Q3', construct:'Quality',       status:'retained', en:'The vehicle was returned in good condition.',                            ar:'عُادت المركبة بحالة جيدة.'},
+  {code:'Q4', construct:'Quality',       status:'removed',  en:'The quality of work increased my confidence in the service center.',    ar:'الجودة زادت ثقتي بالمركز.'},
+  {code:'C1', construct:'Communication', status:'retained', en:'I received clear updates during the service process.',                   ar:'تلقيت تحديثات واضحة أثناء الخدمة.'},
+  {code:'C2', construct:'Communication', status:'retained', en:'The advisor explained the required work clearly.',                       ar:'أوضح المستشار العمل المطلوب بوضوح.'},
+  {code:'C3', construct:'Communication', status:'retained', en:'I was informed before any major change or delay.',                       ar:'أُبلِغت قبل أي تغيير كبير أو تأخير.'},
+  {code:'C4', construct:'Communication', status:'removed',  en:'Communication was easy to understand.',                                  ar:'التواصل كان سهل الفهم.'},
+  {code:'P1', construct:'Price',         status:'retained', en:'The price was fair compared with the service.',                          ar:'السعر كان عادلًا مقارنة بالخدمة.'},
+  {code:'P2', construct:'Price',         status:'retained', en:'The estimate was clear before approval.',                                ar:'التقدير كان واضحًا قبل الموافقة.'},
+  {code:'P3', construct:'Price',         status:'retained', en:'The final invoice matched what was explained.',                          ar:'الفاتورة النهائية طابقت الشرح.'},
+  {code:'P4', construct:'Price',         status:'removed',  en:'The value justified the amount paid.',                                   ar:'القيمة برّرت المبلغ المدفوع.'},
+  {code:'S1', construct:'Speed',         status:'retained', en:'The service was completed within a reasonable time.',                    ar:'أُنجزت الخدمة في وقت معقول.'},
+  {code:'S2', construct:'Speed',         status:'retained', en:'Waiting time was acceptable.',                                           ar:'وقت الانتظار مقبول.'},
+  {code:'S3', construct:'Speed',         status:'retained', en:'Delivery matched the promised timing.',                                  ar:'التسليم طابق الموعد المُعلَن.'},
+  {code:'S4', construct:'Speed',         status:'removed',  en:'Total process time was convenient.',                                     ar:'وقت العملية كان مناسبًا.'},
+  {code:'OS1',construct:'CX Score',      status:'retained', en:'Overall I am satisfied with the service experience.',                   ar:'بشكل عام راضٍ عن تجربة الخدمة.'},
+  {code:'OS2',construct:'CX Score',      status:'retained', en:'The experience met my expectations.',                                   ar:'التجربة نالت توقّعاتي.'},
+  {code:'OS3',construct:'CX Score',      status:'retained', en:'I would consider returning.',                                            ar:'قد أعود لنفس المركز.'},
+];
+
+/* Services data */
+let servicesData = [
+  {id:1, num:'01', nameEn:'Training & Capability Building', nameAr:'التدريب وبناء القدرات', descEn:'Practical, role-based training linked directly to real outcomes.', descAr:'تدريب عملي مرتبط مباشرة بنتائج واقعية.'},
+  {id:2, num:'02', nameEn:'Consulting & Implementation',    nameAr:'الاستشارات والتنفيذ',   descEn:"We don't advise—we design and implement working systems.",        descAr:'لا نقدم توصيات فقط، بل نصمم ونطبق أنظمة عمل فعلية.'},
+  {id:3, num:'03', nameEn:'Performance & Data Intelligence', nameAr:'تحليل الأداء والبيانات', descEn:'Turning data into clear, measurable decisions.',              descAr:'تحويل البيانات إلى قرارات واضحة وقابلة للقياس.'},
+  {id:4, num:'04', nameEn:'System Enablement',              nameAr:'تمكين الأنظمة',          descEn:'Ensuring business systems are actually used—not just installed.', descAr:'ضمان استخدام الأنظمة فعلياً داخل التشغيل.'},
+  {id:5, num:'05', nameEn:'Research & Knowledge Solutions', nameAr:'حلول البحث والمعرفة',   descEn:'From academic frameworks to real-world application.',           descAr:'ربط المنهج العلمي بالتطبيق العملي.'},
+];
+
+/* Datasets */
+let datasets = [
+  {id:1, name:'Q2_2026_Full_Survey.csv',   period:'Q2 2026', rows:412, status:'active',   uploader:'Super Admin', date:'2026-04-01'},
+  {id:2, name:'Q1_2026_Survey_Riyadh.csv', period:'Q1 2026', rows:118, status:'archived', uploader:'Super Admin', date:'2026-01-15'},
+  {id:3, name:'Pilot_Test_2026.csv',       period:'Pilot',   rows:30,  status:'pilot',    uploader:'Analyst',     date:'2025-12-10'},
+];
+
+/* Model quality metrics (editable) */
+let modelMetrics = { r2:'72%', alpha:'0.88', cr:'0.91', ave:'0.64', htmt:'0.78' };
+
+/* ═══════════════════════════════════════════
+   GENERATE MOCK USERS
+═══════════════════════════════════════════ */
+(function generateUsers() {
+  const firstNames = ['Ahmed','Mohammed','Abdullah','Khalid','Omar','Saad','Fahad','Turki','Nora','Fatima','Reem','Sara','Maha','Hana','Lina','Yasmine','Hassan','Ibrahim','Yusuf','Tariq'];
+  const lastNames  = ['Al-Rashidi','Al-Zahrani','Al-Otaibi','Al-Harbi','Al-Qahtani','Al-Shehri','Al-Ghamdi','Al-Dosari','Al-Mutairi','Al-Harthi'];
+  const branches   = ['Riyadh','Jeddah','Dammam'];
+  const roles      = ['customer','customer','customer','customer','analyst','admin'];
+  const statuses   = ['active','active','active','active','active','suspended','pending'];
+  const orgs       = ['ARAMCO','SABIC','STC','Almarai','NCB','Riyad Bank','Dar Al Arkan','Mobily','ACWA Power','Saudi Electricity'];
+  for (let i = 1; i <= 50; i++) {
+    const fn   = firstNames[(i*7)%firstNames.length];
+    const ln   = lastNames[(i*3)%lastNames.length];
+    const br   = branches[(i*11)%branches.length];
+    const role = roles[(i*5)%roles.length];
+    const stat = statuses[(i*13)%statuses.length];
+    const org  = orgs[(i*9)%orgs.length];
+    const d    = new Date(2026,3,1);
+    d.setDate(d.getDate() - (i*7)%90);
+    const loginD = new Date(2026,4,1);
+    loginD.setDate(loginD.getDate() - (i*3)%30);
+    usersData.push({
+      id: `USR-${String(i).padStart(3,'0')}`,
+      firstName: fn, lastName: ln,
+      email: `${fn.toLowerCase()}.${ln.toLowerCase().replace('al-','')}@${org.toLowerCase().replace(/ /g,'')}.com`,
+      role, branch: br, status: stat,
+      org, loginCount: (i*17)%120 + 1,
+      createdAt: d.toISOString().slice(0,10),
+      lastLogin: loginD.toISOString().slice(0,10),
+      notes: ''
+    });
+  }
+})();
+
+/* ═══════════════════════════════════════════
+   GENERATE AUDIT LOG
+═══════════════════════════════════════════ */
+(function generateAudit() {
+  const actions = [
+    {action:'LOGIN',   resource:'Admin Auth',        detail:'Successful admin login',           ip:'192.168.1.10'},
+    {action:'CREATE',  resource:'User USR-001',       detail:'New customer account created',     ip:'192.168.1.10'},
+    {action:'UPDATE',  resource:'Branch Riyadh',      detail:'CX score updated to 3.7',          ip:'192.168.1.10'},
+    {action:'DELETE',  resource:'User USR-048',       detail:'Account permanently deleted',      ip:'192.168.1.12'},
+    {action:'UPLOAD',  resource:'Dataset Q2_2026',    detail:'412 records uploaded and validated',ip:'192.168.1.10'},
+    {action:'EXPORT',  resource:'Report Executive',   detail:'Executive PDF generated',          ip:'192.168.1.10'},
+    {action:'OVERRIDE',resource:'Model Weights',      detail:'Quality weight set to 0.38',       ip:'192.168.1.10'},
+    {action:'UPDATE',  resource:'Questionnaire C4',   detail:'Item status changed to removed',   ip:'192.168.1.14'},
+    {action:'CREATE',  resource:'Branch Dammam North',detail:'New branch added',                 ip:'192.168.1.10'},
+    {action:'UPDATE',  resource:'Settings',           detail:'Registration toggle enabled',      ip:'192.168.1.10'},
+    {action:'DELETE',  resource:'Dataset Q3_2025',    detail:'Archived dataset removed',         ip:'192.168.1.10'},
+    {action:'LOGIN',   resource:'Admin Auth',         detail:'Session restored from token',      ip:'192.168.1.11'},
+    {action:'EXPORT',  resource:'Audit Log',          detail:'Log exported as CSV',              ip:'192.168.1.10'},
+    {action:'UPDATE',  resource:'User USR-015',       detail:'Role changed from customer to analyst', ip:'192.168.1.10'},
+    {action:'CREATE',  resource:'Schedule Weekly',    detail:'Weekly report schedule created',   ip:'192.168.1.10'},
+  ];
+  const now = new Date(2026,4,5,14,22,0);
+  actions.forEach((a,i) => {
+    const ts = new Date(now - i * 3600000 * 1.3);
+    auditLog.push({
+      id: `AL-${String(i+1).padStart(3,'0')}`,
+      timestamp: ts.toISOString().replace('T',' ').slice(0,19),
+      admin: i % 4 === 3 ? 'Manager' : 'Super Admin',
+      action: a.action, resource: a.resource,
+      detail: a.detail, ip: a.ip, status: 'SUCCESS'
+    });
+  });
+})();
+
+/* Generate branch admin cards data */
+(function generateBranches() {
+  ['Riyadh','Jeddah','Dammam'].forEach((name,i) => {
+    branchesData.push({
+      id: `BR-${String(i+1).padStart(2,'0')}`,
+      nameEn: name,
+      nameAr: ['الرياض','جدة','الدمام'][i],
+      region: name,
+      manager: ['Khalid Al-Otaibi','Mohammed Al-Zahrani','Abdullah Al-Harbi'][i],
+      address: [`King Fahd Rd, ${name}`],
+      cxScore: [3.7,3.4,3.2][i],
+      sampleN: 100,
+      status: 'active'
+    });
+  });
+})();
+
+/* Report history */
+(function generateReportHistory() {
+  const types  = ['Executive Summary','CX Drivers','Branch Comparison','Demographics','Full Export'];
+  const fmts   = ['PDF','Excel','CSV','HTML'];
+  const brs    = ['All Branches','Riyadh','Jeddah','Dammam'];
+  for (let i = 1; i <= 8; i++) {
+    const d = new Date(2026,4,5); d.setDate(d.getDate() - i*3);
+    reportHistory.push({
+      id:`RPT-${String(i).padStart(3,'0')}`,
+      name:`${types[(i-1)%types.length]} — ${brs[(i-1)%brs.length]}`,
+      type: types[(i-1)%types.length],
+      branch: brs[(i-1)%brs.length],
+      format: fmts[(i-1)%fmts.length],
+      by:'Super Admin',
+      date: d.toISOString().slice(0,10),
+      status: i<3?'Ready':'Archived'
+    });
+  }
+})();
+
+/* Scheduled exports */
+scheduledExportsList = [
+  {id:'SCH-001',name:'Weekly CX Summary',freq:'Weekly',format:'PDF',branch:'All Branches',email:'admin@roshd.com',active:true},
+  {id:'SCH-002',name:'Monthly Branch Comparison',freq:'Monthly',format:'Excel',branch:'Riyadh',email:'manager@roshd.com',active:false},
+];
+
+/* ═══════════════════════════════════════════
+   UTILITY FUNCTIONS
+═══════════════════════════════════════════ */
+function toast(msg, type='success', icon='✓') {
+  const container = document.getElementById('toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  const icons = {success:'✓', error:'✕', warning:'⚠', info:'ℹ'};
+  el.innerHTML = `<span style="font-size:16px">${icons[type]||icon}</span>${msg}`;
+  container.appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(100%)'; el.style.transition='all 0.3s ease'; setTimeout(()=>el.remove(),300); }, 3500);
+}
+
+function addAuditEntry(action, resource, detail) {
+  const now = new Date(2026,4,5);
+  auditLog.unshift({
+    id:`AL-${String(auditLog.length+1).padStart(3,'0')}`,
+    timestamp: now.toISOString().replace('T',' ').slice(0,19),
+    admin: currentAdmin?.name || 'Super Admin',
+    action, resource, detail,
+    ip: '192.168.1.10',
+    status: 'SUCCESS'
+  });
+  const badge = document.getElementById('auditBadge');
+  if (badge) badge.textContent = Math.min(99, auditLog.filter(a=>a.action!=='LOGIN').length);
+}
+
+function pct(score) { return Math.round((score/5)*100); }
+
+function scoreColor(score) {
+  if (score >= 4)   return 'var(--green)';
+  if (score >= 3.5) return 'var(--gold)';
+  if (score >= 3)   return 'var(--amber)';
+  return 'var(--red)';
+}
+
+function formatScore(score) { return `${pct(score)}% (${Number(score).toFixed(1)})`; }
+
+function impactPct(impact) { return `${Math.round(impact*100)}%`; }
+
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  if (!inp || !btn) return;
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function toggleSetting(el) {
+  el.classList.toggle('on');
+}
+
+function closeModal(modalId, event) {
+  if (event.target === document.getElementById(modalId)) closeModalById(modalId);
+}
+function closeModalById(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function confirmDanger(action, title, message) {
+  pendingDangerAction = action;
+  document.getElementById('confirmTitle').textContent   = title;
+  document.getElementById('confirmMessage').textContent = message;
+  const icons = { 'delete':'🗑️', 'clear-cache':'🔄', 'reset-filters':'⚙️', 'flush-sessions':'🚪', 'reset-model':'📊', 'clear-audit':'🗃️' };
+  document.getElementById('confirmIcon').textContent = icons[action] || '⚠️';
+  openModal('confirmModal');
+}
+
+function executeConfirmedAction() {
+  const a = pendingDangerAction;
+  closeModalById('confirmModal');
+  if (!a) return;
+  const msgs = {
+    'delete':        `User deleted successfully.`,
+    'clear-cache':   `System cache cleared. Clients will reload fresh data.`,
+    'reset-filters': `All user filter preferences reset.`,
+    'flush-sessions':`All active sessions flushed. Users logged out.`,
+    'reset-model':   `Model overrides reset to calculated defaults.`,
+    'clear-audit':   `Audit log cleared.`,
+    'suspend':       `Selected users suspended.`,
+  };
+  if (a.startsWith('delete-user-')) {
+    const uid = a.replace('delete-user-','');
+    usersData = usersData.filter(u => u.id !== uid);
+    renderUsersTable();
+    addAuditEntry('DELETE', `User ${uid}`, 'Account permanently deleted');
+    toast(`User ${uid} deleted.`,'success');
+  } else if (a.startsWith('delete-branch-')) {
+    const bid = a.replace('delete-branch-','');
+    branchesData = branchesData.filter(b => b.id !== bid);
+    renderBranchPanel();
+    addAuditEntry('DELETE', `Branch ${bid}`, 'Branch removed');
+    toast('Branch deleted.','success');
+  } else if (a.startsWith('delete-record-')) {
+    toast('Record deleted.','success');
+    addAuditEntry('DELETE', 'Record', 'Response record removed');
+  } else if (a === 'reset-model') {
+    modelOverrides = {};
+    Object.keys(DRIVERS_DATA).forEach(b => { modelOverrides[b] = DRIVERS_DATA[b].map(d=>({...d})); });
+    renderModelWeights();
+    addAuditEntry('OVERRIDE','Model Weights','All driver weight overrides reset to defaults');
+    toast('Model weights reset to defaults.','success');
+  } else if (a === 'clear-audit') {
+    auditLog = [];
+    renderAuditLog();
+    toast('Audit log cleared.','warning');
+  } else {
+    toast(msgs[a] || 'Action completed.','success');
+    addAuditEntry('OVERRIDE', 'System', msgs[a] || 'Admin action executed');
+  }
+  pendingDangerAction = null;
+}
+
+/* ═══════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════ */
+async function handleAdminLogin() {
+  const email    = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  const errorEl  = document.getElementById('loginError');
+  const btnEl    = document.getElementById('loginBtn');
+  errorEl.classList.remove('show');
+
+  if (!email || !password) {
+    errorEl.textContent = 'Please enter your email and password.';
+    errorEl.classList.add('show'); return;
+  }
+
+  const orig = btnEl.innerHTML;
+  btnEl.disabled = true; btnEl.textContent = 'Signing in…';
+
+  /* Demo check */
+  if (email === 'admin@roshd.com' && password === 'admin123') {
+    launchAdmin({name:'Super Admin', email});
+    btnEl.disabled = false; btnEl.innerHTML = orig;
+    return;
+  }
+
+  try {
+    const res  = await fetch(API_BASE + '/api/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email,password}) });
+    let data = {};
+    try { data = await res.json(); } catch(_) {}
+    if (data.success) {
+      /* Accept any logged-in user as admin in demo — real deployment would check role */
+      launchAdmin({name: data.user?.first_name ? `${data.user.first_name} ${data.user.last_name||''}`.trim() : email, email});
+    } else {
+      errorEl.textContent = data.message || 'Invalid admin credentials.';
+      errorEl.classList.add('show');
+    }
+  } catch(_) {
+    errorEl.textContent = 'Cannot reach server. Use demo credentials: admin@roshd.com / admin123';
+    errorEl.classList.add('show');
+  } finally {
+    btnEl.disabled = false; btnEl.innerHTML = orig;
+  }
+}
+
+function launchAdmin(user) {
+  currentAdmin = user;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').classList.add('open');
+  document.getElementById('adminDisplayName').textContent = user.name;
+  document.getElementById('adminAvatar').textContent = user.name.charAt(0).toUpperCase();
+  addAuditEntry('LOGIN','Admin Auth','Successful admin login');
+  initAllPanels();
+  toast(`Welcome, ${user.name}!`,'success');
+}
+
+function handleLogout() {
+  addAuditEntry('LOGIN','Admin Auth','Admin logged out');
+  document.getElementById('adminApp').classList.remove('open');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminEmail').value = '';
+  document.getElementById('adminPassword').value = '';
+  currentAdmin = null;
+  toast('Logged out successfully.','info');
+}
+
+/* ═══════════════════════════════════════════
+   PANEL NAVIGATION
+═══════════════════════════════════════════ */
+const PANEL_META = {
+  overview:   {title:'Overview',              crumb:'Dashboard'},
+  analytics:  {title:'Live Analytics',        crumb:'Intelligence'},
+  users:      {title:'User Management',       crumb:'Management'},
+  branches:   {title:'Branch Management',     crumb:'Management'},
+  data:       {title:'Data Management',       crumb:'Management'},
+  content:    {title:'Content & Questionnaire',crumb:'Management'},
+  model:      {title:'Model & Weights',       crumb:'Intelligence'},
+  reports:    {title:'Reports & Export',      crumb:'Output'},
+  settings:   {title:'Settings',             crumb:'System'},
+  audit:      {title:'Audit Log',             crumb:'System'},
+};
+
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('panel-' + id);
+  if (panel) panel.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const navBtn = document.querySelector(`[data-panel="${id}"]`) || btn;
+  if (navBtn) navBtn.classList.add('active');
+  const meta = PANEL_META[id] || {title:id, crumb:id};
+  document.getElementById('topbarTitle').textContent = meta.title;
+  document.getElementById('topbarCrumb').textContent = meta.crumb;
+  closeSidebar();
+  /* Lazy render */
+  if (id === 'analytics')  renderAnalytics();
+  if (id === 'users')      renderUsersTable();
+  if (id === 'branches')   renderBranchPanel();
+  if (id === 'data')       renderDataPanel();
+  if (id === 'content')    renderContentPanel();
+  if (id === 'model')      renderModelWeights();
+  if (id === 'reports')    renderReports();
+  if (id === 'settings')   {}
+  if (id === 'audit')      renderAuditLog();
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR MOBILE
+═══════════════════════════════════════════ */
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebarOverlay');
+  const open = sb.classList.toggle('open');
+  ov.classList.toggle('open', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+/* ═══════════════════════════════════════════
+   INIT ALL PANELS
+═══════════════════════════════════════════ */
+function initAllPanels() {
+  renderOverview();
+}
+
+/* ═══════════════════════════════════════════
+   OVERVIEW PANEL
+═══════════════════════════════════════════ */
+function refreshOverview() { renderOverview(); toast('Overview refreshed.','info'); }
+
+function renderOverview() {
+  /* Stats */
+  const stats = [
+    {label:'Total Users', value: usersData.length, trend:'+12', trendDir:'up', accent:'var(--gold)',    iconBg:'var(--gold-dim)',   icon:'👥'},
+    {label:'Active Users', value: usersData.filter(u=>u.status==='active').length, trend:'+5', trendDir:'up', accent:'var(--green)', iconBg:'var(--green-dim)', icon:'✓'},
+    {label:'Total Sample N', value:'300', trend:'0', trendDir:'neutral', accent:'var(--blue)', iconBg:'var(--blue-dim)', icon:'📊'},
+    {label:'Avg CX Score',  value:'76% (3.8)', trend:'+0.3', trendDir:'up', accent:'var(--purple)', iconBg:'var(--purple-dim)', icon:'⭐'},
+    {label:'Model Power',   value:'72%',  trend:'+2%', trendDir:'up', accent:'var(--teal)',   iconBg:'var(--teal-dim)',   icon:'🧠'},
+    {label:'Branches',      value: branchesData.length, trend:'0', trendDir:'neutral', accent:'var(--amber)', iconBg:'var(--amber-dim)', icon:'🏢'},
+  ];
+  document.getElementById('overviewStats').innerHTML = stats.map(s =>
+    `<div class="stat-card" style="--accent:${s.accent}">
+      <div class="stat-head">
+        <div class="stat-icon" style="background:${s.iconBg}"><span style="font-size:18px">${s.icon}</span></div>
+        <span class="stat-trend ${s.trendDir}">${s.trendDir==='up'?'↑':s.trendDir==='down'?'↓':'—'} ${s.trend}</span>
+      </div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-label">${s.label}</div>
+    </div>`
+  ).join('');
+
+  /* Branch scores */
+  document.getElementById('branchScoresBars').innerHTML = ['Riyadh','Jeddah','Dammam'].map(b => {
+    const d = branchOverrides[b]; const w = pct(d.score);
+    return `<div class="score-bar-row" style="margin-bottom:14px">
+      <span class="score-bar-label">${b}</span>
+      <div class="score-bar-track"><div class="score-bar-fill" style="width:${w}%;background:linear-gradient(90deg,${scoreColor(d.score)},${scoreColor(d.score)}cc)"></div></div>
+      <span class="score-bar-val">${formatScore(d.score)}</span>
+    </div>`;
+  }).join('');
+
+  /* Activity feed */
+  document.getElementById('activityFeed').innerHTML = auditLog.slice(0,6).map(a => {
+    const colors = {CREATE:'var(--green)',UPDATE:'var(--blue)',DELETE:'var(--red)',LOGIN:'var(--gold)',EXPORT:'var(--teal)',UPLOAD:'var(--purple)',OVERRIDE:'var(--amber)'};
+    const icons  = {CREATE:'✚',UPDATE:'✎',DELETE:'✕',LOGIN:'→',EXPORT:'↓',UPLOAD:'↑',OVERRIDE:'◈'};
+    return `<div class="activity-item">
+      <div class="activity-icon" style="background:${colors[a.action]||'var(--text-dim)'}22;border:1px solid ${colors[a.action]||'var(--border2)'}44">
+        <span style="font-size:14px;color:${colors[a.action]||'var(--text-dim)'};font-weight:800">${icons[a.action]||'·'}</span>
+      </div>
+      <div class="activity-content">
+        <div class="activity-text"><b>${a.resource}</b> — ${a.detail}</div>
+        <div class="activity-time">${a.timestamp} · ${a.admin}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  /* Driver summary */
+  const drivers = DRIVERS_DATA['All Branches'];
+  document.getElementById('driverSummary').innerHTML = drivers.map(d => {
+    const w = Math.min(100, Math.round(d.impact / 0.35 * 100));
+    return `<div class="score-bar-row" style="margin-bottom:12px">
+      <span class="score-bar-label" style="width:130px">${d.name}</span>
+      <div class="score-bar-track"><div class="score-bar-fill" style="width:${w}%;background:${d.name==='Speed'?'var(--red)':'linear-gradient(90deg,var(--gold),var(--gold-light))'}"></div></div>
+      <span class="score-bar-val">${impactPct(d.impact)}</span>
+    </div>`;
+  }).join('');
+
+  /* User segments */
+  const roles = {};
+  usersData.forEach(u => { roles[u.role] = (roles[u.role]||0)+1; });
+  document.getElementById('userSegments').innerHTML = Object.entries(roles).map(([role,count]) => {
+    const pct2 = Math.round(count/usersData.length*100);
+    const clr = {admin:'var(--gold)',analyst:'var(--blue)',customer:'var(--green)'}[role]||'var(--text-dim)';
+    return `<div class="score-bar-row" style="margin-bottom:12px">
+      <span class="score-bar-label" style="width:90px;text-transform:capitalize">${role}</span>
+      <div class="score-bar-track"><div class="score-bar-fill" style="width:${pct2}%;background:${clr}"></div></div>
+      <span class="score-bar-val">${count}</span>
+    </div>`;
+  }).join('');
+
+  /* System health */
+  const health = [
+    {name:'API Server',      status:'Operational', color:'var(--green)'},
+    {name:'Database',        status:'Operational', color:'var(--green)'},
+    {name:'Analytics Engine',status:'Operational', color:'var(--green)'},
+    {name:'Export Service',  status:'Degraded',    color:'var(--amber)'},
+    {name:'Email Service',   status:'Operational', color:'var(--green)'},
+  ];
+  document.getElementById('systemHealth').innerHTML = health.map(h =>
+    `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+      <span style="font-size:13px;font-weight:600;color:var(--text)">${h.name}</span>
+      <span class="badge" style="background:${h.color}22;color:${h.color};border-color:${h.color}44">${h.status}</span>
+    </div>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════════
+   ANALYTICS PANEL
+═══════════════════════════════════════════ */
+function renderAnalytics() {
+  const branch = document.getElementById('analyticsBranch')?.value || 'All Branches';
+  const d = branchOverrides[branch] || branchOverrides['All Branches'];
+  const drivers = (modelOverrides[branch] || modelOverrides['All Branches'] || []);
+
+  /* KPIs */
+  document.getElementById('analyticsKpis').innerHTML = [
+    {label:'CX Score',      value:formatScore(d.score),    color:'var(--gold)',   icon:'⭐'},
+    {label:'Model Power',   value:d.explanatory+'%',        color:'var(--blue)',   icon:'🧠'},
+    {label:'Top Driver',    value:d.top,                    color:'var(--green)',  icon:'🎯'},
+    {label:'Sample N',      value: d.n||300,               color:'var(--purple)', icon:'👥'},
+  ].map(k =>
+    `<div class="stat-card" style="--accent:${k.color}">
+      <div class="stat-head"><div class="stat-icon" style="background:${k.color}22"><span style="font-size:18px">${k.icon}</span></div></div>
+      <div class="stat-value">${k.value}</div>
+      <div class="stat-label">${k.label}</div>
+    </div>`
+  ).join('');
+
+  /* Driver bars */
+  document.getElementById('analyticsDriverBars').innerHTML = drivers.map(dr => {
+    const w = Math.min(100, Math.round(dr.impact/0.35*100));
+    return `<div class="score-bar-row" style="margin-bottom:14px">
+      <span class="score-bar-label">${dr.name}</span>
+      <div class="score-bar-track"><div class="score-bar-fill" style="width:${w}%;background:${dr.name==='Speed'?'var(--red)':'linear-gradient(90deg,var(--gold),var(--gold-light))'}"></div></div>
+      <span class="score-bar-val">${impactPct(dr.impact)}</span>
+    </div>`;
+  }).join('');
+
+  /* Branch comparison */
+  document.getElementById('analyticsBranchComp').innerHTML = ['Riyadh','Jeddah','Dammam'].map(b => {
+    const bd = branchOverrides[b]; const w = pct(bd.score);
+    return `<div class="score-bar-row" style="margin-bottom:14px">
+      <span class="score-bar-label">${b}</span>
+      <div class="score-bar-track"><div class="score-bar-fill" style="width:${w}%;background:linear-gradient(90deg,${scoreColor(bd.score)},${scoreColor(bd.score)}bb)"></div></div>
+      <span class="score-bar-val">${formatScore(bd.score)}</span>
+    </div>`;
+  }).join('');
+
+  /* Demo breakdown */
+  const demos = [{label:'Male',n:180},{label:'Female',n:120}];
+  document.getElementById('analyticsDemoBreakdown').innerHTML =
+    `<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mute);margin-bottom:12px">Gender Split</div>` +
+    demos.map(item => {
+      const w = Math.round(item.n/300*100);
+      return `<div class="score-bar-row" style="margin-bottom:12px">
+        <span class="score-bar-label">${item.label}</span>
+        <div class="score-bar-track"><div class="score-bar-fill" style="width:${w}%"></div></div>
+        <span class="score-bar-val">${w}% (${item.n})</span>
+      </div>`;
+    }).join('');
+
+  const ages = [{label:'<25',n:30},{label:'25–34',n:90},{label:'35–44',n:120},{label:'45+',n:60}];
+  document.getElementById('analyticsAgeBreakdown').innerHTML =
+    `<div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-mute);margin-bottom:12px">Age Distribution</div>` +
+    ages.map(item => {
+      const w = Math.round(item.n/300*100);
+      return `<div class="score-bar-row" style="margin-bottom:12px">
+        <span class="score-bar-label">${item.label}</span>
+        <div class="score-bar-track"><div class="score-bar-fill" style="width:${w}%"></div></div>
+        <span class="score-bar-val">${w}% (${item.n})</span>
+      </div>`;
+    }).join('');
+}
+
+function exportAnalyticsReport() {
+  toast('Analytics report generated and downloaded.','success');
+  addAuditEntry('EXPORT','Analytics Report','Analytics overview exported');
+}
+
+/* ═══════════════════════════════════════════
+   USERS PANEL
+═══════════════════════════════════════════ */
+let filteredUsers = [];
+
+function filterUsers() {
+  const q  = (document.getElementById('userSearch')?.value||'').toLowerCase();
+  const role   = document.getElementById('userRoleFilter')?.value   || '';
+  const status = document.getElementById('userStatusFilter')?.value || '';
+  const branch = document.getElementById('userBranchFilter')?.value || '';
+  filteredUsers = usersData.filter(u => {
+    const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
+    const match = !q || fullName.includes(q) || u.email.toLowerCase().includes(q) || u.id.toLowerCase().includes(q);
+    return match &&
+      (!role   || u.role===role) &&
+      (!status || u.status===status) &&
+      (!branch || u.branch===branch);
+  });
+  userPage = 1;
+  renderUsersTable();
+}
+
+function renderUsersTable() {
+  filterUsers();
+}
+
+function renderUserTableWithData() {
+  const tbody = document.getElementById('usersTbody');
+  if (!tbody) return;
+  const start = (userPage-1)*USER_PAGE_SIZE;
+  const page  = filteredUsers.slice(start, start+USER_PAGE_SIZE);
+  const statusBadge = {active:'badge-green', suspended:'badge-red', pending:'badge-amber'};
+  const roleBadge   = {admin:'badge-gold', analyst:'badge-blue', customer:'badge-gray'};
+  const avatarClass = {admin:'', analyst:'blue', customer:'green'};
+  tbody.innerHTML = page.map(u =>
+    `<tr>
+      <td><input type="checkbox" class="user-cb" value="${u.id}" onchange="updateBulkButtons()"></td>
+      <td><div class="user-cell">
+        <div class="user-avatar ${avatarClass[u.role]||''}">${u.firstName.charAt(0)}${u.lastName.charAt(0)}</div>
+        <div><div class="user-name">${u.firstName} ${u.lastName}</div><div class="user-email">${u.email}</div></div>
+      </div></td>
+      <td>${u.branch}</td>
+      <td><span class="badge ${roleBadge[u.role]||'badge-gray'}">${u.role}</span></td>
+      <td><span class="badge ${statusBadge[u.status]||'badge-gray'}">${u.status}</span></td>
+      <td><span style="font-family:var(--font-mono);font-size:12px">${u.loginCount}</span></td>
+      <td><span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim)">${u.lastLogin}</span></td>
+      <td><div class="row-actions">
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="viewUser('${u.id}')" title="View">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button class="btn btn-secondary btn-sm btn-icon" onclick="editUser('${u.id}')" title="Edit">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn btn-sm btn-icon" onclick="toggleUserStatus('${u.id}')" title="${u.status==='active'?'Suspend':'Activate'}" style="background:${u.status==='active'?'var(--amber-dim)':'var(--green-dim)'};color:${u.status==='active'?'#fcd34d':'#86efac'};border-color:${u.status==='active'?'rgba(245,158,11,0.3)':'rgba(34,197,94,0.3)'}">
+          ${u.status==='active'?'⏸':'▶'}
+        </button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteUser('${u.id}')" title="Delete">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div></td>
+    </tr>`
+  ).join('') || `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">No users found</div><div class="empty-desc">Try changing your search or filters.</div></div></td></tr>`;
+
+  const total = filteredUsers.length;
+  const totalPages = Math.ceil(total/USER_PAGE_SIZE)||1;
+  document.getElementById('usersPagination').innerHTML =
+    `<div class="pagination-info">Showing ${Math.min(start+1,total)}–${Math.min(start+USER_PAGE_SIZE,total)} of ${total} users</div>
+     <div class="pagination-btns">
+       <button class="page-btn" onclick="setUserPage(${userPage-1})" ${userPage<=1?'disabled':''}>‹</button>
+       ${Array.from({length:Math.min(5,totalPages)},(_,i)=>{
+         const p = Math.max(1,Math.min(totalPages-4,userPage-2))+i;
+         return `<button class="page-btn ${p===userPage?'active':''}" onclick="setUserPage(${p})">${p}</button>`;
+       }).join('')}
+       <button class="page-btn" onclick="setUserPage(${userPage+1})" ${userPage>=totalPages?'disabled':''}>›</button>
+     </div>`;
+
+  const badge = document.getElementById('userBadge');
+  if (badge) badge.textContent = usersData.length;
+}
+
+function setUserPage(p) { userPage = p; renderUserTableWithData(); }
+
+function filterUsers() {
+  const q      = (document.getElementById('userSearch')?.value||'').toLowerCase();
+  const role   = document.getElementById('userRoleFilter')?.value   || '';
+  const status = document.getElementById('userStatusFilter')?.value || '';
+  const branch = document.getElementById('userBranchFilter')?.value || '';
+  filteredUsers = usersData.filter(u => {
+    const fullName = `${u.firstName} ${u.lastName}`.toLowerCase();
+    const match = !q || fullName.includes(q) || u.email.toLowerCase().includes(q) || u.id.toLowerCase().includes(q);
+    return match && (!role||u.role===role) && (!status||u.status===status) && (!branch||u.branch===branch);
+  });
+  userPage = 1;
+  renderUserTableWithData();
+}
+
+function renderUsersTable() { filteredUsers = [...usersData]; renderUserTableWithData(); setTimeout(filterUsers, 0); }
+
+function openCreateUser() {
+  editingUserId = null;
+  document.getElementById('userModalTitle').textContent = 'Add New User';
+  document.getElementById('saveUserBtn').textContent = 'Create User';
+  document.getElementById('editUserId').value = '';
+  ['uFirstName','uLastName','uEmail','uPassword','uOrg','uNotes'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('uRole').value   = 'customer';
+  document.getElementById('uBranch').value = 'All Branches';
+  document.getElementById('uStatus').value = 'active';
+  document.getElementById('userModalError').classList.remove('show');
+  openModal('userModal');
+}
+
+function editUser(uid) {
+  const u = usersData.find(x=>x.id===uid);
+  if (!u) return;
+  editingUserId = uid;
+  document.getElementById('userModalTitle').textContent = 'Edit User';
+  document.getElementById('saveUserBtn').textContent    = 'Save Changes';
+  document.getElementById('editUserId').value           = uid;
+  document.getElementById('uFirstName').value           = u.firstName;
+  document.getElementById('uLastName').value            = u.lastName;
+  document.getElementById('uEmail').value               = u.email;
+  document.getElementById('uPassword').value            = '';
+  document.getElementById('uRole').value                = u.role;
+  document.getElementById('uBranch').value              = u.branch;
+  document.getElementById('uStatus').value              = u.status;
+  document.getElementById('uOrg').value                 = u.org||'';
+  document.getElementById('uNotes').value               = u.notes||'';
+  document.getElementById('userModalError').classList.remove('show');
+  closeModalById('viewUserModal');
+  openModal('userModal');
+}
+
+function editUserFromView() {
+  const uid = document.getElementById('viewUserBody').getAttribute('data-uid');
+  if (uid) editUser(uid);
+}
+
+function saveUser() {
+  const fn    = document.getElementById('uFirstName').value.trim();
+  const ln    = document.getElementById('uLastName').value.trim();
+  const email = document.getElementById('uEmail').value.trim();
+  const pw    = document.getElementById('uPassword').value;
+  const role  = document.getElementById('uRole').value;
+  const branch= document.getElementById('uBranch').value;
+  const status= document.getElementById('uStatus').value;
+  const org   = document.getElementById('uOrg').value.trim();
+  const notes = document.getElementById('uNotes').value.trim();
+  const errEl = document.getElementById('userModalError');
+  errEl.classList.remove('show');
+
+  if (!fn || !ln || !email) { errEl.textContent='First name, last name, and email are required.'; errEl.classList.add('show'); return; }
+  if (!editingUserId && pw.length < 8) { errEl.textContent='Password must be at least 8 characters.'; errEl.classList.add('show'); return; }
+
+  if (editingUserId) {
+    const u = usersData.find(x=>x.id===editingUserId);
+    if (u) { Object.assign(u, {firstName:fn,lastName:ln,email,role,branch,status,org,notes}); if(pw.length>=8) u.passwordChanged=true; }
+    addAuditEntry('UPDATE',`User ${editingUserId}`,`User profile updated (${role})`);
+    toast('User updated successfully.','success');
+  } else {
+    const id = `USR-${String(usersData.length+1).padStart(3,'0')}`;
+    usersData.unshift({id,firstName:fn,lastName:ln,email,role,branch,status,org,notes,loginCount:0,createdAt:new Date().toISOString().slice(0,10),lastLogin:'—'});
+    addAuditEntry('CREATE',`User ${id}`,`New ${role} account created`);
+    toast('User created successfully.','success');
+  }
+  closeModalById('userModal');
+  renderUsersTable();
+}
+
+function viewUser(uid) {
+  const u = usersData.find(x=>x.id===uid);
+  if (!u) return;
+  document.getElementById('viewUserTitle').textContent = `${u.firstName} ${u.lastName}`;
+  document.getElementById('viewUserSub').textContent   = u.email;
+  const body = document.getElementById('viewUserBody');
+  body.setAttribute('data-uid', uid);
+  const statusColors = {active:'var(--green)',suspended:'var(--red)',pending:'var(--amber)'};
+  const roleColors   = {admin:'var(--gold)',analyst:'var(--blue)',customer:'var(--green)'};
+  body.innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;padding:20px;background:var(--bg2);border-radius:10px">
+      <div class="user-avatar" style="width:56px;height:56px;font-size:22px">${u.firstName.charAt(0)}${u.lastName.charAt(0)}</div>
+      <div>
+        <div style="font-size:19px;font-weight:800;color:var(--text)">${u.firstName} ${u.lastName}</div>
+        <div style="font-size:13px;color:var(--text-dim);margin-top:4px;font-family:var(--font-mono)">${u.email}</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <span class="badge" style="background:${roleColors[u.role]}22;color:${roleColors[u.role]};border-color:${roleColors[u.role]}44">${u.role}</span>
+          <span class="badge" style="background:${statusColors[u.status]}22;color:${statusColors[u.status]};border-color:${statusColors[u.status]}44">${u.status}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div><div class="form-label">User ID</div><div style="font-family:var(--font-mono);font-size:13px;color:var(--text)">${u.id}</div></div>
+      <div><div class="form-label">Organization</div><div style="font-size:13px;color:var(--text)">${u.org||'—'}</div></div>
+      <div><div class="form-label">Branch</div><div style="font-size:13px;color:var(--text)">${u.branch}</div></div>
+      <div><div class="form-label">Total Logins</div><div style="font-size:13px;font-family:var(--font-mono);color:var(--text)">${u.loginCount}</div></div>
+      <div><div class="form-label">Created</div><div style="font-size:13px;font-family:var(--font-mono);color:var(--text-dim)">${u.createdAt}</div></div>
+      <div><div class="form-label">Last Login</div><div style="font-size:13px;font-family:var(--font-mono);color:var(--text-dim)">${u.lastLogin}</div></div>
+    </div>
+    ${u.notes?`<div style="margin-top:16px;padding:12px 16px;background:var(--bg2);border-radius:8px;font-size:13px;color:var(--text-dim)">${u.notes}</div>`:''}`;
+  openModal('viewUserModal');
+}
+
+function toggleUserStatus(uid) {
+  const u = usersData.find(x=>x.id===uid);
+  if (!u) return;
+  u.status = u.status === 'active' ? 'suspended' : 'active';
+  addAuditEntry('UPDATE',`User ${uid}`,`Status changed to ${u.status}`);
+  toast(`User ${u.status==='active'?'activated':'suspended'}.`, u.status==='active'?'success':'warning');
+  renderUsersTable();
+}
+
+function deleteUser(uid) {
+  confirmDanger(`delete-user-${uid}`, 'Delete User', `This will permanently delete the user account and all associated data. This cannot be undone.`);
+}
+
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.user-cb').forEach(c => c.checked = cb.checked);
+  updateBulkButtons();
+}
+
+function updateBulkButtons() {
+  const checked = document.querySelectorAll('.user-cb:checked').length;
+  document.getElementById('bulkSuspendBtn').style.display = checked > 0 ? '' : 'none';
+  document.getElementById('bulkDeleteBtn').style.display  = checked > 0 ? '' : 'none';
+}
+
+function bulkAction(action) {
+  const ids = [...document.querySelectorAll('.user-cb:checked')].map(c=>c.value);
+  if (!ids.length) return;
+  if (action === 'suspend') {
+    ids.forEach(id => { const u=usersData.find(x=>x.id===id); if(u) u.status='suspended'; });
+    addAuditEntry('UPDATE','Bulk Users',`${ids.length} users suspended`);
+    toast(`${ids.length} users suspended.`,'warning');
+  } else if (action === 'delete') {
+    confirmDanger('delete', 'Delete Selected Users', `This will permanently delete ${ids.length} user accounts. This cannot be undone.`);
+    return;
+  }
+  renderUsersTable();
+}
+
+function openImportUsers() {
+  toast('CSV import modal — connect to your data pipeline.','info');
+}
+
+function handleGlobalSearch(val) {
+  if (!val) return;
+  const panel = document.querySelector('.panel.active');
+  if (panel && panel.id === 'panel-users') {
+    document.getElementById('userSearch').value = val;
+    filterUsers();
+  }
+}
+
+/* ═══════════════════════════════════════════
+   BRANCH PANEL
+═══════════════════════════════════════════ */
+function renderBranchPanel() {
+  const grid = document.getElementById('branchCards');
+  if (!grid) return;
+  grid.innerHTML = branchesData.map(b => {
+    const d = branchOverrides[b.nameEn] || {};
+    const clr = scoreColor(d.score||3.5);
+    return `<div class="card" style="--accent:${clr};position:relative">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${clr}"></div>
+      <div class="card-body">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+          <div>
+            <div style="font-size:16px;font-weight:800;color:var(--text)">${b.nameEn}</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:2px" dir="rtl">${b.nameAr}</div>
+          </div>
+          <span class="badge ${b.status==='active'?'badge-green':b.status==='pilot'?'badge-amber':'badge-gray'}">${b.status}</span>
+        </div>
+        <div style="font-size:30px;font-weight:800;color:var(--text);margin-bottom:4px">${formatScore(d.score||3.5)}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:14px">CX Score · N=${b.sampleN}</div>
+        <div style="font-size:12px;color:var(--text-dim)">Manager: <span style="color:var(--text);font-weight:600">${b.manager}</span></div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:4px">Top driver: <span style="color:var(--gold-light);font-weight:600">${d.top||'Quality'}</span></div>
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button class="btn btn-secondary btn-sm" onclick="editBranch('${b.id}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDanger('delete-branch-${b.id}','Delete Branch','This branch and its configuration will be permanently removed.')">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🏢</div><div class="empty-title">No branches yet</div></div>`;
+
+  /* Score editor */
+  const editor = document.getElementById('branchScoreEditor');
+  if (editor) {
+    editor.innerHTML = ['Riyadh','Jeddah','Dammam'].map(b => {
+      const d = branchOverrides[b];
+      const w = pct(d.score);
+      return `<div class="driver-weight-row" style="margin-bottom:12px;padding:14px;background:var(--bg2);border-radius:8px;border:1px solid var(--border)">
+        <span class="driver-weight-name">${b}</span>
+        <input type="range" class="admin-range" min="1" max="5" step="0.1" value="${d.score}" data-branch="${b}" oninput="updateBranchScore(this)">
+        <span style="font-size:13px;font-weight:700;color:var(--gold-light);font-family:var(--font-mono);min-width:80px;text-align:right" id="branchScoreVal-${b}">${formatScore(d.score)}</span>
+        <button class="btn btn-secondary btn-sm" onclick="resetBranchScore('${b}')">Reset</button>
+      </div>`;
+    }).join('');
+  }
+}
+
+function updateBranchScore(inp) {
+  const b = inp.getAttribute('data-branch');
+  const v = parseFloat(inp.value);
+  branchOverrides[b].score = v;
+  const lbl = document.getElementById(`branchScoreVal-${b}`);
+  if (lbl) lbl.textContent = formatScore(v);
+}
+
+function resetBranchScore(b) {
+  branchOverrides[b].score = BRANCHES_DATA[b].score;
+  renderBranchPanel();
+}
+
+function saveBranchScores() {
+  addAuditEntry('UPDATE','Branch Scores','CX score overrides saved for all branches');
+  toast('Branch scores saved.','success');
+}
+
+function openCreateBranch() {
+  editingBranchId = null;
+  document.getElementById('branchModalTitle').textContent = 'Add Branch';
+  document.getElementById('saveBranchBtn').textContent = 'Save Branch';
+  ['bNameEn','bNameAr','bManager','bAddress'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('bCxScore').value = '';
+  document.getElementById('bSampleN').value = '';
+  document.getElementById('bStatus').value = 'active';
+  openModal('branchModal');
+}
+
+function editBranch(bid) {
+  const b = branchesData.find(x=>x.id===bid);
+  if (!b) return;
+  editingBranchId = bid;
+  document.getElementById('branchModalTitle').textContent = 'Edit Branch';
+  document.getElementById('saveBranchBtn').textContent = 'Save Changes';
+  document.getElementById('editBranchId').value = bid;
+  document.getElementById('bNameEn').value = b.nameEn;
+  document.getElementById('bNameAr').value = b.nameAr;
+  document.getElementById('bManager').value = b.manager;
+  document.getElementById('bAddress').value = b.address;
+  document.getElementById('bCxScore').value = branchOverrides[b.nameEn]?.score || '';
+  document.getElementById('bSampleN').value = b.sampleN;
+  document.getElementById('bStatus').value  = b.status;
+  openModal('branchModal');
+}
+
+function saveBranch() {
+  const en   = document.getElementById('bNameEn').value.trim();
+  const ar   = document.getElementById('bNameAr').value.trim();
+  const mgr  = document.getElementById('bManager').value.trim();
+  const addr = document.getElementById('bAddress').value.trim();
+  const cx   = parseFloat(document.getElementById('bCxScore').value)||3.5;
+  const n    = parseInt(document.getElementById('bSampleN').value)||100;
+  const st   = document.getElementById('bStatus').value;
+  if (!en || !ar) { toast('Branch names (EN and AR) are required.','error'); return; }
+  if (editingBranchId) {
+    const b = branchesData.find(x=>x.id===editingBranchId);
+    if (b) { Object.assign(b,{nameEn:en,nameAr:ar,manager:mgr,address:addr,sampleN:n,status:st}); if(!branchOverrides[en]) branchOverrides[en]={...branchOverrides[b.nameEn]||{score:cx}}; branchOverrides[en].score=cx; }
+    addAuditEntry('UPDATE',`Branch ${en}`,`Branch details updated`);
+    toast('Branch updated.','success');
+  } else {
+    const id = `BR-${String(branchesData.length+1).padStart(2,'0')}`;
+    branchesData.push({id,nameEn:en,nameAr:ar,region:en,manager:mgr,address:addr,cxScore:cx,sampleN:n,status:st});
+    branchOverrides[en] = {score:cx,explanatory:65,top:'Quality',topAr:'الجودة',n};
+    addAuditEntry('CREATE',`Branch ${en}`,`New branch added`);
+    toast('Branch created.','success');
+  }
+  closeModalById('branchModal');
+  renderBranchPanel();
+}
+
+/* ═══════════════════════════════════════════
+   DATA PANEL
+═══════════════════════════════════════════ */
+function renderDataPanel() {
+  renderDatasets();
+  renderRecordsTable();
+}
+
+function renderDatasets() {
+  const tbody = document.getElementById('datasetsTbody');
+  if (!tbody) return;
+  const statusClr = {active:'badge-green',archived:'badge-gray',pilot:'badge-blue'};
+  tbody.innerHTML = datasets.map(d =>
+    `<tr>
+      <td><b>${d.name}</b></td>
+      <td><span class="badge badge-gold">${d.period}</span></td>
+      <td><span style="font-family:var(--font-mono)">${d.rows.toLocaleString()}</span></td>
+      <td><span class="badge ${statusClr[d.status]||'badge-gray'}">${d.status}</span></td>
+      <td>${d.uploader}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim)">${d.date}</td>
+      <td><div class="row-actions">
+        ${d.status!=='active'?`<button class="btn btn-success btn-sm" onclick="activateDataset(${d.id})">Activate</button>`:'<span class="badge badge-green">Active</span>'}
+        <button class="btn btn-secondary btn-sm" onclick="downloadDataset(${d.id})">Download</button>
+        <button class="btn btn-danger btn-sm btn-icon" onclick="deleteDataset(${d.id})">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div></td>
+    </tr>`
+  ).join('');
+}
+
+function activateDataset(id) {
+  datasets.forEach(d => d.status = d.id===id?'active':'archived');
+  addAuditEntry('UPDATE',`Dataset #${id}`,'Dataset set as active');
+  toast('Dataset activated.','success');
+  renderDatasets();
+}
+
+function downloadDataset(id) {
+  toast(`Dataset #${id} download initiated.`,'info');
+  addAuditEntry('EXPORT',`Dataset #${id}`,'Dataset downloaded by admin');
+}
+
+function deleteDataset(id) {
+  datasets = datasets.filter(d => d.id !== id);
+  addAuditEntry('DELETE',`Dataset #${id}`,'Dataset permanently deleted');
+  toast('Dataset deleted.','success');
+  renderDatasets();
+}
+
+function refreshDatasets() { renderDatasets(); toast('Datasets refreshed.','info'); }
+function downloadTemplate() { toast('Template CSV downloaded.','info'); addAuditEntry('EXPORT','Template','CSV upload template downloaded'); }
+function saveRecordEdits() { toast('Record edits saved.','success'); addAuditEntry('UPDATE','Response Records','Manual record edits applied'); }
+
+/* Sample records from DB_CUSTOMERS (50 shown) */
+let allRecords = [];
+(function genRecords() {
+  const branches=['Riyadh','Jeddah','Dammam'];
+  const genders=['Male','Female'];
+  const services=['Mechanical','Bodyshop'];
+  const freqs=['1 Visit','2–3 Visits','4+ Visits'];
+  const ages=['<25','25–34','35–44','45+'];
+  for (let i=1;i<=60;i++) {
+    const br = branches[(i*11)%3];
+    const g  = (i*7)%10<6?'Male':'Female';
+    const sv = (i*11)%5<3?'Mechanical':'Bodyshop';
+    const fr = (i*13)%10<3?'1 Visit':(i*13)%10<8?'2–3 Visits':'4+ Visits';
+    const ag = ['<25','25–34','35–44','45+'][(i*17)%4];
+    const q  = parseFloat((2.5+(i%30)*0.07).toFixed(1));
+    const c  = parseFloat((2.3+(i%28)*0.08).toFixed(1));
+    const p  = parseFloat((2.2+(i%26)*0.09).toFixed(1));
+    const s  = parseFloat((1.2+(i%20)*0.1).toFixed(1));
+    const cx = parseFloat(Math.min(5,q*0.38+c*0.27+p*0.22+s*0.05+1.0).toFixed(1));
+    const risk = cx<3?'High':cx<3.6?'Medium':'Low';
+    allRecords.push({id:`C-${String(i).padStart(3,'0')}`,branch:br,gender:g,service:sv,freq:fr,age:ag,q,c,p,s,cx,risk});
+  }
+})();
+
+let filteredRecords = [...allRecords];
+
+function filterRecords() {
+  const q = (document.getElementById('recordSearch')?.value||'').toLowerCase();
+  const b = document.getElementById('recordBranchFilter')?.value||'';
+  filteredRecords = allRecords.filter(r => {
+    const m = !q || r.id.toLowerCase().includes(q) || r.branch.toLowerCase().includes(q);
+    return m && (!b||r.branch===b);
+  });
+  recordPage = 1;
+  renderRecordsTable();
+}
+
+function renderRecordsTable() {
+  filterRecords();
+}
+
+function renderRecordsTableWithData() {
+  const tbody = document.getElementById('recordsTbody');
+  if (!tbody) return;
+  const start = (recordPage-1)*RECORD_PAGE_SIZE;
+  const page  = filteredRecords.slice(start, start+RECORD_PAGE_SIZE);
+  const riskBadge = {High:'badge-red',Medium:'badge-amber',Low:'badge-green'};
+  tbody.innerHTML = page.map(r =>
+    `<tr>
+      <td style="font-family:var(--font-mono);font-size:11px">${r.id}</td>
+      <td>${r.branch}</td>
+      <td>${r.gender}</td>
+      <td>${r.service}</td>
+      <td>${r.freq}</td>
+      <td>${r.age}</td>
+      <td><input class="q-input" style="width:56px" type="number" step="0.1" min="1" max="5" value="${r.q}" onchange="updateRecord('${r.id}','q',this.value)"></td>
+      <td><input class="q-input" style="width:56px" type="number" step="0.1" min="1" max="5" value="${r.c}" onchange="updateRecord('${r.id}','c',this.value)"></td>
+      <td><input class="q-input" style="width:56px" type="number" step="0.1" min="1" max="5" value="${r.p}" onchange="updateRecord('${r.id}','p',this.value)"></td>
+      <td><input class="q-input" style="width:56px" type="number" step="0.1" min="1" max="5" value="${r.s}" onchange="updateRecord('${r.id}','s',this.value)"></td>
+      <td style="font-weight:700;color:${scoreColor(r.cx)}">${r.cx}</td>
+      <td><span class="badge ${riskBadge[r.risk]||'badge-gray'}">${r.risk}</span></td>
+      <td><div class="row-actions">
+        <button class="btn btn-danger btn-sm btn-icon" onclick="confirmDanger('delete-record-${r.id}','Delete Record','This response record will be permanently deleted.')">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H5L4 6"/></svg>
+        </button>
+      </div></td>
+    </tr>`
+  ).join('');
+
+  const total = filteredRecords.length;
+  const totalPages = Math.ceil(total/RECORD_PAGE_SIZE)||1;
+  document.getElementById('recordsPagination').innerHTML =
+    `<div class="pagination-info">Showing ${Math.min(start+1,total)}–${Math.min(start+RECORD_PAGE_SIZE,total)} of ${total} records</div>
+     <div class="pagination-btns">
+       <button class="page-btn" onclick="setRecordPage(${recordPage-1})" ${recordPage<=1?'disabled':''}>‹</button>
+       ${Array.from({length:Math.min(5,totalPages)},(_,i)=>{
+         const p = Math.max(1,Math.min(totalPages-4,recordPage-2))+i;
+         return `<button class="page-btn ${p===recordPage?'active':''}" onclick="setRecordPage(${p})">${p}</button>`;
+       }).join('')}
+       <button class="page-btn" onclick="setRecordPage(${recordPage+1})" ${recordPage>=totalPages?'disabled':''}>›</button>
+     </div>`;
+}
+
+function setRecordPage(p) { recordPage=p; renderRecordsTableWithData(); }
+function filterRecords() {
+  const q = (document.getElementById('recordSearch')?.value||'').toLowerCase();
+  const b = document.getElementById('recordBranchFilter')?.value||'';
+  filteredRecords = allRecords.filter(r => (!q||r.id.includes(q)||r.branch.toLowerCase().includes(q)) && (!b||r.branch===b));
+  recordPage=1;
+  renderRecordsTableWithData();
+}
+function renderRecordsTable() { filteredRecords=[...allRecords]; renderRecordsTableWithData(); setTimeout(filterRecords,0); }
+function updateRecord(id, field, val) { const r=allRecords.find(x=>x.id===id); if(r) r[field]=parseFloat(val); }
+
+function triggerUpload()  { document.getElementById('dataFileInput').click(); }
+function onDragOver(e)    { e.preventDefault(); document.getElementById('uploadZone').classList.add('drag-over'); }
+function onDragLeave()    { document.getElementById('uploadZone').classList.remove('drag-over'); }
+function onDrop(e)        { e.preventDefault(); document.getElementById('uploadZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) simulateUpload(f); }
+function handleFileUpload(inp) { if(inp.files[0]) simulateUpload(inp.files[0]); }
+
+function simulateUpload(file) {
+  const prog = document.getElementById('uploadProgress');
+  const bar  = document.getElementById('uploadBar');
+  const pct2 = document.getElementById('uploadPct');
+  const stat = document.getElementById('uploadStatus');
+  const fn   = document.getElementById('uploadFileName');
+  prog.style.display = '';
+  fn.textContent = file.name;
+  let p = 0;
+  const iv = setInterval(() => {
+    p += Math.random()*15+5;
+    if (p >= 100) { p=100; clearInterval(iv); stat.textContent='✓ Validated — 300 records ready to activate'; stat.style.color='var(--green)'; addAuditEntry('UPLOAD',`Dataset ${file.name}`,`${file.name} uploaded and validated`); toast('File uploaded and validated successfully.','success'); datasets.unshift({id:datasets.length+1,name:file.name,period:'Q2 2026',rows:300,status:'pending',uploader:currentAdmin?.name||'Admin',date:new Date().toISOString().slice(0,10)}); renderDatasets(); }
+    bar.style.width = p+'%';
+    pct2.textContent = Math.round(p)+'%';
+  }, 150);
+}
+
+/* ═══════════════════════════════════════════
+   CONTENT PANEL
+═══════════════════════════════════════════ */
+function switchContentTab(tab, btn) {
+  document.querySelectorAll('.content-tab-btn').forEach(b => {
+    b.style.borderBottomColor='transparent'; b.style.color='var(--text-dim)';
+  });
+  btn.style.borderBottomColor='var(--gold)'; btn.style.color='var(--gold)';
+  ['questionnaire','platform','services'].forEach(t => {
+    const el = document.getElementById(`content-tab-${t}`);
+    if (el) el.style.display = t===tab?'':'none';
+  });
+  contentTabActive = tab;
+}
+
+function renderContentPanel() {
+  renderQuestionnaireEditor();
+  renderServicesEditor();
+}
+
+function renderQuestionnaireEditor() {
+  const el = document.getElementById('questionnaireEditor');
+  if (!el) return;
+  const constructs = [...new Set(questionnaireItems.map(q=>q.construct))];
+  el.innerHTML = constructs.map(construct => {
+    const items = questionnaireItems.filter(q=>q.construct===construct);
+    return `<div style="margin-bottom:20px">
+      <div style="font-size:11px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding:8px 12px;background:var(--gold-dim);border-radius:6px;border:1px solid rgba(201,151,58,0.2)">${construct}</div>
+      ${items.map((q,idx) => `<div class="q-item">
+        <div class="q-item-head">
+          <span class="q-code">${q.code}</span>
+          <span class="q-status ${q.status}">${q.status}</span>
+          <div class="q-actions">
+            <button class="btn btn-secondary btn-sm" onclick="toggleItemStatus('${q.code}')">${q.status==='retained'?'Mark Removed':'Mark Retained'}</button>
+            <button class="btn btn-danger btn-sm btn-icon" onclick="deleteQuestionnaireItem('${q.code}')">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H5L4 6"/></svg>
+            </button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <input class="q-input" value="${q.en}" placeholder="English text" onchange="updateQItem('${q.code}','en',this.value)">
+          <input class="q-input" value="${q.ar}" dir="rtl" placeholder="النص العربي" onchange="updateQItem('${q.code}','ar',this.value)">
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function toggleItemStatus(code) {
+  const q = questionnaireItems.find(x=>x.code===code);
+  if (q) { q.status = q.status==='retained'?'removed':'retained'; addAuditEntry('UPDATE',`Questionnaire ${code}`,`Item status set to ${q.status}`); toast(`Item ${code} marked as ${q.status}.`,'success'); renderQuestionnaireEditor(); }
+}
+
+function deleteQuestionnaireItem(code) {
+  questionnaireItems = questionnaireItems.filter(q=>q.code!==code);
+  addAuditEntry('DELETE',`Questionnaire ${code}`,'Item permanently removed from instrument');
+  toast(`Item ${code} deleted.`,'success');
+  renderQuestionnaireEditor();
+}
+
+function updateQItem(code, field, val) {
+  const q = questionnaireItems.find(x=>x.code===code);
+  if (q) q[field]=val;
+}
+
+function addQuestionnaireItem() {
+  const code = `Q${questionnaireItems.length+1}`;
+  questionnaireItems.push({code,construct:'Quality',status:'retained',en:'New question text.',ar:'نص السؤال الجديد.'});
+  addAuditEntry('CREATE',`Questionnaire ${code}`,'New questionnaire item added');
+  toast('New item added.','success');
+  renderQuestionnaireEditor();
+}
+
+function renderServicesEditor() {
+  const el = document.getElementById('servicesEditor');
+  if (!el) return;
+  el.innerHTML = servicesData.map(s =>
+    `<div class="q-item" style="margin-bottom:14px">
+      <div class="q-item-head">
+        <span class="q-code">${s.num}</span>
+        <span style="font-size:13px;font-weight:700;color:var(--text)">${s.nameEn}</span>
+        <div class="q-actions">
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteService(${s.id})">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H5L4 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+        <input class="q-input" value="${s.nameEn}" placeholder="Name (EN)" onchange="updateService(${s.id},'nameEn',this.value)">
+        <input class="q-input" value="${s.nameAr}" dir="rtl" placeholder="الاسم (AR)" onchange="updateService(${s.id},'nameAr',this.value)">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <input class="q-input" value="${s.descEn}" placeholder="Description (EN)" onchange="updateService(${s.id},'descEn',this.value)">
+        <input class="q-input" value="${s.descAr}" dir="rtl" placeholder="الوصف (AR)" onchange="updateService(${s.id},'descAr',this.value)">
+      </div>
+    </div>`
+  ).join('');
+}
+
+function updateService(id, field, val) { const s=servicesData.find(x=>x.id===id); if(s) s[field]=val; }
+function deleteService(id) { servicesData=servicesData.filter(s=>s.id!==id); addAuditEntry('DELETE',`Service #${id}`,'Service entry removed'); toast('Service deleted.','success'); renderServicesEditor(); }
+function addService() { const id=servicesData.length+1; servicesData.push({id,num:`0${id}`,nameEn:'New Service',nameAr:'خدمة جديدة',descEn:'Description.',descAr:'الوصف.'}); addAuditEntry('CREATE',`Service #${id}`,'New service added'); toast('Service added.','success'); renderServicesEditor(); }
+function saveAllContent() { addAuditEntry('UPDATE','Content','All content changes saved'); toast('All content changes saved.','success'); }
+function resetContent() { toast('Content reset to defaults.','warning'); }
+
+/* ═══════════════════════════════════════════
+   MODEL & WEIGHTS
+═══════════════════════════════════════════ */
+function renderModelWeights() {
+  const branch = document.getElementById('modelBranchSelect')?.value || 'All Branches';
+  const drivers = modelOverrides[branch] || modelOverrides['All Branches'] || [];
+  const el = document.getElementById('modelWeightsEditor');
+  if (!el) return;
+
+  el.innerHTML = drivers.map(dr =>
+    `<div class="driver-weight-row">
+      <span class="driver-weight-name">${dr.name}</span>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <input type="range" class="admin-range" min="0" max="0.5" step="0.01" value="${dr.impact}" data-branch="${branch}" data-driver="${dr.name}" oninput="updateWeight(this)">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-mute);font-weight:600"><span>0.00</span><span>0.25</span><span>0.50</span></div>
+      </div>
+      <span style="font-size:13px;font-weight:700;color:var(--gold-light);font-family:var(--font-mono)" id="wt-${branch.replace(' ','_')}-${dr.name}">${impactPct(dr.impact)}</span>
+      <select class="filter-select" style="font-size:12px" onchange="updateDecision('${branch}','${dr.name}',this.value)">
+        ${['Invest','Optimize','Selective','Monitor','Maintain','Do not overinvest'].map(d=>`<option ${d===dr.decision?'selected':''}>${d}</option>`).join('')}
+      </select>
+    </div>`
+  ).join('');
+
+  /* Metrics editor */
+  const mEl = document.getElementById('modelMetricsEditor');
+  if (mEl) {
+    mEl.innerHTML = Object.entries(modelMetrics).map(([k,v]) =>
+      `<div class="form-group">
+        <label class="form-label">${{r2:'Explanatory Power (R²)',alpha:'Cronbach Alpha',cr:'Composite Reliability',ave:'AVE',htmt:'HTMT'}[k]||k}</label>
+        <input class="form-input" value="${v}" onchange="modelMetrics['${k}']=this.value" style="font-family:var(--font-mono)">
+      </div>`
+    ).join('');
+  }
+
+  /* Decision labels override */
+  const dEl = document.getElementById('decisionLabelsEditor');
+  if (dEl) {
+    dEl.innerHTML = `<div class="grid-2" style="margin:0">${drivers.map(dr => `<div class="form-group">
+      <label class="form-label">${dr.name}</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <input class="form-input" value="${dr.decision}" placeholder="Decision (EN)" onchange="updateDecision('${branch}','${dr.name}',this.value)" style="font-size:13px">
+        <input class="form-input" placeholder="القرار (AR)" style="font-size:13px" dir="rtl">
+      </div>
+    </div>`).join('')}</div>`;
+  }
+}
+
+function updateWeight(inp) {
+  const b  = inp.getAttribute('data-branch');
+  const dn = inp.getAttribute('data-driver');
+  const v  = parseFloat(inp.value);
+  const drivers = modelOverrides[b];
+  if (drivers) { const d=drivers.find(x=>x.name===dn); if(d) d.impact=v; }
+  const lbl = document.getElementById(`wt-${b.replace(' ','_')}-${dn}`);
+  if (lbl) lbl.textContent = impactPct(v);
+}
+
+function updateDecision(branch, driverName, val) {
+  const drivers = modelOverrides[branch];
+  if (drivers) { const d=drivers.find(x=>x.name===driverName); if(d) d.decision=val; }
+}
+
+function saveModelWeights() {
+  addAuditEntry('OVERRIDE','Model Weights',`Driver weights saved for ${document.getElementById('modelBranchSelect')?.value||'All'}`);
+  toast('Model weights saved and applied.','success');
+}
+
+function resetModelWeights() {
+  confirmDanger('reset-model','Reset Model Weights','All manual driver weight overrides will be reverted to their calculated defaults.');
+}
+
+/* ═══════════════════════════════════════════
+   REPORTS
+═══════════════════════════════════════════ */
+function renderReports() {
+  /* Scheduled */
+  const sel = document.getElementById('scheduledExports');
+  if (sel) {
+    sel.innerHTML = scheduledExportsList.length
+      ? scheduledExportsList.map(s =>
+          `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 22px;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text)">${s.name}</div>
+              <div style="font-size:11px;color:var(--text-dim);margin-top:3px">${s.freq} · ${s.format} · ${s.branch} → ${s.email}</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="toggle-track ${s.active?'on':''}" onclick="toggleSchedule('${s.id}',this)"><div class="toggle-thumb"></div></div>
+              <button class="btn btn-danger btn-sm btn-icon" onclick="deleteSchedule('${s.id}')">✕</button>
+            </div>
+          </div>`
+        ).join('')
+      : `<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No scheduled exports</div></div>`;
+  }
+
+  /* History */
+  const tbody = document.getElementById('reportHistoryTbody');
+  if (tbody) {
+    tbody.innerHTML = reportHistory.map(r =>
+      `<tr>
+        <td><b>${r.name}</b></td>
+        <td><span class="badge badge-blue">${r.type}</span></td>
+        <td>${r.branch}</td>
+        <td><span class="badge badge-gold">${r.format}</span></td>
+        <td>${r.by}</td>
+        <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim)">${r.date}</td>
+        <td><span class="badge ${r.status==='Ready'?'badge-green':'badge-gray'}">${r.status}</span></td>
+        <td><div class="row-actions">
+          ${r.status==='Ready'?`<button class="btn btn-secondary btn-sm" onclick="downloadReport('${r.id}')">Download</button>`:''}
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteReport('${r.id}')">✕</button>
+        </div></td>
+      </tr>`
+    ).join('');
+  }
+}
+
+function generateReport() {
+  const type   = document.getElementById('reportType').value;
+  const branch = document.getElementById('reportBranch').value;
+  const format = document.getElementById('reportFormat').value;
+  const lang   = document.getElementById('reportLang').value;
+  toast(`Generating ${type} (${branch}) as ${format} — ${lang}…`,'info');
+  setTimeout(() => {
+    const id = `RPT-${String(reportHistory.length+1).padStart(3,'0')}`;
+    reportHistory.unshift({id,name:`${type} — ${branch}`,type,branch,format,by:currentAdmin?.name||'Admin',date:new Date().toISOString().slice(0,10),status:'Ready'});
+    addAuditEntry('EXPORT',`Report ${id}`,`${type} report generated`);
+    toast('Report ready for download.','success');
+    renderReports();
+  }, 2000);
+}
+
+function openScheduleModal() { openModal('scheduleModal'); }
+function saveSchedule() {
+  const name  = document.getElementById('schedName').value.trim();
+  const freq  = document.getElementById('schedFreq').value;
+  const fmt   = document.getElementById('schedFormat').value;
+  const email = document.getElementById('schedEmail').value.trim();
+  const br    = document.getElementById('schedBranch').value;
+  if (!name || !email) { toast('Name and email are required.','error'); return; }
+  scheduledExportsList.push({id:`SCH-${String(scheduledExportsList.length+1).padStart(3,'0')}`,name,freq,format:fmt,branch:br,email,active:true});
+  addAuditEntry('CREATE',`Schedule ${name}`,`Automated ${freq} report scheduled`);
+  toast('Export schedule created.','success');
+  closeModalById('scheduleModal');
+  renderReports();
+}
+function toggleSchedule(id, el) { el.classList.toggle('on'); const s=scheduledExportsList.find(x=>x.id===id); if(s) s.active=!s.active; toast(`Schedule ${s?.active?'activated':'paused'}.`,'info'); }
+function deleteSchedule(id) { scheduledExportsList=scheduledExportsList.filter(s=>s.id!==id); toast('Schedule deleted.','success'); renderReports(); }
+function downloadReport(id) { toast(`Report ${id} downloading…`,'info'); addAuditEntry('EXPORT',`Report ${id}`,'Report downloaded'); }
+function deleteReport(id) { reportHistory=reportHistory.filter(r=>r.id!==id); toast('Report removed.','success'); renderReports(); }
+
+/* ═══════════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════════ */
+function saveSettings() {
+  const quarter = document.getElementById('quarterLabel')?.value;
+  const n       = document.getElementById('sampleSizeN')?.value;
+  const r2      = document.getElementById('modelR2')?.value;
+  addAuditEntry('UPDATE','Settings',`Platform settings saved — Q:${quarter}, N:${n}, R²:${r2}%`);
+  toast('Settings saved successfully.','success');
+}
+
+/* ═══════════════════════════════════════════
+   AUDIT LOG
+═══════════════════════════════════════════ */
+let filteredAudit = [];
+
+function filterAuditLog() {
+  const q      = (document.getElementById('auditSearch')?.value||'').toLowerCase();
+  const action = document.getElementById('auditActionFilter')?.value||'';
+  const admin  = document.getElementById('auditAdminFilter')?.value||'';
+  filteredAudit = auditLog.filter(a =>
+    (!q      || a.resource.toLowerCase().includes(q) || a.detail.toLowerCase().includes(q) || a.admin.toLowerCase().includes(q)) &&
+    (!action || a.action===action) &&
+    (!admin  || a.admin===admin)
+  );
+  auditPage = 1;
+  renderAuditLogTable();
+}
+
+function renderAuditLog() { filteredAudit=[...auditLog]; renderAuditLogTable(); setTimeout(filterAuditLog,0); }
+
+function renderAuditLogTable() {
+  const tbody = document.getElementById('auditTbody');
+  if (!tbody) return;
+  const start = (auditPage-1)*AUDIT_PAGE_SIZE;
+  const page  = filteredAudit.slice(start, start+AUDIT_PAGE_SIZE);
+  const colors = {CREATE:'var(--green)',UPDATE:'var(--blue)',DELETE:'var(--red)',LOGIN:'var(--gold)',EXPORT:'var(--teal)',UPLOAD:'var(--purple)',OVERRIDE:'var(--amber)'};
+  tbody.innerHTML = page.map(a =>
+    `<tr class="audit-row">
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim);white-space:nowrap">${a.timestamp}</td>
+      <td><span style="font-weight:600;font-size:12px">${a.admin}</span></td>
+      <td><span class="badge audit-action" style="background:${colors[a.action]||'var(--text-dim)'}22;color:${colors[a.action]||'var(--text-dim)'};border-color:${colors[a.action]||'var(--border2)'}44">${a.action}</span></td>
+      <td style="font-size:12px;font-weight:600;color:var(--text)">${a.resource}</td>
+      <td style="font-size:12px;color:var(--text-dim);max-width:260px">${a.detail}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-mute)">${a.ip}</td>
+      <td><span class="badge badge-green">${a.status}</span></td>
+    </tr>`
+  ).join('') || `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No audit entries</div></div></td></tr>`;
+
+  const total = filteredAudit.length;
+  const totalPages = Math.ceil(total/AUDIT_PAGE_SIZE)||1;
+  document.getElementById('auditPagination').innerHTML =
+    `<div class="pagination-info">${total} entries</div>
+     <div class="pagination-btns">
+       <button class="page-btn" onclick="setAuditPage(${auditPage-1})" ${auditPage<=1?'disabled':''}>‹</button>
+       ${Array.from({length:Math.min(5,totalPages)},(_,i)=>{
+         const p=Math.max(1,Math.min(totalPages-4,auditPage-2))+i;
+         return `<button class="page-btn ${p===auditPage?'active':''}" onclick="setAuditPage(${p})">${p}</button>`;
+       }).join('')}
+       <button class="page-btn" onclick="setAuditPage(${auditPage+1})" ${auditPage>=totalPages?'disabled':''}>›</button>
+     </div>`;
+  const badge = document.getElementById('auditBadge');
+  if (badge) badge.textContent = Math.min(99,auditLog.filter(a=>a.action!=='LOGIN').length);
+}
+
+function setAuditPage(p) { auditPage=p; renderAuditLogTable(); }
+function exportAuditLog() { addAuditEntry('EXPORT','Audit Log','Full audit log exported as CSV'); toast('Audit log exported.','success'); }
+
+/* ═══════════════════════════════════════════
+   NOTIFICATIONS
+═══════════════════════════════════════════ */
+function toggleNotif() { toast('3 new notifications — feature connects to your backend.','info'); }
+
+/* ═══════════════════════════════════════════
+   KEYBOARD SHORTCUTS
+═══════════════════════════════════════════ */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    ['userModal','branchModal','viewUserModal','confirmModal','scheduleModal'].forEach(id => { const el=document.getElementById(id); if(el) el.classList.remove('open'); });
+    closeSidebar();
+  }
+  if ((e.ctrlKey||e.metaKey) && e.key==='k') { e.preventDefault(); document.getElementById('globalSearch')?.focus(); }
+});
+
+/* ═══════════════════════════════════════════
+   SORT TABLE (stub for extensibility)
+═══════════════════════════════════════════ */
+function sortTable(table, field) {
+  if (table==='users') {
+    if (!sortState[field]) sortState[field]='asc'; else sortState[field]=sortState[field]==='asc'?'desc':'asc';
+    const dir = sortState[field]==='asc'?1:-1;
+    usersData.sort((a,b) => {
+      const av=a[field]||''; const bv=b[field]||'';
+      return av<bv?-dir:av>bv?dir:0;
+    });
+    renderUsersTable();
+  }
+}
+</script>
+</body>
+</html>
