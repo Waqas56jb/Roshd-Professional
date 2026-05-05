@@ -44,7 +44,7 @@ Error generating stack: `+o.message+`
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">\r
 <title>ROSHD Admin — Control Center</title>\r
 <link rel="preconnect" href="https://fonts.googleapis.com">\r
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">\r
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">\r
 <style>\r
 /* ═══════════════════════════════════════════════════════════\r
    ROOT VARIABLES\r
@@ -83,7 +83,7 @@ Error generating stack: `+o.message+`
   --radius-sm:   6px;\r
   --shadow:      0 4px 24px rgba(0,0,0,0.4);\r
   --shadow-lg:   0 12px 48px rgba(0,0,0,0.55);\r
-  --font-main:   'Syne', sans-serif;\r
+  --font-main:   'DM Sans', sans-serif;\r
   --font-ar:     'Cairo', sans-serif;\r
   --font-mono:   'DM Mono', monospace;\r
 }\r
@@ -97,6 +97,20 @@ body {\r
   color: var(--text);\r
   overflow-x: hidden;\r
   min-height: 100vh;\r
+}\r
+\r
+/* Match customer dashboard typography (lighter than old admin) */\r
+.login-brand-text strong,\r
+.login-title,\r
+.sidebar-title,\r
+.admin-name,\r
+.topbar-title,\r
+.page-eyebrow,\r
+.page-title,\r
+.stat-value,\r
+.modal-title,\r
+.confirm-title {\r
+  font-weight: 600;\r
 }\r
 \r
 body::before {\r
@@ -1303,31 +1317,75 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
    RESPONSIVE\r
 ═══════════════════════════════════════════════════════════ */\r
 @media (max-width: 1024px) {\r
-  .sidebar { transform: translateX(-100%); }\r
+  .sidebar {\r
+    transform: translateX(-100%);\r
+    width: min(84vw, 320px);\r
+    z-index: 250;\r
+  }\r
   .sidebar.open { transform: translateX(0); }\r
   .sidebar-overlay { display: block; opacity: 0; pointer-events: none; transition: opacity 0.3s; }\r
   .sidebar-overlay.open { opacity: 1; pointer-events: auto; }\r
   .main { margin-left: 0; }\r
-  .topbar-menu-btn { display: flex; }\r
+  .topbar-menu-btn {\r
+    display: flex;\r
+    width: 38px;\r
+    height: 38px;\r
+  }\r
   .topbar-search { display: none; }\r
+  .topbar {\r
+    padding-left: max(16px, env(safe-area-inset-left, 0px));\r
+    padding-right: max(16px, env(safe-area-inset-right, 0px));\r
+  }\r
+  .content {\r
+    padding-left: max(18px, env(safe-area-inset-left, 0px));\r
+    padding-right: max(18px, env(safe-area-inset-right, 0px));\r
+    padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));\r
+  }\r
   .grid-2, .grid-3 { grid-template-columns: 1fr; }\r
   .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }\r
   .driver-weight-row { grid-template-columns: 1fr; gap: 8px; }\r
 }\r
 \r
 @media (max-width: 768px) {\r
-  .content { padding: 16px; }\r
-  .stat-grid { grid-template-columns: 1fr 1fr; }\r
-  .page-header { flex-direction: column; }\r
-  .topbar { padding: 0 16px; }\r
-  .modal { max-height: calc(100dvh - 24px); }\r
+  .content { padding-top: 16px; }\r
+  .stat-grid { grid-template-columns: 1fr 1fr; gap: 12px; }\r
+  .page-header { flex-direction: column; gap: 14px; }\r
+  .page-title { font-size: 20px; }\r
+  .topbar {\r
+    min-height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));\r
+    padding-top: env(safe-area-inset-top, 0px);\r
+  }\r
+  .topbar-title { font-size: 15px; }\r
+  .topbar-breadcrumb { display: none; }\r
+  .topbar-right { gap: 8px; }\r
+  .status-pill { display: none; }\r
+  .topbar-icon-btn {\r
+    width: 36px;\r
+    height: 36px;\r
+  }\r
+  .modal {\r
+    width: calc(100vw - 20px);\r
+    max-height: calc(100dvh - 20px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));\r
+    border-radius: 12px;\r
+  }\r
+  .modal-header, .modal-body, .modal-footer { padding-left: 20px; padding-right: 20px; }\r
+  .btn, .filter-select, .form-input, .q-input { min-height: 42px; }\r
 }\r
 \r
 @media (max-width: 480px) {\r
+  .login-card { max-width: 100%; border-radius: 14px; }\r
+  .login-header { padding: 28px 22px 20px; }\r
+  .login-body { padding: 22px; }\r
   .stat-grid { grid-template-columns: 1fr; }\r
   .filter-bar { gap: 8px; }\r
   .filter-select { flex: 1 1 calc(50% - 8px); min-width: 0; }\r
-  .modal-header, .modal-body, .modal-footer { padding-left: 18px; padding-right: 18px; }\r
+  .table-wrap { margin: 0 -6px; }\r
+  table.data-table { min-width: 640px; }\r
+  .modal {\r
+    width: calc(100vw - 14px);\r
+    border-radius: 10px;\r
+  }\r
+  .modal-header, .modal-body, .modal-footer { padding-left: 16px; padding-right: 16px; }\r
 }\r
 </style>\r
 </head>\r
