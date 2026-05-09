@@ -928,56 +928,262 @@ html[data-lang="ar"] .db-breadcrumb { font-family: 'Cairo', sans-serif; }
 }
 html[data-lang="ar"] .db-period-badge { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
 
+/* ── Filter bar — minimal thin strip (same theme: db-card + gold accent) ── */
 .db-filter-bar {
-  padding: 14px 28px;
+  padding: 8px 24px 10px;
   background: var(--db-card);
   border-bottom: 1px solid var(--db-border-subtle);
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 18px;
+  flex-shrink: 0;
+}
+
+.db-filter-bar__lead {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
   flex-shrink: 0;
-  row-gap: 10px;
 }
 
-.db-filter-label { font-size: 11px; color: var(--db-muted); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
-html[data-lang="ar"] .db-filter-label { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
+.db-filter-bar__title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1;
+}
+html[data-lang="ar"] .db-filter-bar__title {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+  font-size: 11px;
+}
 
-.db-select {
-  background: var(--db-surface);
-  border: 1px solid var(--db-border-subtle);
-  color: var(--db-text);
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s;
+.db-filter-bar-scroll-outer {
   min-width: 0;
-  flex: 1 1 130px;
+  position: relative;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.db-filter-bar-scroll-outer::before,
+.db-filter-bar-scroll-outer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.db-filter-bar-scroll-outer.is-scrollable-start::before,
+.db-filter-bar-scroll-outer.is-scrollable-end::after {
+  opacity: 1;
+}
+.db-filter-bar-scroll-outer::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--db-card), transparent);
+}
+.db-filter-bar-scroll-outer::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--db-card), transparent);
+}
+html[data-lang="ar"] .db-filter-bar-scroll-outer::before {
+  left: auto;
+  right: 0;
+  background: linear-gradient(270deg, var(--db-card), transparent);
+}
+html[data-lang="ar"] .db-filter-bar-scroll-outer::after {
+  right: auto;
+  left: 0;
+  background: linear-gradient(90deg, var(--db-card), transparent);
+}
+
+.db-filter-bar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 12px;
+  padding: 2px 0;
   max-width: 100%;
 }
-html[data-lang="ar"] .db-select { font-family: 'Cairo', sans-serif; direction: rtl; }
-.db-select:focus { border-color: var(--gold); }
-.db-select option { background: var(--db-card); }
+
+.db-filter-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1 1 128px;
+  max-width: 200px;
+}
+
+.db-filter-chip-lbl {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.32);
+  line-height: 1.2;
+  padding-inline-start: 1px;
+}
+html[data-lang="ar"] .db-filter-chip-lbl {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+  font-size: 10px;
+}
+
+.db-filter-chip-select-wrap {
+  position: relative;
+  border-radius: 6px;
+  transition: box-shadow 0.15s ease;
+}
+.db-filter-chip-select-wrap:focus-within {
+  box-shadow: 0 0 0 1px rgba(184, 150, 46, 0.55);
+}
+
+.db-select {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: rgba(255, 255, 255, 0.03);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23a89040' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3.5 4.5 2.5 2.5 2.5-2.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 11px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 6px 26px 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.3;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+html[data-lang="ar"] .db-select {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  background-position: left 8px center;
+  padding: 6px 10px 6px 26px;
+}
+.db-select:hover {
+  border-color: rgba(184, 150, 46, 0.22);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.db-select:focus-visible {
+  border-color: rgba(184, 150, 46, 0.45);
+}
+.db-select:active {
+  transform: none;
+}
+.db-select option { background: var(--db-card); color: var(--db-text); }
+
+.db-filter-bar__trail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.db-period-badge--filter {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: rgba(184, 150, 46, 0.08);
+  border: 1px solid rgba(184, 150, 46, 0.22);
+  color: rgba(212, 175, 55, 0.95);
+}
+html[data-lang="ar"] .db-period-badge--filter {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+}
 
 .db-export-btn {
-  margin-inline-start: auto;
-  display: flex; align-items: center; gap: 8px;
-  background: var(--gold);
-  color: var(--navy-deep);
-  border: none;
-  padding: 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--gold-light);
+  border: 1px solid rgba(184, 150, 46, 0.4);
+  padding: 6px 14px;
   border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   white-space: nowrap;
+  box-shadow: none;
 }
 html[data-lang="ar"] .db-export-btn { font-family: 'Cairo', sans-serif; }
-.db-export-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+.db-export-btn:hover {
+  background: rgba(184, 150, 46, 0.1);
+  border-color: rgba(184, 150, 46, 0.65);
+  color: var(--gold-light);
+}
+.db-export-btn:active {
+  background: rgba(184, 150, 46, 0.06);
+}
+
+@media (max-width: 1100px) {
+  .db-filter-bar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .db-filter-bar__trail {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .db-filter-bar-scroll-outer {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(184, 150, 46, 0.25) transparent;
+  }
+  .db-filter-bar-scroll-outer::-webkit-scrollbar {
+    height: 4px;
+  }
+  .db-filter-bar-scroll-outer::-webkit-scrollbar-thumb {
+    background: rgba(184, 150, 46, 0.28);
+    border-radius: 99px;
+  }
+  .db-filter-bar-inner {
+    flex-wrap: nowrap;
+    padding: 2px 0;
+    scroll-snap-type: x proximity;
+    width: max-content;
+    max-width: none;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
+  .db-filter-chip {
+    flex: 0 0 auto;
+    width: min(184px, 70vw);
+    max-width: 200px;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .db-filter-chip {
+    width: min(220px, 82vw);
+  }
+}
 
 /* ── Panels ── */
 .db-content {
@@ -3191,25 +3397,21 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .db-topbar { padding: 0 16px; height: 56px; gap: 8px; }
   .db-page-title { font-size: 16px; }
   .db-filter-bar {
-    padding: 12px 14px;
-    gap: 10px;
-    overflow-x: visible;
-    flex-wrap: wrap;
+    padding: 10px 14px 12px;
+    gap: 8px;
   }
-  .db-filter-label { display: none; }
   .db-select {
-    flex: 1 1 calc(50% - 8px);
-    min-width: 0;
     min-height: 44px;
     font-size: 16px;
-    padding: 10px 12px;
+    padding: 8px 28px 8px 12px;
+  }
+  html[data-lang="ar"] .db-select {
+    padding: 8px 12px 8px 28px;
   }
   .db-export-btn {
-    flex: 1 1 100%;
-    margin-inline-start: 0;
-    justify-content: center;
     min-height: 44px;
-    font-size: 14px;
+    padding: 10px 16px;
+    font-size: 13px;
   }
 }
 
@@ -3252,13 +3454,26 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 @media (prefers-reduced-motion: reduce) {
   .modal-overlay.open .modal { animation: none; }
   #customerDashboard.open { animation: none; }
+  .db-export-btn:hover,
+  .db-export-btn:active { transform: none; }
+  .db-select:active { transform: none; }
 }
 
 /* ── Dashboard responsive polish ── */
 /* Make filter selects shrink gracefully so they don't overflow */
 @media (max-width: 900px) {
-  .db-select { min-width: 0; font-size: 14px; padding: 9px 11px; min-height: 42px; }
-  .db-filter-bar { gap: 8px; }
+  .db-select {
+    min-width: 0;
+    font-size: 13px;
+    padding: 6px 26px 6px 10px;
+    min-height: 40px;
+  }
+  html[data-lang="ar"] .db-select {
+    padding: 6px 10px 6px 26px;
+  }
+  .db-filter-bar-inner {
+    gap: 8px 10px;
+  }
   .db-kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .db-overviewviz-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -3268,8 +3483,17 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .db-overviewviz-metrics { grid-template-columns: 1fr !important; }
   .db-model-grid:not(.db-model-grid--wrap) { grid-template-columns: 1fr !important; }
   .db-topbar { padding: 0 12px; height: 52px; }
-  .db-filter-bar { padding: 10px 12px; }
-  .db-select { font-size: 11px; padding: 6px 8px; }
+  .db-filter-bar {
+    padding: 8px 12px 10px;
+  }
+  .db-select {
+    font-size: 16px;
+    padding: 8px 26px 8px 10px;
+    min-height: 44px;
+  }
+  html[data-lang="ar"] .db-select {
+    padding: 8px 10px 8px 26px;
+  }
   .db-page-title { font-size: 14px; }
 }
 
@@ -3881,14 +4105,20 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
     </div>
 
     <!-- Global Filter Bar (8 configurable filters — built in JS from roshd_filter_bar_config) -->
-    <div class="db-filter-bar">
-      <span class="db-filter-label"><span class="en">Filters:</span><span class="ar">التصفية:</span></span>
-      <div id="dbFilterBarInner" class="db-filter-bar-inner" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1;min-width:0"></div>
-      <span class="db-filter-label" style="margin-inline-start:8px;">Q2 2026</span>
-      <button class="db-export-btn" onclick="window.print()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span class="en">Export</span><span class="ar">تصدير</span>
-      </button>
+    <div class="db-filter-bar" aria-label="Segment filters">
+      <div class="db-filter-bar__lead">
+        <span class="db-filter-bar__title"><span class="en">Filters</span><span class="ar">التصفية</span></span>
+      </div>
+      <div class="db-filter-bar-scroll-outer">
+        <div id="dbFilterBarInner" class="db-filter-bar-inner"></div>
+      </div>
+      <div class="db-filter-bar__trail">
+        <span class="db-period-badge db-period-badge--filter" title="Reporting period"><span class="en">Q2 2026</span><span class="ar">٢٠٢٦ Q2</span></span>
+        <button type="button" class="db-export-btn" onclick="window.print()">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span class="en">Export</span><span class="ar">تصدير</span>
+        </button>
+      </div>
     </div>
 
     <!-- Scrollable Content -->
@@ -4646,6 +4876,11 @@ function setLanguage(lang) {
   // Re-render dashboard if open
   if (document.getElementById('customerDashboard').classList.contains('open')) {
     dbRender();
+    try {
+      const fb = document.querySelector('.db-filter-bar-scroll-outer');
+      if (fb && typeof dbUpdateFilterBarScrollFade === 'function')
+        requestAnimationFrame(() => dbUpdateFilterBarScrollFade(fb));
+    } catch (_) {}
   }
 }
 
@@ -5116,25 +5351,53 @@ function dbEscAttr(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
+function dbUpdateFilterBarScrollFade(outer) {
+  if (!outer) return;
+  const max = outer.scrollWidth - outer.clientWidth;
+  if (max <= 1) {
+    outer.classList.remove('is-scrollable-start', 'is-scrollable-end');
+    return;
+  }
+  const tol = 4;
+  const sl = outer.scrollLeft;
+  outer.classList.toggle('is-scrollable-start', sl > tol);
+  outer.classList.toggle('is-scrollable-end', sl < max - tol);
+}
+
+let __dbFilterScrollBound = false;
+function dbBindFilterBarScrollFade() {
+  const outer = document.querySelector('.db-filter-bar-scroll-outer');
+  if (!outer) return;
+  const upd = () => {
+    requestAnimationFrame(() => dbUpdateFilterBarScrollFade(outer));
+  };
+  upd();
+  if (__dbFilterScrollBound) return;
+  __dbFilterScrollBound = true;
+  outer.addEventListener('scroll', upd, { passive: true });
+  window.addEventListener('resize', upd);
+}
+
 function dbBuildCustomerFilterBar() {
   const host = document.getElementById('dbFilterBarInner');
   if (!host) return;
   const cfg = dbGetFilterBarConfig();
   host.innerHTML = cfg.filters.map((f, i) => {
     const fid = dbFilId('db', i);
-    const lbl = `<span class="db-filter-chip-lbl"><span class="en">${dbEscAttr(f.labelEn)}</span><span class="ar">${dbEscAttr(f.labelAr)}</span></span>`;
+    const lbl = `<label class="db-filter-chip-lbl" for="${fid}"><span class="en">${dbEscAttr(f.labelEn)}</span><span class="ar">${dbEscAttr(f.labelAr)}</span></label>`;
     const optAll = `<option value="${dbEscAttr(f.allValue)}" data-en="${dbEscAttr(f.allLabelEn)}" data-ar="${dbEscAttr(f.allLabelAr)}">${dbEscAttr(f.allLabelEn)}</option>`;
     const opts = (f.options || []).map(
       (o) =>
         `<option value="${dbEscAttr(o.value)}" data-en="${dbEscAttr(o.labelEn)}" data-ar="${dbEscAttr(o.labelAr)}">${dbEscAttr(o.labelEn)}</option>`
     ).join('');
-    return lbl + `<select class="db-select" id="${fid}" aria-label="${dbEscAttr(f.labelEn)}" onchange="dbRender()">${optAll}${opts}</select>`;
+    return `<div class="db-filter-chip">${lbl}<div class="db-filter-chip-select-wrap"><select class="db-select" id="${fid}" aria-label="${dbEscAttr(f.labelEn)}" onchange="dbRender()">${optAll}${opts}</select></div></div>`;
   }).join('');
   document.querySelectorAll('#dbFilterBarInner select option[data-en]').forEach((opt) => {
     const en = opt.dataset.en;
     const ar = opt.dataset.ar;
     opt.textContent = document.documentElement.getAttribute('data-lang') === 'ar' ? (ar || en) : en;
   });
+  dbBindFilterBarScrollFade();
 }
 
 /** @type {Array<any>} Customer rows: … + risk @11, extra1–3 @12–14 */
