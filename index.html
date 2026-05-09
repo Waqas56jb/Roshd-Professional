@@ -4845,8 +4845,15 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
      JAVASCRIPT
      ═══════════════════════════════════════════════ -->
 <script>
-/* ── Backend API base URL ── */
-const API_BASE = 'https://roshd-professional-s8lh.vercel.app';
+/* ── Backend API base URL (same host in dev so GET/PUT use your running server + Supabase) ── */
+const API_BASE = (function () {
+  try {
+    const h = window.location.hostname;
+    if (h === 'localhost' || h === '127.0.0.1') return window.location.origin;
+    if (!h && window.location.protocol === 'file:') return 'http://localhost:5000';
+  } catch (_) {}
+  return 'https://roshd-professional-s8lh.vercel.app';
+})();
 
 /* ── Language System ── */
 function setLanguage(lang) {
@@ -5254,6 +5261,7 @@ async function roshdHydrateAllConfigFromApi() {
     if (!data || !data.success || !data.configs || typeof data.configs !== 'object') return;
     const configs = data.configs;
     const gotFiltersFromKv = Object.prototype.hasOwnProperty.call(configs, FILTER_BAR_STORAGE_KEY);
+    const remoteSnapshot = data.source === 'remote';
     for (const [key, val] of Object.entries(configs)) {
       if (val == null) continue;
       if (key === ROSHD_DB_MODEL_KEY) {
@@ -5270,6 +5278,19 @@ async function roshdHydrateAllConfigFromApi() {
       try {
         localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val));
       } catch (_) {}
+    }
+    if (remoteSnapshot && Object.keys(configs).length > 0) {
+      for (const key of ROSHD_REMOTE_CONFIG_KEYS) {
+        if (Object.prototype.hasOwnProperty.call(configs, key)) continue;
+        try {
+          localStorage.removeItem(key);
+          if (key === ROSHD_DB_MODEL_KEY) {
+            try {
+              delete window.__ROSHD_DB_MODEL__;
+            } catch (_) {}
+          }
+        } catch (_) {}
+      }
     }
     if (!gotFiltersFromKv) await dbTrySyncFiltersFromApi();
   } catch (_) {}
@@ -5299,6 +5320,19 @@ const DB_AGE_LIST = ["<25", "25–34", "35–44", "45+"];
 
 /** Must match admin `FILTER_BAR_STORAGE_KEY` */
 const FILTER_BAR_STORAGE_KEY = 'roshd_filter_bar_config';
+/** Mirror admin `ROSHD_CONFIG_KV_KEYS` — keys reconciled when GET `/api/roshd/config` returns `source: remote`. */
+const ROSHD_REMOTE_CONFIG_KEYS = [
+  FILTER_BAR_STORAGE_KEY,
+  'roshd_executive_overrides',
+  'roshd_cx_drivers_overrides',
+  'roshd_units_performance_overrides',
+  'roshd_demographics_overrides',
+  'roshd_customer_patterns_overrides',
+  'roshd_questionnaire_overrides',
+  'roshd_pilot_analysis_overrides',
+  'roshd_model_quality_overrides',
+  ROSHD_DB_MODEL_KEY,
+];
 let __dbgFilterCfgSig = '';
 
 function dbDefaultFilterBarConfig() {
