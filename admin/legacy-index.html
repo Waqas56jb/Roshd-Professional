@@ -2698,6 +2698,64 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
   JAVASCRIPT
 ════════════════════════════════════════ -->
 <script>
+/* When admin is embedded via React/Vite (`iframe srcDoc`), relative fetch('./customer-dashboard.html')
+   resolves against about:srcdoc and fails silently on Vercel — editors show empty defaults. */
+function resolveCustomerDashboardHtmlUrl() {
+  let loc = null;
+  try {
+    if (window.parent && window.parent !== window) {
+      loc = window.parent.location;
+    }
+  } catch (_) {
+    loc = null;
+  }
+  if (!loc) {
+    try {
+      loc = window.location;
+    } catch (_) {
+      return '/customer-dashboard.html';
+    }
+  }
+  let pathname = loc.pathname || '/';
+  if (pathname === '/' || pathname === '') {
+    return loc.origin + '/customer-dashboard.html';
+  }
+  if (pathname.endsWith('/')) {
+    return loc.origin + pathname + 'customer-dashboard.html';
+  }
+  const segments = pathname.split('/').filter(Boolean);
+  const last = segments.length ? segments[segments.length - 1] : '';
+  if (last && /\.[a-z0-9]{2,8}$/i.test(last)) {
+    segments.pop();
+    const dir = segments.length ? '/' + segments.join('/') + '/' : '/';
+    return loc.origin + dir + 'customer-dashboard.html';
+  }
+  return loc.origin + pathname + '/customer-dashboard.html';
+}
+
+async function fetchCustomerDashboardHtmlBundle() {
+  const urls = [];
+  const push = (u) => {
+    if (u && urls.indexOf(u) === -1) urls.push(u);
+  };
+  push(resolveCustomerDashboardHtmlUrl());
+  try {
+    const p = window.parent && window.parent !== window ? window.parent : window;
+    push(p.location.origin + '/customer-dashboard.html');
+  } catch (_) {}
+  try {
+    push(window.location.origin + '/customer-dashboard.html');
+  } catch (_) {}
+  for (let i = 0; i < urls.length; i++) {
+    const url = urls[i];
+    try {
+      const res = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+      if (res.ok) return await res.text();
+    } catch (_) {}
+  }
+  return '';
+}
+
 /* ═══════════════════════════════════════════
    CONSTANTS & STATE
 ═══════════════════════════════════════════ */
@@ -5065,9 +5123,8 @@ let _qnSections = [];
 
 async function fetchDefaultQuestionnairePanelHtml() {
   try {
-    const res = await fetch('./customer-dashboard.html', { cache: 'no-store' });
-    if (!res.ok) throw new Error('fetch failed');
-    const txt = await res.text();
+    const txt = await fetchCustomerDashboardHtmlBundle();
+    if (!txt) throw new Error('fetch failed');
     const doc = new DOMParser().parseFromString(txt, 'text/html');
     const panel = doc.getElementById('db-panel-questionnaire');
     return panel ? panel.innerHTML.trim() : '';
@@ -5251,9 +5308,8 @@ let _plDefaultValues = [];
 
 async function fetchDefaultPilotAnalysisPanelHtml() {
   try {
-    const res = await fetch('./customer-dashboard.html', { cache: 'no-store' });
-    if (!res.ok) throw new Error('fetch failed');
-    const txt = await res.text();
+    const txt = await fetchCustomerDashboardHtmlBundle();
+    if (!txt) throw new Error('fetch failed');
     const doc = new DOMParser().parseFromString(txt, 'text/html');
     const panel = doc.getElementById('db-panel-pilot');
     return panel ? panel.innerHTML.trim() : '';
@@ -5393,9 +5449,8 @@ let _mqFlowBlocks = [];
 
 async function fetchDefaultModelQualityPanelHtml() {
   try {
-    const res = await fetch('./customer-dashboard.html', { cache: 'no-store' });
-    if (!res.ok) throw new Error('fetch failed');
-    const txt = await res.text();
+    const txt = await fetchCustomerDashboardHtmlBundle();
+    if (!txt) throw new Error('fetch failed');
     const doc = new DOMParser().parseFromString(txt, 'text/html');
     const panel = doc.getElementById('db-panel-model');
     return panel ? panel.innerHTML.trim() : '';
@@ -5633,7 +5688,7 @@ const ADMIN_PREVIEW_DB_PANEL = {
 };
 
 function resolveAdminCustomerEmbedBase() {
-  return './customer-dashboard.html';
+  return resolveCustomerDashboardHtmlUrl();
 }
 
 function embedCustomerDashboardMirror(panelAdminKey, forceReload) {
