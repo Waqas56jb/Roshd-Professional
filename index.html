@@ -4849,8 +4849,11 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 const API_BASE = (function () {
   try {
     const h = window.location.hostname;
-    if (h === 'localhost' || h === '127.0.0.1') return window.location.origin;
+    if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]') return window.location.origin;
     if (!h && window.location.protocol === 'file:') return 'http://localhost:5000';
+    if (/^(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})$/.test(h))
+      return window.location.origin;
+    if (h && h.endsWith('.vercel.app')) return window.location.origin;
   } catch (_) {}
   return 'https://roshd-professional-s8lh.vercel.app';
 })();

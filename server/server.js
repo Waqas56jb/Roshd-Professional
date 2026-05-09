@@ -109,28 +109,29 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Handle all OPTIONS preflight requests
 app.use(express.json({ limit: '5mb' }));
 
-app.get('/api/health', (_req, res) => {
-  res.json({
-    status: 'ok',
-    supabase: supabaseAnon && supabaseAdmin ? 'connected' : 'missing_env',
-    timestamp: new Date().toISOString(),
-  });
-});
-
 /** Customer + admin toolbar filters (same JSON as localStorage `roshd_filter_bar_config`). */
 
 const IS_PRODUCTION_DEPLOY =
   process.env.NODE_ENV === 'production' || process.env.VERCEL === '1';
 
-/** Fixed dev-only default; admin client sends this as Bearer when API + page are local. Never used when IS_PRODUCTION_DEPLOY. */
+/**
+ * When true: PUT /api/filters and PUT /api/roshd/config require Bearer
+ * (ROSHD_DASHBOARD_ADMIN_TOKEN or ROSHD_FILTERS_ADMIN_TOKEN), or loopback + ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE.
+ * Default (unset/false): writes are allowed without a client token (simple admin UX; protect the API URL / deployment).
+ */
+const ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH =
+  process.env.ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH === 'true' ||
+  process.env.ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH === '1';
+
+/** Dev-only default Bearer when auth is required and no env token is set (non-production only). */
 const ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN = 'roshd-local-default-dashboard-write-secret';
 
-/** Bearer secret for PUT /api/filters and PUT /api/roshd/config. In non-production, defaults so local saves work without pasting a token. */
-const ROSHD_DASHBOARD_WRITE_SECRET =
-  String(process.env.ROSHD_DASHBOARD_ADMIN_TOKEN || process.env.ROSHD_FILTERS_ADMIN_TOKEN || '').trim() ||
-  (!IS_PRODUCTION_DEPLOY ? ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN : '');
+const ROSHD_DASHBOARD_WRITE_SECRET = ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH
+  ? String(process.env.ROSHD_DASHBOARD_ADMIN_TOKEN || process.env.ROSHD_FILTERS_ADMIN_TOKEN || '').trim() ||
+    (!IS_PRODUCTION_DEPLOY ? ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN : '')
+  : '';
 
-/** When true, PUT also accepts loopback with no Bearer (optional extra; Bearer with dev default is primary). */
+/** When auth is required: PUT also accepts loopback with no Bearer (optional). */
 const ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE =
   process.env.ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE === 'true' ||
   process.env.ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE === '1' ||
@@ -152,6 +153,7 @@ function roshdIsLocalhostClient(req) {
 }
 
 function roshdDashboardWriteAuthorized(req) {
+  if (!ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH) return true;
   if (ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE && roshdIsLocalhostClient(req)) return true;
   const auth = req.headers.authorization || '';
   const bearer = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
@@ -162,6 +164,17 @@ function roshdDashboardWriteAuthorized(req) {
 function filtersPutAuthorized(req) {
   return roshdDashboardWriteAuthorized(req);
 }
+
+/** Admin / tooling: confirms which server build is running (legacy clients used to see stale Vercel 401s). */
+app.get('/api/health', (_req, res) => {
+  res.json({
+    status: 'ok',
+    supabase: supabaseAnon && supabaseAdmin ? 'connected' : 'missing_env',
+    timestamp: new Date().toISOString(),
+    roshd_server_api: 2,
+    dashboard_put_requires_bearer: ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH,
+  });
+});
 
 app.get('/api/filters', async (_req, res) => {
   try {
@@ -190,7 +203,7 @@ app.put('/api/filters', async (req, res) => {
       return res.status(401).json({
         success: false,
         message:
-          'Unauthorized. Set ROSHD_DASHBOARD_ADMIN_TOKEN (or ROSHD_FILTERS_ADMIN_TOKEN) in server env and send Authorization: Bearer <same value>. Non-production servers use a built-in dev secret automatically.',
+          'Unauthorized. Set ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH=true and ROSHD_DASHBOARD_ADMIN_TOKEN in server env, then send Authorization: Bearer <same value> (or enable ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE for loopback without Bearer).',
       });
     }
     const body = req.body || {};
@@ -245,7 +258,7 @@ app.put('/api/roshd/config', async (req, res) => {
       return res.status(401).json({
         success: false,
         message:
-          'Unauthorized. Set ROSHD_DASHBOARD_ADMIN_TOKEN in server env (Vercel/production). Local dev uses an automatic Bearer secret when NODE_ENV is not production.',
+          'Unauthorized. Set ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH=true and ROSHD_DASHBOARD_ADMIN_TOKEN on the server, then send Authorization: Bearer <same value>.',
       });
     }
     if (!supabaseAdmin) {
@@ -746,16 +759,17 @@ if (!process.env.VERCEL) {
     if (!fs.existsSync(legacyAdminPath)) {
       return res.status(404).send('legacy-index.html not found');
     }
-    try {
-      let html = fs.readFileSync(legacyAdminPath, 'utf8');
-      if (ROSHD_DASHBOARD_WRITE_SECRET) {
+    if (ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH && ROSHD_DASHBOARD_WRITE_SECRET) {
+      try {
+        let html = fs.readFileSync(legacyAdminPath, 'utf8');
         const inj = `<script>window.__ROSHD_SERVER_INJECTED_WRITE_TOKEN__=${JSON.stringify(ROSHD_DASHBOARD_WRITE_SECRET)};</script>\n`;
         html = html.includes('</head>') ? html.replace('</head>', inj + '</head>') : inj + html;
+        return res.type('html').send(html);
+      } catch (e) {
+        return res.status(500).send(String(e.message || e));
       }
-      res.type('html').send(html);
-    } catch (e) {
-      res.status(500).send(String(e.message || e));
     }
+    res.sendFile(legacyAdminPath);
   });
 
   app.use(express.static(statRoot));
@@ -773,14 +787,20 @@ export default app;
 
 async function start() {
   await logDatabaseConnection();
-  if (!IS_PRODUCTION_DEPLOY && ROSHD_DASHBOARD_WRITE_SECRET === ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN) {
+  if (ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH) {
+    if (!IS_PRODUCTION_DEPLOY && ROSHD_DASHBOARD_WRITE_SECRET === ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN) {
+      console.warn(
+        `[roshd] Dashboard write auth: using dev default Bearer. Set ROSHD_DASHBOARD_ADMIN_TOKEN in .env for a custom secret.`
+      );
+    }
+    if (ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE) {
+      console.warn(
+        '[roshd] Localhost requests may omit Bearer when ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE is enabled.'
+      );
+    }
+  } else {
     console.warn(
-      `[roshd] Dev mode: dashboard PUT uses default Bearer token (same as admin auto-sync). Set ROSHD_DASHBOARD_ADMIN_TOKEN in .env for a custom secret. Open legacy admin at http://localhost:${PORT}/admin/legacy-index.html`
-    );
-  }
-  if (ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE) {
-    console.warn(
-      '[roshd] Localhost unauthenticated dashboard writes are ALSO allowed (no Bearer). Disable on public hosts: ROSHD_ALLOW_LOCALHOST_UNAUTH_CONFIG_WRITE=false'
+      '[roshd] Dashboard PUT endpoints accept writes without Bearer (ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH is not true). For a public URL, set ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH=true and ROSHD_DASHBOARD_ADMIN_TOKEN.'
     );
   }
   app.listen(PORT, () => {

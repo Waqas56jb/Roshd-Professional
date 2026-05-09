@@ -2153,15 +2153,11 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
           </div>
           <div class="exec-editor-section" style="margin-bottom:16px;border:1px solid var(--border2);border-radius:12px;padding:14px" id="dfServerSyncBar">
             <h3 style="margin:0 0 8px">Server sync</h3>
-            <p class="exec-editor-hint">Saves go to Supabase (<code>filter_bar_remote_config</code>, <code>roshd_config_kv</code>). <b>Local dev:</b> run <code>node server.js</code> and open <code>/admin/legacy-index.html</code> on the same origin — the server injects the write secret automatically. <b>Production:</b> set <code>ROSHD_DASHBOARD_ADMIN_TOKEN</code> in the server environment; paste the same value below if the page is not served by that server.</p>
-            <div class="exec-editor-grid2">
-              <div class="form-group"><label class="form-label">Write token (for database sync)</label><input type="password" class="form-input" id="dfApiWriteToken" placeholder="Same as ROSHD_DASHBOARD_ADMIN_TOKEN or ROSHD_FILTERS_ADMIN_TOKEN in .env" autocomplete="off"></div>
-              <div class="form-group" style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px">
-                <button type="button" class="btn btn-secondary btn-sm" onclick="dfRememberWriteToken()">Remember token</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="admPullFiltersFromServerClicked()">Pull from server</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="admPullAllRoshdConfigClicked()">Pull all config</button>
-                <button type="button" class="btn btn-secondary btn-sm" onclick="admPushAllRoshdConfigClicked()">Push all config</button>
-              </div>
+            <p class="exec-editor-hint">Saves go to Supabase (<code>filter_bar_remote_config</code>, <code>roshd_config_kv</code>). Run the API (<code>node server.js</code> locally or your Vercel deployment) and keep <code>API_BASE</code> pointed at that same host. No admin token is required unless you set <code>ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH=true</code> on the server.</p>
+            <div class="form-group" style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="admPullFiltersFromServerClicked()">Pull from server</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="admPullAllRoshdConfigClicked()">Pull all config</button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="admPushAllRoshdConfigClicked()">Push all config</button>
             </div>
           </div>
           <div id="dfEditorMount"></div>
@@ -3028,8 +3024,13 @@ async function fetchCustomerDashboardHtmlBundle() {
 const API_BASE = (function () {
   try {
     const h = window.location.hostname;
-    if (h === 'localhost' || h === '127.0.0.1') return window.location.origin;
+    if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]') return window.location.origin;
     if (!h && window.location.protocol === 'file:') return 'http://localhost:5000';
+    // LAN / Docker host port: use this origin so we do not fall through to production Vercel.
+    if (/^(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})$/.test(h))
+      return window.location.origin;
+    // Vercel preview / production URL: API is the same origin (avoid calling a stale hardcoded deployment).
+    if (h && h.endsWith('.vercel.app')) return window.location.origin;
   } catch (_) {}
   return 'https://roshd-professional-s8lh.vercel.app';
 })();
@@ -3149,62 +3150,63 @@ function execDedupeDrivers(arr) {
   });
 }
 
-/** Must match server `ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN` (non-production default Bearer). */
-const ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN = 'roshd-local-default-dashboard-write-secret';
-
 /** Must match customer dashboard */
 const FILTER_BAR_STORAGE_KEY = 'roshd_filter_bar_config';
-/** Optional override; server may inject via /admin/legacy-index.html */
-const FILTERS_API_TOKEN_KEY = 'roshd_filters_api_write_token';
 
-/** True when API_BASE targets this machine's dev API (Bearer dev secret is valid). */
-function admApiIsLocalLoopback() {
+function admJsonHeaders() {
+  const headers = { 'Content-Type': 'application/json' };
   try {
-    const base = (typeof API_BASE === 'string' ? API_BASE : '').replace(/\/$/, '');
-    if (!base) return false;
-    const u = new URL(base);
-    return u.hostname === 'localhost' || u.hostname === '127.0.0.1';
+    if (typeof window.__ROSHD_SERVER_INJECTED_WRITE_TOKEN__ === 'string') {
+      const t = String(window.__ROSHD_SERVER_INJECTED_WRITE_TOKEN__).trim();
+      if (t) headers.Authorization = 'Bearer ' + t;
+    }
+  } catch (_) {}
+  return headers;
+}
+
+/** Appended to 401 on dashboard PUT — usually API_BASE points at an old deployment. */
+async function admExplainDashboardPut401() {
+  try {
+    const base = String(API_BASE || '').replace(/\/$/, '');
+    if (!base) return '';
+    const r = await fetch(base + '/api/health', { cache: 'no-store', credentials: 'omit' });
+    const d = r.ok ? await r.json() : null;
+    if (d && d.roshd_server_api === 2) {
+      if (d.dashboard_put_requires_bearer === true) {
+        return ' This API requires Bearer (ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH=true). Unset that env on the server for open writes, or open legacy admin from the same Node server.';
+      }
+      return '';
+    }
+    return (
+      ' The host ' +
+      base +
+      ' is running an older API (GET /api/health has no roshd_server_api: 2). Redeploy this project’s server from GitHub, or run admin at http://127.0.0.1:5000/admin/legacy-index.html with node server.js. Check the browser console for API_BASE.'
+    );
   } catch (_) {
-    return false;
+    return ' Could not read /api/health — verify the server is up and API_BASE matches the running API.';
   }
 }
 
-/** Bearer for PUT /api/filters and PUT /api/roshd/config — injected by server, or stored, or dev default when API is local. */
-function admGetDashboardWriteToken() {
+(function admLogApiBaseForDashboardSync() {
   try {
-    if (typeof window.__ROSHD_SERVER_INJECTED_WRITE_TOKEN__ === 'string') {
-      const inj = String(window.__ROSHD_SERVER_INJECTED_WRITE_TOKEN__).trim();
-      if (inj) return inj;
-    }
+    console.info('[Roshd legacy admin] API_BASE (dashboard sync) =', API_BASE);
+    const b = String(API_BASE || '').replace(/\/$/, '');
+    if (!b) return;
+    fetch(b + '/api/health', { cache: 'no-store', credentials: 'omit' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!d || d.roshd_server_api !== 2) {
+          console.warn(
+            '[Roshd legacy admin] Stale or unknown API at',
+            b,
+            '— redeploy server/server.js or use local Node on the same origin. Health:',
+            d
+          );
+        }
+      })
+      .catch(() => {});
   } catch (_) {}
-  try {
-    const fromSession = sessionStorage.getItem(FILTERS_API_TOKEN_KEY);
-    if (fromSession && String(fromSession).trim()) return String(fromSession).trim();
-    const fromLocal = localStorage.getItem(FILTERS_API_TOKEN_KEY);
-    if (fromLocal && String(fromLocal).trim()) return String(fromLocal).trim();
-    const el = document.getElementById('dfApiWriteToken');
-    const typed = el && String(el.value || '').trim();
-    if (typed) return typed;
-  } catch (_) {}
-  if (admApiIsLocalLoopback()) return ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN;
-  return '';
-}
-
-function admPersistDashboardWriteToken(token) {
-  const v = String(token || '').trim();
-  if (!v || v === ROSHD_LOCAL_DEV_DEFAULT_WRITE_TOKEN) return;
-  try {
-    sessionStorage.setItem(FILTERS_API_TOKEN_KEY, v);
-    localStorage.setItem(FILTERS_API_TOKEN_KEY, v);
-  } catch (_) {}
-}
-
-function admAuthHeadersForConfigWrite() {
-  const token = admGetDashboardWriteToken();
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) headers.Authorization = 'Bearer ' + token;
-  return headers;
-}
+})();
 
 /** Keys upserted by Push all config → GET/PUT /api/roshd/config (same as customer dashboard localStorage). */
 const ROSHD_CONFIG_KV_KEYS = [
@@ -3249,24 +3251,21 @@ async function admPullFiltersFromServerIfAvailable() {
 }
 
 async function admPushFiltersToServer(payload) {
-  const token = admGetDashboardWriteToken();
-  if (!token) return { ok: false, skipped: true };
   try {
     const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
     const res = await fetch(base + '/api/filters', {
       method: 'PUT',
-      headers: admAuthHeadersForConfigWrite(),
+      headers: admJsonHeaders(),
       body: JSON.stringify(payload),
     });
     let data = {};
     try {
       data = await res.json();
     } catch (_) {}
-    if (!res.ok) return { ok: false, skipped: false, message: data.message || res.statusText };
-    if (token) {
-      admPersistDashboardWriteToken(token);
-      const tokEl = document.getElementById('dfApiWriteToken');
-      if (tokEl && !String(tokEl.value || '').trim()) tokEl.value = token;
+    if (!res.ok) {
+      let msg = data.message || res.statusText;
+      if (res.status === 401) msg += await admExplainDashboardPut401();
+      return { ok: false, skipped: false, message: msg };
     }
     return { ok: true, skipped: false };
   } catch (e) {
@@ -3274,34 +3273,9 @@ async function admPushFiltersToServer(payload) {
   }
 }
 
-function dfRememberWriteToken() {
-  const el = document.getElementById('dfApiWriteToken');
-  const v = el && el.value ? String(el.value).trim() : '';
-  if (!v) {
-    try {
-      sessionStorage.removeItem(FILTERS_API_TOKEN_KEY);
-      localStorage.removeItem(FILTERS_API_TOKEN_KEY);
-    } catch (_) {}
-    toast('Write token cleared from this browser.', 'info');
-    return;
-  }
-  admPersistDashboardWriteToken(v);
-  toast('Write token saved in this browser (persists across restarts).', 'success');
-}
-
-function dfPrefillWriteTokenField() {
-  const el = document.getElementById('dfApiWriteToken');
-  if (!el) return;
-  try {
-    el.value =
-      sessionStorage.getItem(FILTERS_API_TOKEN_KEY) || localStorage.getItem(FILTERS_API_TOKEN_KEY) || '';
-  } catch (_) {}
-}
-
 async function admPullFiltersFromServerClicked() {
   const ok = await admPullFiltersFromServerIfAvailable();
   loadDashboardFiltersEditor();
-  dfPrefillWriteTokenField();
   if (ok) {
     admAfterDashboardFiltersSaved();
     toast('Loaded filter configuration from server.', 'success');
@@ -3328,7 +3302,6 @@ async function admPullAllRoshdConfigClicked() {
   const configs = await admFetchAllRoshdConfig();
   if (!configs || !Object.keys(configs).length) {
     loadDashboardFiltersEditor();
-    dfPrefillWriteTokenField();
     toast('Remote config unavailable or empty.', 'info');
     return;
   }
@@ -3343,7 +3316,6 @@ async function admPullAllRoshdConfigClicked() {
     } catch (_) {}
   }
   loadDashboardFiltersEditor();
-  dfPrefillWriteTokenField();
   admAfterDashboardFiltersSaved();
   try {
     const ch = new BroadcastChannel('roshd_dashboard_sync');
@@ -3354,15 +3326,6 @@ async function admPullAllRoshdConfigClicked() {
 }
 
 async function admPushAllRoshdConfigClicked() {
-  const token = admGetDashboardWriteToken();
-  if (!token) {
-    dfPrefillWriteTokenField();
-    toast(
-      'Set ROSHD_DASHBOARD_ADMIN_TOKEN on the server (Vercel env) and paste it here, or point API_BASE at http://localhost:PORT for local dev.',
-      'warning'
-    );
-    return;
-  }
   const configs = {};
   for (const k of ROSHD_CONFIG_KV_KEYS) {
     const raw = localStorage.getItem(k);
@@ -3381,7 +3344,7 @@ async function admPushAllRoshdConfigClicked() {
     const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
     const res = await fetch(base + '/api/roshd/config', {
       method: 'PUT',
-      headers: admAuthHeadersForConfigWrite(),
+      headers: admJsonHeaders(),
       body: JSON.stringify({ configs }),
     });
     let data = {};
@@ -3389,13 +3352,10 @@ async function admPushAllRoshdConfigClicked() {
       data = await res.json();
     } catch (_) {}
     if (!res.ok) {
-      toast('Push failed: ' + (data.message || res.statusText), 'error');
+      let msg = data.message || res.statusText;
+      if (res.status === 401) msg += await admExplainDashboardPut401();
+      toast('Push failed: ' + msg, 'error');
       return;
-    }
-    if (token) {
-      admPersistDashboardWriteToken(token);
-      const tokEl = document.getElementById('dfApiWriteToken');
-      if (tokEl && !String(tokEl.value || '').trim()) tokEl.value = token;
     }
     toast('Pushed ' + (data.upserted || Object.keys(configs).length) + ' config key(s) to server.', 'success');
     addAuditEntry('UPDATE', 'Dashboard config KV', 'Push all to roshd_config_kv');
@@ -3404,12 +3364,10 @@ async function admPushAllRoshdConfigClicked() {
   }
 }
 
-/** Upsert one localStorage document to `roshd_config_kv` (Bearer = session write token). Skipped if no token or key missing. */
+/** Upsert one localStorage document to `roshd_config_kv`. Skipped if the key is missing in storage. */
 async function admSyncConfigKeyToServerIfToken(storageKey) {
-  const token = admGetDashboardWriteToken();
-  if (!token) return { ok: true, skipped: true };
   const raw = localStorage.getItem(storageKey);
-  if (raw == null) return { ok: true, skipped: true };
+  if (raw == null) return { ok: true, skipped: true, skipReason: 'no_local_storage' };
   let payload;
   try {
     payload = JSON.parse(raw);
@@ -3420,18 +3378,17 @@ async function admSyncConfigKeyToServerIfToken(storageKey) {
     const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
     const res = await fetch(base + '/api/roshd/config', {
       method: 'PUT',
-      headers: admAuthHeadersForConfigWrite(),
+      headers: admJsonHeaders(),
       body: JSON.stringify({ key: storageKey, payload }),
     });
     let data = {};
     try {
       data = await res.json();
     } catch (_) {}
-    if (!res.ok) return { ok: false, skipped: false, message: data.message || res.statusText };
-    if (token) {
-      admPersistDashboardWriteToken(token);
-      const tokEl = document.getElementById('dfApiWriteToken');
-      if (tokEl && !String(tokEl.value || '').trim()) tokEl.value = token;
+    if (!res.ok) {
+      let msg = data.message || res.statusText;
+      if (res.status === 401) msg += await admExplainDashboardPut401();
+      return { ok: false, skipped: false, message: msg };
     }
     return { ok: true, skipped: false };
   } catch (e) {
@@ -3443,11 +3400,9 @@ async function admFinishDashboardKvSave(storageKey, summaryForToast) {
   const sync = await admSyncConfigKeyToServerIfToken(storageKey);
   const line = summaryForToast || 'Saved locally';
   if (sync.skipped) {
-    toast(
-      line +
-        '. No write secret available. For local dev: open admin at http://127.0.0.1:5000/admin/legacy-index.html (same port as node server) so API_BASE is local. For production: set ROSHD_DASHBOARD_ADMIN_TOKEN in server env and paste it under Dashboard filters → Write token.',
-      'warning'
-    );
+    if (sync.skipReason === 'no_local_storage') {
+      toast(line + '. Browser saved OK; nothing to sync (no data in storage for this key).', 'info');
+    }
     return sync;
   }
   if (!sync.ok) {
@@ -5929,7 +5884,6 @@ function loadDashboardFiltersEditor() {
   mount.innerHTML =
     '<p class="exec-editor-hint">Eight filters with fixed keys and order. Add or rename options here (e.g. new branches). Stored <b>values</b> are used for filtering — keep them stable when renaming labels. Uncheck <b>Active</b> to hide an option without deleting history. Customer dashboards load this config via <code>GET /api/filters</code> when deployed.</p>' +
     cards;
-  dfPrefillWriteTokenField();
 }
 
 function dashboardFiltersGatherNormalized() {
@@ -5982,15 +5936,12 @@ function saveDashboardFiltersFromForm() {
     const kv = await admSyncConfigKeyToServerIfToken(FILTER_BAR_STORAGE_KEY);
     admAfterDashboardFiltersSaved();
     addAuditEntry('UPDATE', 'Dashboard filters config', 'Customer toolbar filters saved');
-    if (!syncPush.skipped && !syncPush.ok) {
+    if (!syncPush.ok) {
       toast('Saved locally. Table filter_bar_remote_config sync failed: ' + (syncPush.message || ''), 'warning');
-    } else if (!kv.skipped && !kv.ok) {
+    } else if (!kv.ok) {
       toast('Saved locally. Table roshd_config_kv sync failed: ' + (kv.message || ''), 'warning');
     } else if (kv.skipped) {
-      toast(
-        'Filters saved in this browser only. Paste the dashboard write token (Remember token) and save again to write to Supabase.',
-        'warning'
-      );
+      toast('Saved locally; bundle KV step was skipped (unexpected — try Save again).', 'info');
     } else {
       toast('Filters saved to Supabase (filter_bar_remote_config + roshd_config_kv).', 'success');
     }
@@ -6042,15 +5993,17 @@ function saveToolbarFilterLabelsFromModal() {
       toast('Could not save (storage blocked).', 'error');
       return;
     }
-    await admPushFiltersToServer(payload);
+    const syncPush = await admPushFiltersToServer(payload);
     const kv = await admSyncConfigKeyToServerIfToken(FILTER_BAR_STORAGE_KEY);
     closeModalById('toolbarFilterLabelsModal');
     admAfterDashboardFiltersSaved();
     addAuditEntry('UPDATE', 'Dashboard filters config', 'Toolbar filter labels (EN/AR) updated');
-    if (!kv.skipped && !kv.ok) {
+    if (!syncPush.ok) {
+      toast('Labels saved locally; filter_bar_remote_config sync failed: ' + (syncPush.message || ''), 'warning');
+    } else if (!kv.ok) {
       toast('Labels saved locally; roshd_config_kv sync failed: ' + (kv.message || ''), 'warning');
     } else if (kv.skipped) {
-      toast('Labels saved locally. Set write token to sync bundle to Supabase.', 'warning');
+      toast('Labels saved locally; bundle KV step was skipped.', 'info');
     } else {
       toast('Labels saved; bundle synced to Supabase (roshd_config_kv).', 'success');
     }
@@ -7957,9 +7910,6 @@ function sortTable(table, field) {
 }
 
 launchAdmin({ name: 'Super Admin', email: 'admin@roshd.com' }, { quiet: true });
-try {
-  dfPrefillWriteTokenField();
-} catch (_) {}
 </script>
 </body>
 </html>
