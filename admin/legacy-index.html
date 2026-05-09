@@ -606,6 +606,14 @@ html[data-lang="ar"] .nav-item.active::before {
 }
 
 .exec-editor { max-width: 1100px; }
+#panel-executive .exec-editor {
+  max-width: none;
+  padding-top: 120px;
+}
+#panel-cx-drivers .exec-editor {
+  max-width: none;
+  padding-top: 120px;
+}
 .exec-editor-section {
   margin-bottom: 28px;
   padding: 20px 22px;
@@ -613,6 +621,135 @@ html[data-lang="ar"] .nav-item.active::before {
   border: 1px solid var(--border2);
   background: var(--surface);
 }
+#panel-executive .exec-editor-section--sticky {
+  position: fixed;
+  top: var(--topbar-h);
+  left: calc(var(--sidebar-w) + 28px);
+  right: 28px;
+  z-index: 180;
+  margin-top: 0;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.16);
+}
+#panel-cx-drivers .exec-editor-section--sticky {
+  position: fixed;
+  top: var(--topbar-h);
+  left: calc(var(--sidebar-w) + 28px);
+  right: 28px;
+  z-index: 170;
+  margin-top: 0;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.16);
+}
+#panel-executive .exec-filter-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: #0f1f3d;
+}
+#panel-executive .exec-filter-strip-label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  color: #b8c7e6;
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+#panel-executive .exec-filter-strip .filter-select {
+  min-width: 150px;
+  background: rgba(9, 20, 43, 0.92);
+  border-color: #30496f;
+  color: #f2f6ff;
+}
+#panel-executive .exec-filter-strip-note {
+  margin-left: auto;
+  font-size: 12px;
+  color: #c8d6ef;
+}
+#panel-cx-drivers .exec-filter-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border2);
+  background: #0f1f3d;
+}
+#panel-cx-drivers .exec-filter-strip-label {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  color: #b8c7e6;
+  text-transform: uppercase;
+  margin-right: 2px;
+}
+#panel-cx-drivers .exec-filter-strip .filter-select {
+  min-width: 150px;
+  background: rgba(9, 20, 43, 0.92);
+  border-color: #30496f;
+  color: #f2f6ff;
+}
+#panel-cx-drivers .exec-filter-strip-note {
+  margin-left: auto;
+  font-size: 12px;
+  color: #c8d6ef;
+}
+@media (max-width: 900px) {
+  #panel-executive .exec-editor {
+    padding-top: 156px;
+  }
+  #panel-cx-drivers .exec-editor {
+    padding-top: 156px;
+  }
+  #panel-executive .exec-editor-section--sticky {
+    top: calc(var(--topbar-h) + 4px);
+    left: 20px;
+    right: 20px;
+  }
+  #panel-cx-drivers .exec-editor-section--sticky {
+    top: calc(var(--topbar-h) + 4px);
+    left: 20px;
+    right: 20px;
+  }
+  #panel-executive .exec-filter-strip .filter-select {
+    min-width: 0;
+    flex: 1 1 calc(50% - 8px);
+  }
+  #panel-executive .exec-filter-strip-note {
+    width: 100%;
+    margin-left: 0;
+  }
+  #panel-cx-drivers .exec-filter-strip .filter-select {
+    min-width: 0;
+    flex: 1 1 calc(50% - 8px);
+  }
+  #panel-cx-drivers .exec-filter-strip-note {
+    width: 100%;
+    margin-left: 0;
+  }
+}
+@media (max-width: 480px) {
+  #panel-executive .exec-editor {
+    padding-top: 174px;
+  }
+  #panel-cx-drivers .exec-editor {
+    padding-top: 174px;
+  }
+  #panel-executive .exec-editor-section--sticky {
+    left: 14px;
+    right: 14px;
+  }
+  #panel-cx-drivers .exec-editor-section--sticky {
+    left: 14px;
+    right: 14px;
+  }
+}
+#panel-executive { overflow: visible; }
 .exec-editor-section h3 {
   margin: 0 0 14px;
   font-size: 11px;
@@ -1453,6 +1590,9 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
         <div class="topbar-icon-btn" onclick="window.print()" title="Print / Export">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
         </div>
+        <div class="topbar-icon-btn" onclick="openCustomerPreviewForActivePanel()" title="Preview customer page">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
       </div>
     </div>
 
@@ -1468,22 +1608,32 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
             <div class="page-subtitle">Edits save to this browser only (localStorage). The live customer Executive tab reads the same key and updates on refresh — no API yet.</div>
           </div>
           <div class="page-header-actions">
-            <button type="button" class="btn btn-secondary btn-sm" onclick="resetExecutiveOverrides()">Reset to defaults</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="resetExecutiveOverrides()">Reset this filter</button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="resetAllExecutiveOverrides()">Reset all filters</button>
             <button type="button" class="btn btn-primary btn-sm" onclick="saveExecutiveOverridesFromForm()">Save &amp; push to customer view</button>
           </div>
         </div>
 
         <div class="exec-editor">
+          <div class="exec-editor-section exec-editor-section--sticky">
+            <h3>Editing context (same as customer filters)</h3>
+            <div class="exec-filter-strip">
+              <div class="exec-filter-strip-label">Filters:</div>
+              <select class="filter-select" id="execCtxBranch" onchange="loadExecutiveEditorForm()"><option>All Branches</option><option>Riyadh</option><option>Jeddah</option><option>Dammam</option></select>
+              <select class="filter-select" id="execCtxGender" onchange="loadExecutiveEditorForm()"><option>All Genders</option><option>Male</option><option>Female</option></select>
+              <select class="filter-select" id="execCtxService" onchange="loadExecutiveEditorForm()"><option>All Services</option><option>Mechanical</option><option>Bodyshop</option></select>
+              <select class="filter-select" id="execCtxFrequency" onchange="loadExecutiveEditorForm()"><option>All Frequencies</option><option>1 Visit</option><option>2–3 Visits</option><option>4+ Visits</option></select>
+              <select class="filter-select" id="execCtxAge" onchange="loadExecutiveEditorForm()"><option>All Ages</option><option>&lt;25</option><option>25–34</option><option>35–44</option><option>45+</option></select>
+              <div class="exec-filter-strip-note" id="execCtxKeyView"></div>
+            </div>
+            <p class="exec-editor-hint">Filter badlain, form values us context par switch hongi. Save se isi filter combination ka text/description update hota hai.</p>
+          </div>
+
           <div class="exec-editor-section">
             <h3>KPI strip (top of customer Executive)</h3>
             <div class="exec-editor-grid3">
               <div class="form-group"><label class="form-label">CX trend line</label><input class="form-input" id="execEd_kpiTrend1" placeholder="↑ +0.3"></div>
-              <div class="form-group"><label class="form-label">CX score line</label><input class="form-input" id="execEd_kpiScore" placeholder="76% (3.8)"></div>
               <div class="form-group"><label class="form-label">Model power %</label><input class="form-input" id="execEd_kpiStripR2" placeholder="72%"></div>
-              <div class="form-group"><label class="form-label">Top driver (EN)</label><input class="form-input" id="execEd_kpiTopDriverEn" placeholder="Quality"></div>
-              <div class="form-group"><label class="form-label">Top driver (AR)</label><input class="form-input" id="execEd_kpiTopDriverAr" dir="rtl" placeholder="الجودة"></div>
-              <div class="form-group"><label class="form-label">Waste risk (EN)</label><input class="form-input" id="execEd_kpiRiskEn" placeholder="Speed"></div>
-              <div class="form-group"><label class="form-label">Waste risk (AR)</label><input class="form-input" id="execEd_kpiRiskAr" dir="rtl" placeholder="السرعة"></div>
               <div class="form-group"><label class="form-label">Filtered N</label><input class="form-input" id="execEd_kpiSampleN" placeholder="300"></div>
               <div class="form-group"><label class="form-label">Sample share (EN)</label><input class="form-input" id="execEd_kpiSampleShareEn" placeholder="100% of full sample (300)"></div>
               <div class="form-group"><label class="form-label">Sample share (AR)</label><input class="form-input" id="execEd_kpiSampleShareAr" dir="rtl" placeholder="100% من العينة الكاملة (300)"></div>
@@ -1581,6 +1731,20 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
             </div>
           </div>
 
+          <div class="exec-editor-section exec-editor-section--sticky" style="margin-bottom:16px">
+            <h3>Editing context (same as customer filters)</h3>
+            <div class="exec-filter-strip">
+              <div class="exec-filter-strip-label">Filters:</div>
+              <select class="filter-select" id="cxCtxBranch" onchange="loadCxDriversEditorForm()"><option>All Branches</option><option>Riyadh</option><option>Jeddah</option><option>Dammam</option></select>
+              <select class="filter-select" id="cxCtxGender" onchange="loadCxDriversEditorForm()"><option>All Genders</option><option>Male</option><option>Female</option></select>
+              <select class="filter-select" id="cxCtxService" onchange="loadCxDriversEditorForm()"><option>All Services</option><option>Mechanical</option><option>Bodyshop</option></select>
+              <select class="filter-select" id="cxCtxFrequency" onchange="loadCxDriversEditorForm()"><option>All Frequencies</option><option>1 Visit</option><option>2–3 Visits</option><option>4+ Visits</option></select>
+              <select class="filter-select" id="cxCtxAge" onchange="loadCxDriversEditorForm()"><option>All Ages</option><option>&lt;25</option><option>25–34</option><option>35–44</option><option>45+</option></select>
+              <div class="exec-filter-strip-note" id="cxCtxKeyView"></div>
+            </div>
+            <p class="exec-editor-hint">Filter badlain, CX Drivers defaults isi context ke mutabiq load hongay. Save se isi filter combination ka data update hota hai.</p>
+          </div>
+
           <div class="exec-editor-section">
             <h3>Impact map &amp; ranking cards</h3>
             <div class="exec-editor-grid3">
@@ -1605,8 +1769,8 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
 
           <div class="exec-editor-section">
             <h3>Driver settings (single source)</h3>
-            <p class="exec-editor-hint"><b>This is the single place</b> to manage driver names/values. Ranking table, units bars, bubble map, simulation labels, and expected score all use this data automatically.</p>
-            <div class="exec-editor-grid2" id="cxEd_driverRowsMount"></div>
+            <p class="exec-editor-hint"><b>Single master table:</b> yahi ek jagah hai jahan driver ranking data (EN/AR) enter hoga. Ranking table, map, simulation labels, expected score, executive top driver aur units bars sab isi array se data lenge.</p>
+            <div id="cxEd_driverRowsMount"></div>
           </div>
 
           <div class="exec-editor-section">
@@ -1623,6 +1787,28 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
               <div class="form-group"><label class="form-label">“Baseline:” prefix (EN)</label><input class="form-input" id="cxEd_baselineLblEn"></div>
               <div class="form-group"><label class="form-label">“Baseline:” prefix (AR)</label><input class="form-input" id="cxEd_baselineLblAr" dir="rtl"></div>
               <div class="form-group"><label class="form-label">Baseline suffix (after score)</label><input class="form-input" id="cxEd_baselineSuffix" placeholder=" / 5"></div>
+            </div>
+            <div class="exec-editor-grid2" style="margin-top:12px">
+              <div class="exec-flow-step">
+                <label>Simulation Lever 1</label>
+                <input class="form-input" id="cxEd_simLever0En" placeholder="Label EN">
+                <input class="form-input" id="cxEd_simLever0Ar" placeholder="Label AR" dir="rtl" style="margin-top:6px">
+              </div>
+              <div class="exec-flow-step">
+                <label>Simulation Lever 2</label>
+                <input class="form-input" id="cxEd_simLever1En" placeholder="Label EN">
+                <input class="form-input" id="cxEd_simLever1Ar" placeholder="Label AR" dir="rtl" style="margin-top:6px">
+              </div>
+              <div class="exec-flow-step">
+                <label>Simulation Lever 3</label>
+                <input class="form-input" id="cxEd_simLever2En" placeholder="Label EN">
+                <input class="form-input" id="cxEd_simLever2Ar" placeholder="Label AR" dir="rtl" style="margin-top:6px">
+              </div>
+              <div class="exec-flow-step">
+                <label>Simulation Lever 4</label>
+                <input class="form-input" id="cxEd_simLever3En" placeholder="Label EN">
+                <input class="form-input" id="cxEd_simLever3Ar" placeholder="Label AR" dir="rtl" style="margin-top:6px">
+              </div>
             </div>
             <div class="exec-editor-grid2" style="margin-top:12px">
               <div class="form-group"><label class="form-label">Fixed expected lead (optional — hides live sim math when set)</label><input class="form-input" id="cxEd_simExpectedLead" placeholder="e.g. 79%"></div>
@@ -1661,9 +1847,8 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
             <div class="exec-editor-grid2">
               <div class="form-group"><label class="form-label">Title (EN)</label><input class="form-input" id="upEd_segTitleEn" placeholder="All Branches — Units Performance"></div>
               <div class="form-group"><label class="form-label">Title (AR)</label><input class="form-input" id="upEd_segTitleAr" dir="rtl"></div>
-              <div class="form-group"><label class="form-label">Subtitle line (EN)</label><textarea class="form-input" id="upEd_segSubEn" rows="2"></textarea></div>
-              <div class="form-group"><label class="form-label">Subtitle line (AR)</label><textarea class="form-input" id="upEd_segSubAr" rows="2" dir="rtl"></textarea></div>
             </div>
+            <p class="exec-editor-hint">Subtitle is auto-generated from CX Driver Ranking + active filters.</p>
           </div>
 
           <div class="exec-editor-section">
@@ -1672,27 +1857,8 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
           </div>
 
           <div class="exec-editor-section">
-            <h3>Recommendation cards — titles</h3>
-            <div class="exec-editor-grid3">
-              <div class="form-group"><label class="form-label">Invest card (EN)</label><input class="form-input" id="upEd_cardInvestTitleEn" placeholder="Invest Now"></div>
-              <div class="form-group"><label class="form-label">Invest card (AR)</label><input class="form-input" id="upEd_cardInvestTitleAr" dir="rtl"></div>
-              <div class="form-group"><label class="form-label">Optimize card (EN)</label><input class="form-input" id="upEd_cardOptimizeTitleEn" placeholder="Optimize"></div>
-              <div class="form-group"><label class="form-label">Optimize card (AR)</label><input class="form-input" id="upEd_cardOptimizeTitleAr" dir="rtl"></div>
-              <div class="form-group"><label class="form-label">Avoid card (EN)</label><input class="form-input" id="upEd_cardAvoidTitleEn" placeholder="Avoid"></div>
-              <div class="form-group"><label class="form-label">Avoid card (AR)</label><input class="form-input" id="upEd_cardAvoidTitleAr" dir="rtl"></div>
-            </div>
-          </div>
-
-          <div class="exec-editor-section">
-            <h3>Bullet lists (one line per bullet)</h3>
-            <div class="exec-editor-grid2">
-              <div class="form-group"><label class="form-label">Invest — EN</label><textarea class="form-input" id="upEd_investEn" rows="5"></textarea></div>
-              <div class="form-group"><label class="form-label">Invest — AR</label><textarea class="form-input" id="upEd_investAr" rows="5" dir="rtl"></textarea></div>
-              <div class="form-group"><label class="form-label">Optimize — EN</label><textarea class="form-input" id="upEd_optimizeEn" rows="5"></textarea></div>
-              <div class="form-group"><label class="form-label">Optimize — AR</label><textarea class="form-input" id="upEd_optimizeAr" rows="5" dir="rtl"></textarea></div>
-              <div class="form-group"><label class="form-label">Avoid — EN</label><textarea class="form-input" id="upEd_avoidEn" rows="5"></textarea></div>
-              <div class="form-group"><label class="form-label">Avoid — AR</label><textarea class="form-input" id="upEd_avoidAr" rows="5" dir="rtl"></textarea></div>
-            </div>
+            <h3>Recommendation cards</h3>
+            <p class="exec-editor-hint"><b>Single source enabled:</b> Invest / Optimize / Avoid cards are now managed from <b>Executive</b> only. Duplicate editing here has been removed.</p>
           </div>
 
           <div class="exec-editor-actions">
@@ -2037,6 +2203,14 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
           <div class="exec-editor-section">
             <h3>All visible labels (EN/AR)</h3>
             <div id="mqPairsMount"></div>
+          </div>
+          <div class="exec-editor-section">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+              <h3 style="margin:0">Flow card blocks (left side)</h3>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="mqAddFlowBlock()">Add block</button>
+            </div>
+            <p class="exec-editor-hint">Add up to 8 blocks. These blocks render in customer Model Quality flow card with responsive arrows to the right-side outcome box.</p>
+            <div id="mqFlowBlocksMount"></div>
           </div>
           <div class="exec-editor-section">
             <h3>Model values</h3>
@@ -2510,6 +2684,201 @@ const DRIVERS_DATA = {
     {name:'Speed',          impact:0.01, avg:1.2, decision:'Do not overinvest'}
   ]
 };
+
+const EXEC_DB_DATA = {
+  "All Branches": {
+    score: 3.8, explanatory: 72, top: "Quality", topAr: "الجودة", risk: "Speed", riskAr: "السرعة",
+    drivers: [
+      { name: "Quality", nameAr: "الجودة", avg: 3.4, impact: 0.34, decision: "Invest", decisionAr: "استثمر", cls: "navy" },
+      { name: "Communication", nameAr: "التواصل", avg: 3.0, impact: 0.23, decision: "Selective", decisionAr: "انتقائي", cls: "warning" },
+      { name: "Price Fairness", nameAr: "عدالة السعر", avg: 2.9, impact: 0.12, decision: "Monitor", decisionAr: "راقب", cls: "info" },
+      { name: "Advisor Behavior", nameAr: "سلوك المستشار", avg: 3.8, impact: 0.10, decision: "Maintain", decisionAr: "حافظ", cls: "" },
+      { name: "Speed", nameAr: "السرعة", avg: 1.4, impact: 0.01, decision: "Do not overinvest", decisionAr: "لا تُبالغ في الاستثمار", cls: "danger" },
+    ],
+    invest: ["Fund quality consistency improvements.", "Audit first-time-right and rework patterns.", "Make quality the main CX improvement program."],
+    investAr: ["موّل تحسينات الجودة المستمرة.", "راجع أنماط الإصلاح من أول مرة والإعادة.", "اجعل الجودة برنامج التحسين الرئيسي."],
+    optimize: ["Improve customer communication discipline.", "Use advisor scripts for updates.", "Target price fairness where complaints cluster."],
+    optimizeAr: ["حسّن انضباط التواصل مع العملاء.", "استخدم نصوص المستشار للتحديثات.", "استهدف عدالة السعر حيث تتركز الشكاوى."],
+    avoid: ["Do not invest in speed just because its average is low.", "Do not build one action plan for all branches.", "Do not use averages as decision authority."],
+    avoidAr: ["لا تستثمر في السرعة لأن متوسطها منخفض فقط.", "لا تبنِ خطة عمل واحدة لجميع الفروع.", "لا تستخدم المتوسطات كسلطة قرار."],
+  },
+  "Riyadh": {
+    score: 3.7, explanatory: 74, top: "Quality", topAr: "الجودة", risk: "Speed", riskAr: "السرعة",
+    drivers: [
+      { name: "Quality", nameAr: "الجودة", avg: 3.5, impact: 0.34, decision: "Invest", decisionAr: "استثمر", cls: "navy" },
+      { name: "Advisor Behavior", nameAr: "سلوك المستشار", avg: 3.9, impact: 0.15, decision: "Optimize", decisionAr: "حسّن", cls: "warning" },
+      { name: "Communication", nameAr: "التواصل", avg: 3.2, impact: 0.11, decision: "Selective", decisionAr: "انتقائي", cls: "info" },
+      { name: "Price Fairness", nameAr: "عدالة السعر", avg: 3.0, impact: 0.07, decision: "Monitor", decisionAr: "راقب", cls: "" },
+      { name: "Speed", nameAr: "السرعة", avg: 1.5, impact: 0.01, decision: "Do not overinvest", decisionAr: "لا تُبالغ", cls: "danger" },
+    ],
+    invest: ["Invest in repair quality consistency.", "Introduce quality gate before delivery.", "Tie rework reduction to branch KPIs."],
+    investAr: ["استثمر في استمرارية جودة الإصلاح.", "أدخل بوابة جودة قبل التسليم.", "اربط تخفيض الإعادة بمؤشرات الفرع."],
+    optimize: ["Coach advisors on expectation setting.", "Improve explanation during handover.", "Track advisor-level complaints."],
+    optimizeAr: ["درّب المستشارين على تحديد التوقعات.", "حسّن الشرح أثناء التسليم.", "تتبع الشكاوى على مستوى المستشار."],
+    avoid: ["Do not add capacity only to improve speed.", "Avoid generic campaigns not linked to quality.", "Do not treat Riyadh like other branches."],
+    avoidAr: ["لا تضف طاقة فقط لتحسين السرعة.", "تجنّب الحملات العامة غير المرتبطة بالجودة.", "لا تعامل الرياض مثل الفروع الأخرى."],
+  },
+  "Jeddah": {
+    score: 3.4, explanatory: 69, top: "Communication", topAr: "التواصل", risk: "Speed", riskAr: "السرعة",
+    drivers: [
+      { name: "Communication", nameAr: "التواصل", avg: 2.8, impact: 0.26, decision: "Invest", decisionAr: "استثمر", cls: "navy" },
+      { name: "Quality", nameAr: "الجودة", avg: 3.4, impact: 0.18, decision: "Optimize", decisionAr: "حسّن", cls: "warning" },
+      { name: "Price Fairness", nameAr: "عدالة السعر", avg: 2.7, impact: 0.12, decision: "Selective", decisionAr: "انتقائي", cls: "info" },
+      { name: "Advisor Behavior", nameAr: "سلوك المستشار", avg: 3.5, impact: 0.08, decision: "Monitor", decisionAr: "راقب", cls: "" },
+      { name: "Speed", nameAr: "السرعة", avg: 1.3, impact: 0.01, decision: "Do not overinvest", decisionAr: "لا تُبالغ", cls: "danger" },
+    ],
+    invest: ["Invest in communication discipline.", "Mandatory customer update checkpoints.", "Daily advisor update compliance tracking."],
+    investAr: ["استثمر في انضباط التواصل.", "نقاط تحديث إلزامية للعملاء.", "تتبع يومي لامتثال تحديثات المستشار."],
+    optimize: ["Target quality issues in repeat complaints.", "Use selective quality audit.", "Improve repair explanation to customer."],
+    optimizeAr: ["استهدف مشكلات الجودة في الشكاوى المتكررة.", "استخدم تدقيق جودة انتقائي.", "حسّن شرح الإصلاح للعميل."],
+    avoid: ["Do not assume speed is the root cause.", "Avoid staffing increases without driver evidence.", "Do not overreact to low averages."],
+    avoidAr: ["لا تفترض أن السرعة هي السبب الجذري.", "تجنّب زيادة الكوادر بدون دليل محرك.", "لا تبالغ في الاستجابة لانخفاض المتوسطات."],
+  },
+  "Dammam": {
+    score: 3.2, explanatory: 63, top: "Price Fairness", topAr: "عدالة السعر", risk: "Speed", riskAr: "السرعة",
+    drivers: [
+      { name: "Price Fairness", nameAr: "عدالة السعر", avg: 2.5, impact: 0.22, decision: "Invest", decisionAr: "استثمر", cls: "navy" },
+      { name: "Communication", nameAr: "التواصل", avg: 3.0, impact: 0.15, decision: "Optimize", decisionAr: "حسّن", cls: "warning" },
+      { name: "Quality", nameAr: "الجودة", avg: 3.3, impact: 0.10, decision: "Selective", decisionAr: "انتقائي", cls: "info" },
+      { name: "Advisor Behavior", nameAr: "سلوك المستشار", avg: 3.4, impact: 0.06, decision: "Monitor", decisionAr: "راقب", cls: "" },
+      { name: "Speed", nameAr: "السرعة", avg: 1.2, impact: 0.01, decision: "Do not overinvest", decisionAr: "لا تُبالغ", cls: "danger" },
+    ],
+    invest: ["Invest in price fairness explanation.", "Improve estimate transparency.", "Train advisors on value explanation."],
+    investAr: ["استثمر في شرح عدالة السعر.", "حسّن شفافية التقديرات.", "درّب المستشارين على شرح القيمة."],
+    optimize: ["Support price fairness with better communication.", "Send clear estimates before approval.", "Track price-related objections."],
+    optimizeAr: ["ادعم عدالة السعر بتواصل أفضل.", "أرسل تقديرات واضحة قبل الموافقة.", "تتبع الاعتراضات المتعلقة بالسعر."],
+    avoid: ["Do not discount blindly.", "Do not prioritize speed.", "Avoid across-the-board fixes."],
+    avoidAr: ["لا تُقدّم خصومات بشكل أعمى.", "لا تُعطِ أولوية للسرعة.", "تجنّب الإصلاحات الشاملة."],
+  },
+};
+
+function execDedupeDrivers(arr) {
+  const seen = new Set();
+  return (arr || []).filter((dr) => {
+    const k = String(dr?.name || "").trim();
+    if (!k || seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+}
+
+const EXEC_DB_SAMPLE_TOTAL = 300;
+const EXEC_DB_BR_LIST = ["Riyadh", "Jeddah", "Dammam"];
+const EXEC_DB_CUSTOMERS = [];
+(function execGenerateCustomers() {
+  const branchPool = [];
+  for (let zi = 0; zi < EXEC_DB_BR_LIST.length; zi++) {
+    const b = EXEC_DB_BR_LIST[zi];
+    for (let z = 0; z < EXEC_DB_SAMPLE_TOTAL / EXEC_DB_BR_LIST.length; z++) branchPool.push(b);
+  }
+  for (let k = branchPool.length - 1; k > 0; k--) {
+    const jj = ((k * 7919 + 104729 + k * k * 993) >>> 0) % (k + 1);
+    const t = branchPool[k];
+    branchPool[k] = branchPool[jj];
+    branchPool[jj] = t;
+  }
+  for (let i = 1; i <= EXEC_DB_SAMPLE_TOTAL; i++) {
+    let branch = branchPool[i - 1];
+    let gender = (i * 7) % 10 < 6 ? "Male" : "Female";
+    let service = (i * 11) % 5 < 3 ? "Mechanical" : "Bodyshop";
+    let frequency = (i * 13) % 10 < 3 ? "1 Visit" : (i * 13) % 10 < 8 ? "2–3 Visits" : "4+ Visits";
+    let ageBand = (i * 17) % 12;
+    let age = ageBand < 2 ? "<25" : ageBand < 6 ? "25–34" : ageBand < 10 ? "35–44" : "45+";
+    if (branch === "Riyadh" && i % 4 === 0) service = "Bodyshop";
+    if (branch === "Dammam" && i % 5 === 0) frequency = "4+ Visits";
+    let q = branch === "Riyadh" ? 3.7 : branch === "Jeddah" ? 3.3 : 3.1;
+    let c = branch === "Jeddah" ? 2.8 : 3.2;
+    let p = branch === "Dammam" ? 2.5 : 2.9;
+    let s = 1.2 + (i % 4) * 0.15;
+    if (frequency === "4+ Visits") q += 0.25;
+    if (age === "<25") p -= 0.25;
+    if (gender === "Female") c -= 0.1;
+    const sat = Math.max(1, Math.min(5, q * 0.38 + c * 0.27 + p * 0.22 + s * 0.05 + 1.0));
+    EXEC_DB_CUSTOMERS.push(["C-" + String(i).padStart(3, "0"), branch, gender, service, frequency, age, +q.toFixed(1), +c.toFixed(1), +p.toFixed(1), +s.toFixed(1), +sat.toFixed(1)]);
+  }
+})();
+
+function execFilteredCustomers(ctx) {
+  const c = ctx || getExecutiveFilterContext();
+  return EXEC_DB_CUSTOMERS.filter(
+    (row) =>
+      (c.branch === "All Branches" || row[1] === c.branch) &&
+      (c.gender === "All Genders" || row[2] === c.gender) &&
+      (c.service === "All Services" || row[3] === c.service) &&
+      (c.frequency === "All Frequencies" || row[4] === c.frequency) &&
+      (c.age === "All Ages" || row[5] === c.age)
+  );
+}
+
+function execDataForContext(ctx) {
+  const c = ctx || getExecutiveFilterContext();
+  const branch = EXEC_DB_DATA[c.branch] ? c.branch : "All Branches";
+  const d = JSON.parse(JSON.stringify(EXEC_DB_DATA[branch] || EXEC_DB_DATA["All Branches"]));
+  if (c.gender === "Female") {
+    d.top = "Communication";
+    d.topAr = "التواصل";
+    d.drivers = [
+      { name: "Communication", nameAr: "التواصل", avg: 2.9, impact: 0.25, decision: "Invest", decisionAr: "استثمر", cls: "navy" },
+      { name: "Quality", nameAr: "الجودة", avg: 3.4, impact: 0.19, decision: "Optimize", decisionAr: "حسّن", cls: "warning" },
+      { name: "Advisor Behavior", nameAr: "سلوك المستشار", avg: 3.5, impact: 0.13, decision: "Selective", decisionAr: "انتقائي", cls: "info" },
+      { name: "Price Fairness", nameAr: "عدالة السعر", avg: 2.8, impact: 0.08, decision: "Monitor", decisionAr: "راقب", cls: "" },
+      { name: "Speed", nameAr: "السرعة", avg: 1.3, impact: 0.01, decision: "Do not overinvest", decisionAr: "لا تُبالغ في الاستثمار", cls: "danger" },
+    ];
+    d.invest = ["Female segment: communication is the strongest driver.", "Improve proactive updates and clarity.", "Standardize advisor explanation before and after service."];
+    d.investAr = ["شريحة الإناث: التواصل أقوى محرّك للرضا.", "حسّن التحديثات الاستباقية والوضوح.", "وحّد شرح المستشار قبل وبعد الخدمة."];
+  }
+  if (c.gender === "Male" && c.branch === "All Branches") {
+    d.top = "Quality";
+    d.topAr = "الجودة";
+    if (d.drivers[0]) d.drivers[0].impact = 0.29;
+    if (d.drivers.length > 1) {
+      d.drivers[1] = { name: "Price Fairness", nameAr: "عدالة السعر", avg: 3.0, impact: 0.16, decision: "Optimize", decisionAr: "حسّن", cls: "warning" };
+    }
+  }
+  if (c.service === "Bodyshop") {
+    d.score = Math.max(1, d.score - 0.2);
+    d.explanatory = Math.max(55, d.explanatory - 3);
+    if (d.drivers[0]) d.drivers[0].impact = Math.min(0.38, d.drivers[0].impact + 0.03);
+  }
+  if (c.frequency === "4+ Visits") {
+    d.top = "Quality";
+    d.topAr = "الجودة";
+    d.drivers.unshift({ name: "Quality", nameAr: "الجودة", avg: 3.8, impact: 0.35, decision: "Invest", decisionAr: "استثمر", cls: "navy" });
+    d.drivers = execDedupeDrivers(d.drivers);
+    const tail = (d.invest || []).slice(0, 2);
+    const tailAr = (d.investAr || d.invest || []).slice(0, 2);
+    d.invest = ["High-frequency customers are quality-sensitive; protect retention through first-time-right discipline.", ...tail];
+    d.investAr = ["عملاء الزيارات المتكررة أكثر حساسية للجودة؛ حافظ على الاحتفاظ عبر الانضباط في الإصلاح من أول مرة.", ...tailAr];
+  }
+  if (c.frequency === "1 Visit") {
+    d.top = "Communication";
+    d.topAr = "التواصل";
+    d.drivers.unshift({ name: "Communication", nameAr: "التواصل", avg: 2.9, impact: 0.24, decision: "Invest", decisionAr: "استثمر", cls: "navy" });
+    d.drivers = execDedupeDrivers(d.drivers);
+  }
+  if (c.age === "<25") {
+    d.top = "Price Fairness";
+    d.topAr = "عدالة السعر";
+    d.drivers.unshift({ name: "Price Fairness", nameAr: "عدالة السعر", avg: 2.6, impact: 0.25, decision: "Invest", decisionAr: "استثمر", cls: "navy" });
+    d.drivers = execDedupeDrivers(d.drivers);
+    const tail = (d.invest || []).slice(0, 2);
+    const tailAr = (d.investAr || d.invest || []).slice(0, 2);
+    d.invest = ["Younger customers show stronger price sensitivity; improve estimate transparency and value explanation.", ...tail];
+    d.investAr = ["العملاء الأصغر سناً أكثر حساسية للسعر؛ حسّن شفافية التقدير وشرح القيمة.", ...tailAr];
+  }
+  const fc = execFilteredCustomers(c);
+  if (fc.length) {
+    d.score = fc.reduce((acc, row) => acc + row[10], 0) / fc.length;
+    let adj = 0;
+    if (fc.length < 30) adj = 7;
+    else if (fc.length < 60) adj = 3;
+    d.explanatory = Math.max(52, Math.min(78, Math.round(d.explanatory - adj)));
+  }
+  d.drivers = (d.drivers || []).slice(0, 5);
+  d.risk = "Speed";
+  d.riskAr = "السرعة";
+  return d;
+}
 
 /* Admin branch overrides (editable) */
 let branchOverrides = JSON.parse(JSON.stringify(BRANCHES_DATA));
@@ -3348,6 +3717,42 @@ const PANEL_META = I18N.en.panelMeta;
 
 const EXEC_OVERRIDES_STORAGE_KEY = 'roshd_executive_overrides';
 
+function getExecutiveFilterContext() {
+  return {
+    branch: (document.getElementById('execCtxBranch')?.value || 'All Branches').trim(),
+    gender: (document.getElementById('execCtxGender')?.value || 'All Genders').trim(),
+    service: (document.getElementById('execCtxService')?.value || 'All Services').trim(),
+    frequency: (document.getElementById('execCtxFrequency')?.value || 'All Frequencies').trim(),
+    age: (document.getElementById('execCtxAge')?.value || 'All Ages').trim(),
+  };
+}
+
+function buildExecutiveFilterKey(ctx) {
+  const c = ctx || getExecutiveFilterContext();
+  return [c.branch, c.gender, c.service, c.frequency, c.age].join(' | ');
+}
+
+function updateExecutiveContextKeyView() {
+  const el = document.getElementById('execCtxKeyView');
+  if (el) el.textContent = 'Editing: ' + buildExecutiveFilterKey();
+}
+
+function syncExecutiveContextToCustomerFilters(ctx) {
+  const c = ctx || getExecutiveFilterContext();
+  try {
+    localStorage.setItem(
+      'roshd_filters',
+      JSON.stringify({
+        branch: c.branch || 'All Branches',
+        gender: c.gender || 'All Genders',
+        service: c.service || 'All Services',
+        frequency: c.frequency || 'All Frequencies',
+        age: c.age || 'All Ages',
+      })
+    );
+  } catch (_) {}
+}
+
 const EXEC_EDITOR_FLOW_DEFAULT = [
   { titleEn: '1. Filter', titleAr: '١. التصفية', bodyEn: 'Branch / gender / service / visits / age', bodyAr: 'الفرع / الجنس / الخدمة / الزيارات / العمر' },
   { titleEn: '2. Sample', titleAr: '٢. العيّنة', bodyEn: 'Segment N & share', bodyAr: 'الحجم ونسبة الشريحة' },
@@ -3356,59 +3761,75 @@ const EXEC_EDITOR_FLOW_DEFAULT = [
   { titleEn: '5. Recommend', titleAr: '٥. التوصية', bodyEn: 'Do / Optimize / Avoid', bodyAr: 'نفّذ / حسّن / تجنّب' },
 ];
 
-function getExecutiveDefaultOverrides() {
+function getExecutiveDefaultOverrides(ctx) {
+  const c = ctx || getExecutiveFilterContext();
+  const d = execDataForContext(c);
+  const score = Number(d.score || 3.8);
+  const explanatory = Number(d.explanatory || 72);
+  const segmentN = execFilteredCustomers(c).length;
+  const sharePct = segmentN ? Math.round((segmentN / EXEC_DB_SAMPLE_TOTAL) * 100) : 0;
+
+  const branchBars = ['Riyadh', 'Jeddah', 'Dammam'].map((b) => {
+    const row = BRANCHES_DATA[b] || BRANCHES_DATA['All Branches'];
+    let pct = Math.max(0, Math.min(100, Math.round((Number(row.score || 0) / 5) * 100)));
+    if (c.branch !== 'All Branches' && c.branch === b) pct = Math.min(100, pct + 4);
+    return {
+      labelEn: b,
+      labelAr: tr('branch', b),
+      scoreLabel: `${pct}% (${Number(row.score || 0).toFixed(1)})`,
+      widthPct: pct,
+    };
+  });
+
   return {
     kpiTrend1: '↑ +0.3',
-    kpiScore: '76% (3.8)',
-    kpiStripR2: '72%',
-    kpiTopDriverEn: 'Quality',
-    kpiTopDriverAr: 'الجودة',
-    kpiRiskEn: 'Speed',
-    kpiRiskAr: 'السرعة',
-    kpiSampleN: '300',
-    kpiSampleShareEn: '100% of full sample (300)',
-    kpiSampleShareAr: '100% من العينة الكاملة (300)',
-    investEn: [ 
-      'Fund quality consistency improvements.',
-      'Audit first-time-right and rework patterns.',
-      'Make quality the main CX improvement program.',
-    ],
-    investAr: [
-      'موّل تحسينات الجودة المستمرة.',
-      'راجع أنماط الإصلاح من أول مرة والإعادة.',
-      'اجعل الجودة برنامج التحسين الرئيسي.',
-    ],
-    optimizeEn: [
-      'Improve customer communication discipline.',
-      'Use advisor scripts for updates.',
-      'Target price fairness where complaints cluster.',
-    ],
-    optimizeAr: [
-      'حسّن انضباط التواصل مع العملاء.',
-      'استخدم نصوص المستشار للتحديثات.',
-      'استهدف عدالة السعر حيث تتركز الشكاوى.',
-    ],
-    avoidEn: [
-      'Do not invest in speed just because its average is low.',
-      'Do not build one action plan for all branches.',
-      'Do not use averages as decision authority.',
-    ],
-    avoidAr: [
-      'لا تستثمر في السرعة لأن متوسطها منخفض فقط.',
-      'لا تبنِ خطة عمل واحدة لجميع الفروع.',
-      'لا تستخدم المتوسطات كسلطة قرار.',
-    ],
-    branchBars: [
-      { labelEn: 'Riyadh', labelAr: 'الرياض', scoreLabel: '74% (3.7)', widthPct: 74 },
-      { labelEn: 'Jeddah', labelAr: 'جدة', scoreLabel: '68% (3.4)', widthPct: 68 },
-      { labelEn: 'Dammam', labelAr: 'الدمام', scoreLabel: '64% (3.2)', widthPct: 64 },
-    ],
+    kpiScore: `${Math.round((score / 5) * 100)}% (${score.toFixed(1)})`,
+    kpiStripR2: `${Math.round(explanatory)}%`,
+    kpiTopDriverEn: d.top || 'Quality',
+    kpiTopDriverAr: d.topAr || trDriverName(d.top || 'Quality'),
+    kpiRiskEn: d.risk || 'Speed',
+    kpiRiskAr: d.riskAr || trDriverName(d.risk || 'Speed'),
+    kpiSampleN: String(segmentN),
+    kpiSampleShareEn: `${sharePct}% of full sample (${EXEC_DB_SAMPLE_TOTAL})`,
+    kpiSampleShareAr: `${sharePct}% من العينة الكاملة (${EXEC_DB_SAMPLE_TOTAL})`,
+    investEn: Array.isArray(d.invest) ? d.invest : [],
+    investAr: Array.isArray(d.investAr) ? d.investAr : [],
+    optimizeEn: Array.isArray(d.optimize) ? d.optimize : [],
+    optimizeAr: Array.isArray(d.optimizeAr) ? d.optimizeAr : [],
+    avoidEn: Array.isArray(d.avoid) ? d.avoid : [],
+    avoidAr: Array.isArray(d.avoidAr) ? d.avoidAr : [],
+    branchBars,
     flowSteps: EXEC_EDITOR_FLOW_DEFAULT.map((s) => ({ ...s })),
     coreRuleEn: 'A low average score is not a priority unless it has meaningful effect size and enough segment sample.',
     coreRuleAr: 'انخفاض متوسط الدرجة ليس أولوية ما لم يكن لتأثيره حجم مهم وحجم شريحة كافٍ.',
     segmentWarningMode: 'auto',
     segmentWarningEn: '',
     segmentWarningAr: '',
+  };
+}
+
+function getExecutiveLiveDriversPreview(ctx) {
+  const d = execDataForContext(ctx);
+  return Array.isArray(d.drivers) ? d.drivers : [];
+}
+
+function applyExecutiveAutoFieldsByContext(base, ctx) {
+  const c = ctx || getExecutiveFilterContext();
+  const drivers = getExecutiveLiveDriversPreview(c)
+    .slice()
+    .sort((a, b) => (Number(b?.impact) || 0) - (Number(a?.impact) || 0));
+  if (drivers.length) {
+    const topRow = drivers[0];
+    const topEn = String(topRow?.name || '').trim();
+    const topAr = String(topRow?.nameAr || '').trim();
+    if (topEn) base.kpiTopDriverEn = topEn;
+    if (topAr) base.kpiTopDriverAr = topAr;
+    else if (topEn) base.kpiTopDriverAr = trDriverName(topEn) || base.kpiTopDriverAr;
+  }
+  return {
+    ...base,
+    kpiRiskEn: 'Speed',
+    kpiRiskAr: trDriverName('Speed'),
   };
 }
 
@@ -3423,20 +3844,43 @@ function readExecutiveOverridesFromStorage() {
   }
 }
 
+function resolveExecutiveOverridesForContext(storeObj, key) {
+  const k = key || buildExecutiveFilterKey();
+  if (!storeObj) return null;
+  if (storeObj.byFilter && typeof storeObj.byFilter === 'object') {
+    const scoped = storeObj.byFilter[k];
+    if (scoped && typeof scoped === 'object') return scoped;
+    if (storeObj.global && typeof storeObj.global === 'object') return storeObj.global;
+    return null;
+  }
+  return storeObj;
+}
+
 function mergeExecutiveOverrides() {
-  const base = getExecutiveDefaultOverrides();
+  const ctx = getExecutiveFilterContext();
+  const base = applyExecutiveAutoFieldsByContext(getExecutiveDefaultOverrides(ctx), ctx);
   const s = readExecutiveOverridesFromStorage();
-  if (!s) return base;
-  return Object.assign({}, base, s, {
-    investEn: Array.isArray(s.investEn) ? s.investEn : base.investEn,
-    investAr: Array.isArray(s.investAr) ? s.investAr : base.investAr,
-    optimizeEn: Array.isArray(s.optimizeEn) ? s.optimizeEn : base.optimizeEn,
-    optimizeAr: Array.isArray(s.optimizeAr) ? s.optimizeAr : base.optimizeAr,
-    avoidEn: Array.isArray(s.avoidEn) ? s.avoidEn : base.avoidEn,
-    avoidAr: Array.isArray(s.avoidAr) ? s.avoidAr : base.avoidAr,
-    branchBars: Array.isArray(s.branchBars) && s.branchBars.length ? s.branchBars : base.branchBars,
-    flowSteps: Array.isArray(s.flowSteps) && s.flowSteps.length === 5 ? s.flowSteps : base.flowSteps,
+  const scoped = resolveExecutiveOverridesForContext(s, buildExecutiveFilterKey(ctx));
+  if (!scoped) return base;
+  const merged = Object.assign({}, base, scoped, {
+    investEn: Array.isArray(scoped.investEn) && scoped.investEn.length ? scoped.investEn : base.investEn,
+    investAr: Array.isArray(scoped.investAr) && scoped.investAr.length ? scoped.investAr : base.investAr,
+    optimizeEn: Array.isArray(scoped.optimizeEn) && scoped.optimizeEn.length ? scoped.optimizeEn : base.optimizeEn,
+    optimizeAr: Array.isArray(scoped.optimizeAr) && scoped.optimizeAr.length ? scoped.optimizeAr : base.optimizeAr,
+    avoidEn: Array.isArray(scoped.avoidEn) && scoped.avoidEn.length ? scoped.avoidEn : base.avoidEn,
+    avoidAr: Array.isArray(scoped.avoidAr) && scoped.avoidAr.length ? scoped.avoidAr : base.avoidAr,
+    branchBars: Array.isArray(scoped.branchBars) && scoped.branchBars.length ? scoped.branchBars : base.branchBars,
+    flowSteps: Array.isArray(scoped.flowSteps) && scoped.flowSteps.length === 5 ? scoped.flowSteps : base.flowSteps,
   });
+  const fallbackIfBlank = (key) => {
+    const v = merged[key];
+    if (v == null || String(v).trim() === '') merged[key] = base[key];
+  };
+  fallbackIfBlank('kpiTopDriverEn');
+  fallbackIfBlank('kpiTopDriverAr');
+  fallbackIfBlank('kpiRiskEn');
+  fallbackIfBlank('kpiRiskAr');
+  return merged;
 }
 
 function ensureExecFlowEditorBuilt() {
@@ -3505,12 +3949,7 @@ function gatherExecutiveOverridesFromForm() {
   }));
   return {
     kpiTrend1: _v('execEd_kpiTrend1'),
-    kpiScore: _v('execEd_kpiScore'),
     kpiStripR2: _v('execEd_kpiStripR2'),
-    kpiTopDriverEn: _v('execEd_kpiTopDriverEn'),
-    kpiTopDriverAr: _v('execEd_kpiTopDriverAr'),
-    kpiRiskEn: _v('execEd_kpiRiskEn'),
-    kpiRiskAr: _v('execEd_kpiRiskAr'),
     kpiSampleN: _v('execEd_kpiSampleN'),
     kpiSampleShareEn: _v('execEd_kpiSampleShareEn'),
     kpiSampleShareAr: _v('execEd_kpiSampleShareAr'),
@@ -3533,12 +3972,7 @@ function gatherExecutiveOverridesFromForm() {
 function applyExecutiveOverridesToForm(o) {
   ensureExecFlowEditorBuilt();
   _set('execEd_kpiTrend1', o.kpiTrend1);
-  _set('execEd_kpiScore', o.kpiScore);
   _set('execEd_kpiStripR2', o.kpiStripR2);
-  _set('execEd_kpiTopDriverEn', o.kpiTopDriverEn);
-  _set('execEd_kpiTopDriverAr', o.kpiTopDriverAr);
-  _set('execEd_kpiRiskEn', o.kpiRiskEn);
-  _set('execEd_kpiRiskAr', o.kpiRiskAr);
   _set('execEd_kpiSampleN', o.kpiSampleN);
   _set('execEd_kpiSampleShareEn', o.kpiSampleShareEn);
   _set('execEd_kpiSampleShareAr', o.kpiSampleShareAr);
@@ -3570,7 +4004,9 @@ function applyExecutiveOverridesToForm(o) {
 }
 
 function loadExecutiveEditorForm() {
-  if (!document.getElementById('execEd_kpiScore')) return;
+  if (!document.getElementById('execEd_kpiTrend1')) return;
+  syncExecutiveContextToCustomerFilters();
+  updateExecutiveContextKeyView();
   ensureExecFlowEditorBuilt();
   applyExecutiveOverridesToForm(mergeExecutiveOverrides());
 }
@@ -3584,29 +4020,90 @@ function notifyCustomerDashboardOverrides(msgType) {
 }
 
 function saveExecutiveOverridesFromForm() {
+  const ctxKey = buildExecutiveFilterKey();
   const payload = gatherExecutiveOverridesFromForm();
+  const current = readExecutiveOverridesFromStorage();
+  const byFilter = current && current.byFilter && typeof current.byFilter === 'object'
+    ? Object.assign({}, current.byFilter)
+    : {};
+  byFilter[ctxKey] = payload;
   try {
-    localStorage.setItem(EXEC_OVERRIDES_STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(EXEC_OVERRIDES_STORAGE_KEY, JSON.stringify({ byFilter }));
   } catch (_) {
     toast('Could not save (storage blocked).', 'error');
     return;
   }
-  addAuditEntry('UPDATE', 'Executive overrides', 'Customer Executive KPIs and copy saved to localStorage');
+  addAuditEntry('UPDATE', 'Executive overrides', `Customer Executive KPIs and copy saved for filter: ${ctxKey}`);
   notifyCustomerDashboardOverrides('executive-overrides-updated');
-  toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
+  toast(`Saved for filter context: ${ctxKey}`, 'success');
 }
 
 function resetExecutiveOverrides() {
+  const ctxKey = buildExecutiveFilterKey();
+  const current = readExecutiveOverridesFromStorage();
+  if (current && current.byFilter && typeof current.byFilter === 'object') {
+    const byFilter = Object.assign({}, current.byFilter);
+    delete byFilter[ctxKey];
+    try {
+      if (Object.keys(byFilter).length) localStorage.setItem(EXEC_OVERRIDES_STORAGE_KEY, JSON.stringify({ byFilter }));
+      else localStorage.removeItem(EXEC_OVERRIDES_STORAGE_KEY);
+    } catch (_) {}
+  } else {
+    try {
+      localStorage.removeItem(EXEC_OVERRIDES_STORAGE_KEY);
+    } catch (_) {}
+  }
+  loadExecutiveEditorForm();
+  addAuditEntry('UPDATE', 'Executive overrides', `Reset Executive override for filter: ${ctxKey}`);
+  notifyCustomerDashboardOverrides('executive-overrides-updated');
+  toast(`Executive override cleared for: ${ctxKey}`, 'info');
+}
+
+function resetAllExecutiveOverrides() {
   try {
     localStorage.removeItem(EXEC_OVERRIDES_STORAGE_KEY);
   } catch (_) {}
   loadExecutiveEditorForm();
-  addAuditEntry('UPDATE', 'Executive overrides', 'Reset to built-in defaults');
+  addAuditEntry('UPDATE', 'Executive overrides', 'Reset all Executive filter overrides to defaults');
   notifyCustomerDashboardOverrides('executive-overrides-updated');
-  toast('Executive overrides cleared.', 'info');
+  toast('All Executive overrides cleared.', 'info');
 }
 
 const CX_DRIVERS_OVERRIDES_STORAGE_KEY = 'roshd_cx_drivers_overrides';
+const CX_MAX_DRIVERS = 8;
+
+function getCxFilterContext() {
+  return {
+    branch: (document.getElementById('cxCtxBranch')?.value || 'All Branches').trim(),
+    gender: (document.getElementById('cxCtxGender')?.value || 'All Genders').trim(),
+    service: (document.getElementById('cxCtxService')?.value || 'All Services').trim(),
+    frequency: (document.getElementById('cxCtxFrequency')?.value || 'All Frequencies').trim(),
+    age: (document.getElementById('cxCtxAge')?.value || 'All Ages').trim(),
+  };
+}
+
+function buildCxFilterKey(ctx) {
+  const c = ctx || getCxFilterContext();
+  return [c.branch, c.gender, c.service, c.frequency, c.age].join(' | ');
+}
+
+function updateCxContextKeyView() {
+  const el = document.getElementById('cxCtxKeyView');
+  if (el) el.textContent = 'Editing: ' + buildCxFilterKey();
+}
+
+function syncCxContextToCustomerFilters(ctx) {
+  const c = ctx || getCxFilterContext();
+  try {
+    localStorage.setItem('roshd_filters', JSON.stringify({
+      branch: c.branch || 'All Branches',
+      gender: c.gender || 'All Genders',
+      service: c.service || 'All Services',
+      frequency: c.frequency || 'All Frequencies',
+      age: c.age || 'All Ages',
+    }));
+  } catch (_) {}
+}
 
 /** Mirrors customer dashboard `DB_DATA["All Branches"]` (must stay in sync for admin preview). */
 const CX_CUSTOMER_MODEL_ALL_BRANCHES = {
@@ -3674,7 +4171,8 @@ function cxResolveDriverCls(cls) {
 }
 
 function buildCxDriversRowsLiveDefaults() {
-  return CX_CUSTOMER_MODEL_ALL_BRANCHES.drivers.map((dr, i) => ({
+  const d = execDataForContext(getCxFilterContext());
+  return (d.drivers || []).map((dr, i) => ({
     rank: i + 1,
     nameEn: dr.name,
     nameAr: dr.nameAr || dr.name,
@@ -3688,14 +4186,15 @@ function buildCxDriversRowsLiveDefaults() {
 
 /** Top-four levers in cohort order (matches customer `dbRenderSimulation`). */
 function buildCxSimSliderLiveDefaults() {
-  return CX_CUSTOMER_MODEL_ALL_BRANCHES.drivers.slice(0, 4).map((dr) => ({
+  const d = execDataForContext(getCxFilterContext());
+  return (d.drivers || []).slice(0, 4).map((dr) => ({
     labelEn: `${dr.name} Improvement`,
     labelAr: `${dr.nameAr || dr.name} تحسين`,
   }));
 }
 
 function getCxDriversDefaultOverrides() {
-  const M = CX_CUSTOMER_MODEL_ALL_BRANCHES;
+  const M = execDataForContext(getCxFilterContext());
   return {
     mapTitleEn: 'Driver Impact Map',
     mapTitleAr: 'خريطة تأثير المحركات',
@@ -3758,12 +4257,17 @@ function mergeCxDriversOverrides() {
   const base = getCxDriversDefaultOverrides();
   const s = readCxDriversOverridesFromStorage();
   if (!s) return base;
-  const merged = { ...base, ...s };
+  let scoped = s;
+  if (s.byFilter && typeof s.byFilter === 'object') {
+    scoped = s.byFilter[buildCxFilterKey()] || null;
+  }
+  if (!scoped) return base;
+  const merged = { ...base, ...scoped };
   merged.driversRows =
-    Array.isArray(s.driversRows) && s.driversRows.length ? s.driversRows : base.driversRows;
-  merged.bubbles = s.bubbles !== undefined ? s.bubbles : base.bubbles;
+    Array.isArray(scoped.driversRows) && scoped.driversRows.length ? scoped.driversRows : base.driversRows;
+  merged.bubbles = scoped.bubbles !== undefined ? scoped.bubbles : base.bubbles;
   const bSl = base.simSliders;
-  const sSl = Array.isArray(s.simSliders) && s.simSliders.length === 4 ? s.simSliders : null;
+  const sSl = Array.isArray(scoped.simSliders) && scoped.simSliders.length === 4 ? scoped.simSliders : null;
   merged.simSliders = sSl ? sSl.map((slot, i) => (slot && (slot.labelEn || slot.labelAr) ? slot : bSl[i])) : bSl;
   return merged;
 }
@@ -3771,29 +4275,43 @@ function mergeCxDriversOverrides() {
 function ensureCxDriverRowEditorsBuilt() {
   const host = document.getElementById('cxEd_driverRowsMount');
   if (!host || host.dataset.bound === '1') return;
-  host.innerHTML = [0, 1, 2, 3, 4]
-    .map(
-      (i) => `
-    <div class="exec-flow-step" style="grid-column:1/-1;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px">
-      <label style="font-weight:700;margin-bottom:8px;display:block">Driver ${i + 1}</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <input class="form-input" id="cxEd_dr${i}_rank" placeholder="Rank # (optional)">
-        <select class="filter-select" id="cxEd_dr${i}_cls" style="min-height:42px">
-          <option value="navy">Badge: Navy</option>
-          <option value="warning">Badge: Warning</option>
-          <option value="danger">Badge: Danger</option>
-          <option value="gold">Badge: Gold</option>
+  const rows = Array.from({ length: CX_MAX_DRIVERS }, (_, i) => `
+    <tr>
+      <td><input class="form-input" id="cxEd_dr${i}_rank" placeholder="${i + 1}" style="min-width:72px"></td>
+      <td><input class="form-input" id="cxEd_dr${i}_nameEn" placeholder="Driver name EN"></td>
+      <td><input class="form-input" id="cxEd_dr${i}_nameAr" placeholder="Driver name AR" dir="rtl"></td>
+      <td><input class="form-input" id="cxEd_dr${i}_impact" placeholder="0.00" style="min-width:110px"></td>
+      <td><input class="form-input" id="cxEd_dr${i}_avgScore" placeholder="0-5" style="min-width:90px"></td>
+      <td><input class="form-input" id="cxEd_dr${i}_decisionEn" placeholder="Decision EN"></td>
+      <td><input class="form-input" id="cxEd_dr${i}_decisionAr" placeholder="Decision AR" dir="rtl"></td>
+      <td>
+        <select class="filter-select" id="cxEd_dr${i}_cls" style="min-height:38px;min-width:130px">
+          <option value="navy">Navy</option>
+          <option value="warning">Warning</option>
+          <option value="danger">Danger</option>
+          <option value="gold">Gold</option>
         </select>
-      </div>
-      <input class="form-input" id="cxEd_dr${i}_nameEn" placeholder="Name EN" style="margin-top:8px">
-      <input class="form-input" id="cxEd_dr${i}_nameAr" placeholder="Name AR" dir="rtl" style="margin-top:6px">
-      <input class="form-input" id="cxEd_dr${i}_impact" placeholder="Impact e.g. 0.34" style="margin-top:6px">
-      <input class="form-input" id="cxEd_dr${i}_avgScore" placeholder="Avg score numeric (/5) e.g. 3.4" style="margin-top:6px">
-      <input class="form-input" id="cxEd_dr${i}_decisionEn" placeholder="Decision EN" style="margin-top:6px">
-      <input class="form-input" id="cxEd_dr${i}_decisionAr" placeholder="Decision AR" dir="rtl" style="margin-top:6px">
-    </div>`
-    )
-    .join('');
+      </td>
+    </tr>
+  `).join("");
+  host.innerHTML = `
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name (EN)</th>
+            <th>Name (AR)</th>
+            <th>Impact</th>
+            <th>Avg (/5)</th>
+            <th>Decision (EN)</th>
+            <th>Decision (AR)</th>
+            <th>Badge</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
   host.dataset.bound = '1';
 }
 
@@ -3809,7 +4327,7 @@ function gatherCxDriversOverridesFromForm() {
     return Math.min(5, Math.max(0, n));
   };
   const driversRows = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < CX_MAX_DRIVERS; i++) {
     const nameEn = _v(`cxEd_dr${i}_nameEn`);
     const nameAr = _v(`cxEd_dr${i}_nameAr`);
     if (!nameEn && !nameAr) continue;
@@ -3826,6 +4344,16 @@ function gatherCxDriversOverridesFromForm() {
       cls: document.getElementById(`cxEd_dr${i}_cls`)?.value || 'gold',
     });
   }
+  const defaultSimSliders = buildCxSimSliderLiveDefaults();
+  const simSliders = [0, 1, 2, 3].map((i) => {
+    const en = _v(`cxEd_simLever${i}En`);
+    const ar = _v(`cxEd_simLever${i}Ar`);
+    const def = defaultSimSliders[i] || { labelEn: `Lever ${i + 1}`, labelAr: `الرافعة ${i + 1}` };
+    return {
+      labelEn: en || def.labelEn,
+      labelAr: ar || def.labelAr || en || def.labelEn,
+    };
+  });
   return {
     mapTitleEn: _v('cxEd_mapTitleEn'),
     mapTitleAr: _v('cxEd_mapTitleAr'),
@@ -3854,6 +4382,7 @@ function gatherCxDriversOverridesFromForm() {
     simBaseline: _v('cxEd_simBaseline'),
     simAdviceEn: _v('cxEd_simAdviceEn'),
     simAdviceAr: _v('cxEd_simAdviceAr'),
+    simSliders,
   };
 }
 
@@ -3885,7 +4414,13 @@ function applyCxDriversOverridesToForm(o) {
   _set('cxEd_simBaseline', o.simBaseline);
   _set('cxEd_simAdviceEn', o.simAdviceEn);
   _set('cxEd_simAdviceAr', o.simAdviceAr);
-  for (let i = 0; i < 5; i++) {
+  const simSlots = Array.isArray(o.simSliders) ? o.simSliders : buildCxSimSliderLiveDefaults();
+  for (let i = 0; i < 4; i++) {
+    const slot = simSlots[i] || {};
+    _set(`cxEd_simLever${i}En`, slot.labelEn || '');
+    _set(`cxEd_simLever${i}Ar`, slot.labelAr || slot.labelEn || '');
+  }
+  for (let i = 0; i < CX_MAX_DRIVERS; i++) {
     const row = (o.driversRows || [])[i];
     _set(`cxEd_dr${i}_rank`, row && row.rank != null ? String(row.rank) : '');
     _set(`cxEd_dr${i}_nameEn`, row ? row.nameEn : '');
@@ -3901,31 +4436,66 @@ function applyCxDriversOverridesToForm(o) {
 
 function loadCxDriversEditorForm() {
   if (!document.getElementById('cxEd_mapTitleEn')) return;
+  const branchEl = document.getElementById('cxCtxBranch');
+  if (branchEl && branchEl.dataset.initFromStore !== '1') {
+    try {
+      const f = JSON.parse(localStorage.getItem('roshd_filters') || 'null');
+      const setIf = (id, v) => {
+        const el = document.getElementById(id);
+        if (el && v) el.value = v;
+      };
+      if (f) {
+        setIf('cxCtxBranch', f.branch);
+        setIf('cxCtxGender', f.gender);
+        setIf('cxCtxService', f.service);
+        setIf('cxCtxFrequency', f.frequency);
+        setIf('cxCtxAge', f.age);
+      }
+    } catch (_) {}
+    branchEl.dataset.initFromStore = '1';
+  }
+  syncCxContextToCustomerFilters();
+  updateCxContextKeyView();
   ensureCxDriverRowEditorsBuilt();
   applyCxDriversOverridesToForm(mergeCxDriversOverrides());
 }
 
 function saveCxDriversOverridesFromForm() {
+  const ctxKey = buildCxFilterKey();
   const payload = gatherCxDriversOverridesFromForm();
+  const current = readCxDriversOverridesFromStorage();
+  const byFilter = current && current.byFilter && typeof current.byFilter === 'object'
+    ? Object.assign({}, current.byFilter)
+    : {};
+  byFilter[ctxKey] = payload;
   try {
-    localStorage.setItem(CX_DRIVERS_OVERRIDES_STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(CX_DRIVERS_OVERRIDES_STORAGE_KEY, JSON.stringify({ byFilter }));
   } catch (_) {
     toast('Could not save (storage blocked).', 'error');
     return;
   }
-  addAuditEntry('UPDATE', 'CX Drivers overrides', 'Customer CX Drivers content saved to localStorage');
+  addAuditEntry('UPDATE', 'CX Drivers overrides', `Customer CX Drivers content saved for filter: ${ctxKey}`);
   notifyCustomerDashboardOverrides('cx-drivers-overrides-updated');
-  toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
+  toast(`Saved for filter context: ${ctxKey}`, 'success');
 }
 
 function resetCxDriversOverrides() {
-  try {
-    localStorage.removeItem(CX_DRIVERS_OVERRIDES_STORAGE_KEY);
-  } catch (_) {}
+  const ctxKey = buildCxFilterKey();
+  const current = readCxDriversOverridesFromStorage();
+  if (current && current.byFilter && typeof current.byFilter === 'object') {
+    const byFilter = Object.assign({}, current.byFilter);
+    delete byFilter[ctxKey];
+    try {
+      if (Object.keys(byFilter).length) localStorage.setItem(CX_DRIVERS_OVERRIDES_STORAGE_KEY, JSON.stringify({ byFilter }));
+      else localStorage.removeItem(CX_DRIVERS_OVERRIDES_STORAGE_KEY);
+    } catch (_) {}
+  } else {
+    try { localStorage.removeItem(CX_DRIVERS_OVERRIDES_STORAGE_KEY); } catch (_) {}
+  }
   loadCxDriversEditorForm();
-  addAuditEntry('UPDATE', 'CX Drivers overrides', 'Reset to defaults');
+  addAuditEntry('UPDATE', 'CX Drivers overrides', `Reset defaults for filter: ${ctxKey}`);
   notifyCustomerDashboardOverrides('cx-drivers-overrides-updated');
-  toast('CX Drivers overrides cleared.', 'info');
+  toast(`CX Drivers override cleared for: ${ctxKey}`, 'info');
 }
 
 const UNITS_PERF_OVERRIDES_STORAGE_KEY = 'roshd_units_performance_overrides';
@@ -3941,24 +4511,9 @@ function buildUnitsPerfDriverBarsDefaults() {
 }
 
 function getUnitsPerformanceDefaultOverrides() {
-  const M = CX_CUSTOMER_MODEL_ALL_BRANCHES;
   return {
     segTitleEn: 'All Branches — Units Performance',
     segTitleAr: 'جميع الفروع — أداء الوحدات',
-    segSubEn: `${M.explanatory}% · Top driver: ${M.top} · ${cxFormatMean5(M.score, 1)}`,
-    segSubAr: `${M.explanatory}% · المحرك الأول: ${M.topAr} · ${cxFormatMean5(M.score, 1)}`,
-    investEn: M.invest.slice(),
-    investAr: M.investAr.slice(),
-    optimizeEn: M.optimize.slice(),
-    optimizeAr: M.optimizeAr.slice(),
-    avoidEn: M.avoid.slice(),
-    avoidAr: M.avoidAr.slice(),
-    cardInvestTitleEn: 'Invest Now',
-    cardInvestTitleAr: 'استثمر الآن',
-    cardOptimizeTitleEn: 'Optimize',
-    cardOptimizeTitleAr: 'حسّن',
-    cardAvoidTitleEn: 'Avoid',
-    cardAvoidTitleAr: 'تجنّب',
   };
 }
 
@@ -3977,14 +4532,7 @@ function mergeUnitsPerformanceOverrides() {
   const base = getUnitsPerformanceDefaultOverrides();
   const s = readUnitsPerformanceOverridesFromStorage();
   if (!s) return base;
-  return Object.assign({}, base, s, {
-    investEn: Array.isArray(s.investEn) ? s.investEn : base.investEn,
-    investAr: Array.isArray(s.investAr) ? s.investAr : base.investAr,
-    optimizeEn: Array.isArray(s.optimizeEn) ? s.optimizeEn : base.optimizeEn,
-    optimizeAr: Array.isArray(s.optimizeAr) ? s.optimizeAr : base.optimizeAr,
-    avoidEn: Array.isArray(s.avoidEn) ? s.avoidEn : base.avoidEn,
-    avoidAr: Array.isArray(s.avoidAr) ? s.avoidAr : base.avoidAr,
-  });
+  return Object.assign({}, base, s);
 }
 
 function ensureUnitsPerfDriverBarsEditorsBuilt() {
@@ -4010,40 +4558,12 @@ function gatherUnitsPerformanceOverridesFromForm() {
   return {
     segTitleEn: _v('upEd_segTitleEn'),
     segTitleAr: _v('upEd_segTitleAr'),
-    segSubEn: _v('upEd_segSubEn'),
-    segSubAr: _v('upEd_segSubAr'),
-    investEn: _lines('upEd_investEn'),
-    investAr: _lines('upEd_investAr'),
-    optimizeEn: _lines('upEd_optimizeEn'),
-    optimizeAr: _lines('upEd_optimizeAr'),
-    avoidEn: _lines('upEd_avoidEn'),
-    avoidAr: _lines('upEd_avoidAr'),
-    cardInvestTitleEn: _v('upEd_cardInvestTitleEn'),
-    cardInvestTitleAr: _v('upEd_cardInvestTitleAr'),
-    cardOptimizeTitleEn: _v('upEd_cardOptimizeTitleEn'),
-    cardOptimizeTitleAr: _v('upEd_cardOptimizeTitleAr'),
-    cardAvoidTitleEn: _v('upEd_cardAvoidTitleEn'),
-    cardAvoidTitleAr: _v('upEd_cardAvoidTitleAr'),
   };
 }
 
 function applyUnitsPerformanceOverridesToForm(o) {
   _set('upEd_segTitleEn', o.segTitleEn);
   _set('upEd_segTitleAr', o.segTitleAr);
-  _set('upEd_segSubEn', o.segSubEn);
-  _set('upEd_segSubAr', o.segSubAr);
-  _set('upEd_cardInvestTitleEn', o.cardInvestTitleEn);
-  _set('upEd_cardInvestTitleAr', o.cardInvestTitleAr);
-  _set('upEd_cardOptimizeTitleEn', o.cardOptimizeTitleEn);
-  _set('upEd_cardOptimizeTitleAr', o.cardOptimizeTitleAr);
-  _set('upEd_cardAvoidTitleEn', o.cardAvoidTitleEn);
-  _set('upEd_cardAvoidTitleAr', o.cardAvoidTitleAr);
-  _setLines('upEd_investEn', o.investEn);
-  _setLines('upEd_investAr', o.investAr);
-  _setLines('upEd_optimizeEn', o.optimizeEn);
-  _setLines('upEd_optimizeAr', o.optimizeAr);
-  _setLines('upEd_avoidEn', o.avoidEn);
-  _setLines('upEd_avoidAr', o.avoidAr);
 }
 
 function loadUnitsPerformanceEditorForm() {
@@ -4812,6 +5332,8 @@ function resetPilotAnalysisOverrides() {
 const MODEL_QUALITY_OVERRIDES_STORAGE_KEY = 'roshd_model_quality_overrides';
 let _mqDefaultPairs = [];
 let _mqDefaultValues = [];
+let _mqDefaultFlowBlocks = [];
+let _mqFlowBlocks = [];
 
 async function fetchDefaultModelQualityPanelHtml() {
   try {
@@ -4852,6 +5374,29 @@ function mqExtractValuesFromHtml(innerHtml) {
   return vals;
 }
 
+function mqExtractFlowBlocksFromHtml(innerHtml) {
+  const wrap = document.createElement('div');
+  wrap.innerHTML = innerHtml || '';
+  const rows = [];
+  wrap.querySelectorAll('.db-mq-construct-list .db-mq-ant').forEach((li) => {
+    if (li.classList.contains('db-mq-ant--cx')) return;
+    const nameEn = (li.querySelector('.db-mq-ant-text strong .en')?.textContent || '').trim();
+    const nameAr = (li.querySelector('.db-mq-ant-text strong .ar')?.textContent || '').trim();
+    const descEn = (li.querySelector('.db-mq-ant-text small .en')?.textContent || '').trim();
+    const descAr = (li.querySelector('.db-mq-ant-text small .ar')?.textContent || '').trim();
+    const qTxt = (li.querySelector('.db-mq-qty')?.textContent || '').trim();
+    const qCount = Number.parseInt(qTxt, 10);
+    rows.push({
+      nameEn: nameEn || 'New Block',
+      nameAr: nameAr || 'كتلة جديدة',
+      descEn: descEn || '',
+      descAr: descAr || '',
+      qCount: Number.isFinite(qCount) && qCount > 0 ? qCount : 4,
+    });
+  });
+  return rows.slice(0, 8);
+}
+
 function mqEsc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 }
@@ -4859,16 +5404,74 @@ function mqEsc(s) {
 function readModelQualityStored() {
   try {
     const raw = localStorage.getItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY);
-    if (!raw) return { pairs: {}, values: {} };
+    if (!raw) return { pairs: {}, values: {}, flowBlocks: null };
     const o = JSON.parse(raw);
-    if (!o || typeof o !== 'object') return { pairs: {}, values: {} };
+    if (!o || typeof o !== 'object') return { pairs: {}, values: {}, flowBlocks: null };
     return {
       pairs: o.pairs && typeof o.pairs === 'object' ? o.pairs : {},
-      values: o.values && typeof o.values === 'object' ? o.values : {}
+      values: o.values && typeof o.values === 'object' ? o.values : {},
+      flowBlocks: Array.isArray(o.flowBlocks) ? o.flowBlocks.slice(0, 8) : null,
     };
   } catch (_) {
-    return { pairs: {}, values: {} };
+    return { pairs: {}, values: {}, flowBlocks: null };
   }
+}
+
+function mqRenderFlowBlocksEditor() {
+  const mount = document.getElementById('mqFlowBlocksMount');
+  if (!mount) return;
+  mount.innerHTML = (_mqFlowBlocks || [])
+    .map((b, i) => {
+      return `<div class="exec-editor-section" style="border:1px solid var(--border2);border-radius:12px;padding:12px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+          <div class="exec-editor-hint"><b>Block #${i + 1}</b></div>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="mqRemoveFlowBlock(${i})">Remove block</button>
+        </div>
+        <div class="exec-editor-grid2">
+          <div class="form-group"><label class="form-label">Name (EN)</label><input class="form-input" value="${mqEsc(b.nameEn || '')}" oninput="mqSetFlowBlockField(${i},'nameEn',this.value)"></div>
+          <div class="form-group"><label class="form-label">Name (AR)</label><input class="form-input" dir="rtl" value="${mqEsc(b.nameAr || '')}" oninput="mqSetFlowBlockField(${i},'nameAr',this.value)"></div>
+          <div class="form-group"><label class="form-label">Description (EN)</label><input class="form-input" value="${mqEsc(b.descEn || '')}" oninput="mqSetFlowBlockField(${i},'descEn',this.value)"></div>
+          <div class="form-group"><label class="form-label">Description (AR)</label><input class="form-input" dir="rtl" value="${mqEsc(b.descAr || '')}" oninput="mqSetFlowBlockField(${i},'descAr',this.value)"></div>
+          <div class="form-group"><label class="form-label">Questions count</label><input class="form-input" type="number" min="1" max="20" value="${mqEsc(String(Math.max(1, Number(b.qCount) || 1)))}" oninput="mqSetFlowBlockField(${i},'qCount',this.value)"></div>
+        </div>
+      </div>`;
+    })
+    .join('');
+  if (!_mqFlowBlocks.length) {
+    mount.innerHTML = '<div class="exec-editor-hint">No flow blocks. Click "Add block" to start.</div>';
+  }
+}
+
+function mqSetFlowBlockField(i, key, value) {
+  if (!_mqFlowBlocks[i]) return;
+  if (key === 'qCount') {
+    const n = Number.parseInt(String(value), 10);
+    _mqFlowBlocks[i][key] = Number.isFinite(n) && n > 0 ? n : 1;
+    return;
+  }
+  _mqFlowBlocks[i][key] = value;
+}
+
+function mqAddFlowBlock() {
+  if (!Array.isArray(_mqFlowBlocks)) _mqFlowBlocks = [];
+  if (_mqFlowBlocks.length >= 8) {
+    toast('Maximum 8 blocks allowed.', 'info');
+    return;
+  }
+  _mqFlowBlocks.push({
+    nameEn: 'New Block',
+    nameAr: 'كتلة جديدة',
+    descEn: 'Describe this construct',
+    descAr: 'وصف هذه الكتلة',
+    qCount: 4,
+  });
+  mqRenderFlowBlocksEditor();
+}
+
+function mqRemoveFlowBlock(i) {
+  if (!Array.isArray(_mqFlowBlocks) || !_mqFlowBlocks[i]) return;
+  _mqFlowBlocks.splice(i, 1);
+  mqRenderFlowBlocksEditor();
 }
 
 function renderModelQualityEditor(pairs, values, stored) {
@@ -4896,6 +5499,11 @@ function renderModelQualityEditor(pairs, values, stored) {
       <input class="form-input" id="mqVal_${i}" value="${mqEsc(vv)}">
     </div>`;
   }).join('') || '<div class="exec-editor-hint">No value fields found.</div>';
+
+  _mqFlowBlocks = Array.isArray(stored.flowBlocks) && stored.flowBlocks.length
+    ? JSON.parse(JSON.stringify(stored.flowBlocks.slice(0, 8)))
+    : JSON.parse(JSON.stringify(_mqDefaultFlowBlocks.slice(0, 8)));
+  mqRenderFlowBlocksEditor();
 }
 
 async function loadModelQualityEditorForm(forceReloadDefaults) {
@@ -4903,6 +5511,7 @@ async function loadModelQualityEditorForm(forceReloadDefaults) {
     const html = await fetchDefaultModelQualityPanelHtml();
     _mqDefaultPairs = mqExtractPairsFromHtml(html);
     _mqDefaultValues = mqExtractValuesFromHtml(html);
+    _mqDefaultFlowBlocks = mqExtractFlowBlocksFromHtml(html);
   }
   renderModelQualityEditor(_mqDefaultPairs, _mqDefaultValues, readModelQualityStored());
 }
@@ -4929,13 +5538,16 @@ function saveModelQualityOverridesFromForm() {
   const payload = {};
   if (Object.keys(pairs).length) payload.pairs = pairs;
   if (Object.keys(values).length) payload.values = values;
+  const currFlow = JSON.stringify((_mqFlowBlocks || []).slice(0, 8));
+  const defFlow = JSON.stringify((_mqDefaultFlowBlocks || []).slice(0, 8));
+  if (currFlow !== defFlow) payload.flowBlocks = JSON.parse(currFlow);
   try {
     localStorage.setItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, JSON.stringify(payload));
   } catch (_) {
     toast('Could not save (storage blocked).', 'error');
     return;
   }
-  addAuditEntry('UPDATE', 'Model Quality overrides', 'Customer Model Quality labels/values saved to localStorage');
+  addAuditEntry('UPDATE', 'Model Quality overrides', 'Customer Model Quality labels/values/flow blocks saved to localStorage');
   notifyCustomerDashboardOverrides('model-quality-overrides-updated');
   toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
 }
@@ -4944,13 +5556,24 @@ function resetModelQualityOverrides() {
   try {
     localStorage.removeItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY);
   } catch (_) {}
-  renderModelQualityEditor(_mqDefaultPairs, _mqDefaultValues, { pairs: {}, values: {} });
+  renderModelQualityEditor(_mqDefaultPairs, _mqDefaultValues, { pairs: {}, values: {}, flowBlocks: null });
   addAuditEntry('UPDATE', 'Model Quality overrides', 'Reset to defaults');
   notifyCustomerDashboardOverrides('model-quality-overrides-updated');
   toast('Model Quality overrides cleared.', 'info');
 }
 
 const ADMIN_MIRROR_DB_PANEL = {
+};
+
+const ADMIN_PREVIEW_DB_PANEL = {
+  executive: 'executive',
+  'cx-drivers': 'drivers',
+  'units-performance': 'segments',
+  demographics: 'demographics',
+  'customer-patterns': 'customers',
+  questionnaire: 'questionnaire',
+  'pilot-analysis': 'pilot',
+  'model-quality': 'model',
 };
 
 function resolveAdminCustomerEmbedBase() {
@@ -4980,6 +5603,27 @@ function reloadActiveCustomerMirrorIframe() {
   const iframe = document.querySelector('#panel-' + pk + ' iframe.admin-customer-dash-iframe');
   if (iframe) iframe.dataset.mirrorLoaded = '';
   embedCustomerDashboardMirror(pk, true);
+}
+
+function openCustomerPreviewForActivePanel() {
+  const activeNav = document.querySelector('.nav-item.active');
+  const pk = activeNav && activeNav.getAttribute('data-panel');
+  const dbPanel = pk ? ADMIN_PREVIEW_DB_PANEL[pk] : null;
+  if (!dbPanel) {
+    toast('No customer dashboard preview available for this tab.', 'info');
+    return;
+  }
+  if (pk === 'executive') {
+    try {
+      localStorage.setItem('roshd_filters', JSON.stringify(getExecutiveFilterContext()));
+    } catch (_) {}
+  }
+  const qp = new URLSearchParams({
+    adminEmbed: '1',
+    dbPanel,
+    lang: currentLang === 'ar' ? 'ar' : 'en',
+  });
+  window.open(resolveAdminCustomerEmbedBase() + '?' + qp.toString(), '_blank');
 }
 
 function showPanel(id, btn) {

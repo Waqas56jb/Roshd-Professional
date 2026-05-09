@@ -4131,7 +4131,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               <span class="ar"><b>ملاحظة:</b> أدناه مخطط مدمج يناسب الوضع الداكن. لاستخدام صورتك، احفظها باسم <code style="opacity:.85">mode.png</code> في جذر الموقع لربطها لاحقًا بجانب هذا القسم.</span>
             </p>
             <div class="db-mq-measure-split">
-              <ul class="db-mq-construct-list">
+              <ul class="db-mq-construct-list" id="dbMqConstructList">
                 <li class="db-mq-ant db-mq-ant--quality">
                   <span class="db-mq-ico" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#93c5fd" stroke-width="1.75"/></svg>
@@ -4184,7 +4184,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 </li>
               </ul>
               <div class="db-mq-diagram-panel">
-                <div class="db-mq-svg-wrap" dir="ltr">
+                <div class="db-mq-svg-wrap" dir="ltr" id="dbMqSvgWrap">
                   <svg class="db-mq-model-svg" viewBox="0 0 548 392" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <defs>
                       <marker id="dbMqMb" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto"><polygon points="0 0,9 4.5,0 9" fill="#60a5fa"/></marker>
@@ -4222,7 +4222,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                     <path d="M 184 339 L 276 339 L 338 232" stroke="#a78bfa" stroke-width="1.85" fill="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8" marker-end="url(#dbMqMv)"/>
                   </svg>
                 </div>
-                <p class="db-mq-diagram-caption">
+                <p class="db-mq-diagram-caption" id="dbMqDiagramCaption">
                   <span class="en">Conceptual drivers → Customer Experience Score (19 items across all blocks pre-pilot).</span>
                   <span class="ar">محركات مفاهيمية → درجة تجربة العميل (١٩ بندًا إجمالًا قبل التجربة).</span>
                 </p>
@@ -6209,6 +6209,17 @@ let dbPilotAnalysisDefaultInnerHtml = null;
 const MODEL_QUALITY_OVERRIDES_KEY = 'roshd_model_quality_overrides';
 let dbModelQualityDefaultInnerHtml = null;
 
+function dbGetModelQualityOverrides() {
+  try {
+    const raw = localStorage.getItem(MODEL_QUALITY_OVERRIDES_KEY);
+    if (!raw) return null;
+    const o = JSON.parse(raw);
+    return o && typeof o === 'object' ? o : null;
+  } catch (_) {
+    return null;
+  }
+}
+
 function dbGetQuestionnaireOverrides() {
   try {
     const raw = localStorage.getItem(QUESTIONNAIRE_OVERRIDES_KEY);
@@ -6265,6 +6276,143 @@ function dbApplyQuestionnaireOverrides() {
   }
 }
 
+function dbExtractQuestionnaireSectionsFromPanel() {
+  const panel = document.getElementById('db-panel-questionnaire');
+  if (!panel) return [];
+  const out = [];
+  panel.querySelectorAll('.db-q-items-inner .db-q-section').forEach((sec) => {
+    const topicEn = (sec.querySelector('.db-q-section-head .en')?.textContent || '').trim();
+    const topicAr = (sec.querySelector('.db-q-section-head .ar')?.textContent || '').trim();
+    const qCount = sec.querySelectorAll('.db-q-lines > li').length;
+    if (!topicEn && !topicAr) return;
+    out.push({
+      topicEn: topicEn || topicAr || '—',
+      topicAr: topicAr || topicEn || '—',
+      qCount: qCount > 0 ? qCount : 1,
+    });
+  });
+  return out;
+}
+
+function dbMeasurementColor(idx) {
+  const palette = ['#60a5fa', '#34d399', '#eab308', '#a78bfa', '#f97316', '#22d3ee', '#f43f5e', '#84cc16'];
+  return palette[idx % palette.length];
+}
+
+function dbRenderMeasurementModelFromQuestionnaire() {
+  const listEl = document.getElementById('dbMqConstructList');
+  const svgWrap = document.getElementById('dbMqSvgWrap');
+  const capEl = document.getElementById('dbMqDiagramCaption');
+  if (!listEl || !svgWrap || !capEl) return;
+
+  const mqOverrides = dbGetModelQualityOverrides();
+  const mqRows = Array.isArray(mqOverrides && mqOverrides.flowBlocks)
+    ? mqOverrides.flowBlocks
+        .slice(0, 8)
+        .map((b) => ({
+          topicEn: String((b && b.nameEn) || '').trim(),
+          topicAr: String((b && b.nameAr) || '').trim(),
+          descEn: String((b && b.descEn) || '').trim(),
+          descAr: String((b && b.descAr) || '').trim(),
+          qCount: Math.max(1, Number.parseInt(String((b && b.qCount) || 1), 10) || 1),
+        }))
+        .filter((b) => b.topicEn || b.topicAr)
+    : [];
+
+  const allSections = dbExtractQuestionnaireSectionsFromPanel();
+  const antecedents = allSections.filter((s) => {
+    const t = `${s.topicEn} ${s.topicAr}`.toLowerCase();
+    return !(t.includes('customer experience score') || t.includes('درجة تجربة العميل') || t.includes('cx score'));
+  });
+  const outcome = allSections.find((s) => {
+    const t = `${s.topicEn} ${s.topicAr}`.toLowerCase();
+    return t.includes('customer experience score') || t.includes('درجة تجربة العميل') || t.includes('cx score');
+  });
+
+  const rows = (mqRows.length ? mqRows : antecedents).slice(0, 8);
+  if (!rows.length) return;
+  const outcomeRow = outcome || { topicEn: 'Customer Experience Score', topicAr: 'درجة تجربة العميل', qCount: 3 };
+  const totalItems = rows.reduce((a, b) => a + (Number(b.qCount) || 0), 0) + (Number(outcomeRow.qCount) || 0);
+
+  listEl.innerHTML = rows
+    .map((r, i) => {
+      const c = dbMeasurementColor(i);
+      return `<li class="db-mq-ant" style="border-color:${dbExecHtmlEscape(c)}66;background:color-mix(in srgb, ${dbExecHtmlEscape(c)} 12%, transparent)">
+        <span class="db-mq-ico" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="${dbExecHtmlEscape(c)}" stroke-width="1.75"/></svg>
+        </span>
+        <div class="db-mq-ant-text">
+          <strong><span class="en">${dbExecHtmlEscape(r.topicEn || r.topicAr || '—')}</span><span class="ar">${dbExecHtmlEscape(r.topicAr || r.topicEn || '—')}</span></strong>
+          <small><span class="en">${dbExecHtmlEscape(r.descEn || 'Block defined in Model Quality editor')}</span><span class="ar">${dbExecHtmlEscape(r.descAr || 'كتلة معرفة في محرر جودة النموذج')}</span></small>
+        </div>
+        <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">${Math.max(1, Number(r.qCount) || 1)}</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+      </li>`;
+    })
+    .join('') +
+    `<li class="db-mq-ant db-mq-ant--cx">
+      <span class="db-mq-ico" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#d4af55" stroke-width="1.75"/><circle cx="12" cy="7" r="4" stroke="#d4af55" stroke-width="1.75"/></svg>
+      </span>
+      <div class="db-mq-ant-text">
+        <strong><span class="en">${dbExecHtmlEscape(outcomeRow.topicEn)}</span><span class="ar">${dbExecHtmlEscape(outcomeRow.topicAr)}</span></strong>
+        <small><span class="en">Reflective latent · OS block</span><span class="ar">كتلة انعكاسية · OS</span></small>
+      </div>
+      <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">${Math.max(1, Number(outcomeRow.qCount) || 1)}</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+    </li>`;
+
+  const n = rows.length;
+  const step = 68;
+  const topPad = 20;
+  const h = Math.max(260, topPad * 2 + (n - 1) * step + 50);
+  const rightBoxY = Math.max(24, (h - 130) / 2);
+  const rightJoinStart = rightBoxY + 28;
+  const rightJoinEnd = rightBoxY + 102;
+
+  const nodes = rows
+    .map((r, i) => {
+      const y = topPad + i * step;
+      const c = dbMeasurementColor(i);
+      const txtY = y + 23;
+      const subY = y + 40;
+      return `
+        <rect x="18" y="${y}" width="176" height="50" rx="12" stroke="${c}99" stroke-width="1.5" fill="${c}17"/>
+        <text x="106" y="${txtY}" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="12.5" font-weight="700">${dbExecHtmlEscape(r.topicEn)}</text>
+        <text x="106" y="${subY}" text-anchor="middle" fill="${c}" font-size="10.5" font-weight="700">× ${Math.max(1, Number(r.qCount) || 1)} questions</text>
+      `;
+    })
+    .join('');
+
+  const linkMarkers = rows
+    .map((_, i) => {
+      const c = dbMeasurementColor(i);
+      const marker = `dbMqDynArr${i}`;
+      return `<marker id="${marker}" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto"><polygon points="0 0,9 4.5,0 9" fill="${c}"/></marker>`;
+    })
+    .join('');
+
+  const links = rows
+    .map((_, i) => {
+      const y = topPad + i * step + 25;
+      const targetY = rightJoinStart + ((rightJoinEnd - rightJoinStart) * (i + 1)) / (n + 1);
+      const c = dbMeasurementColor(i);
+      const marker = `dbMqDynArr${i}`;
+      return `<path d="M 194 ${y} L 282 ${y} L 338 ${targetY}" stroke="${c}" stroke-width="1.8" fill="none" marker-end="url(#${marker})"/>`;
+    })
+    .join('');
+
+  svgWrap.innerHTML = `<svg class="db-mq-model-svg" viewBox="0 0 548 ${h}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>${linkMarkers}</defs>
+    ${nodes}
+    ${links}
+    <rect x="338" y="${rightBoxY}" width="188" height="130" rx="16" stroke="rgba(212,175,85,0.58)" stroke-width="1.6" fill="rgba(184,150,46,0.1)"/>
+    <text x="432" y="${rightBoxY + 52}" text-anchor="middle" fill="rgba(255,255,255,0.95)" font-size="13.5" font-weight="700">${dbExecHtmlEscape(outcomeRow.topicEn)}</text>
+    <text x="432" y="${rightBoxY + 84}" text-anchor="middle" fill="#e8c65c" font-size="11.5" font-weight="700">${Math.max(1, Number(outcomeRow.qCount) || 1)} indicators</text>
+  </svg>`;
+
+  capEl.innerHTML = `<span class="en">Conceptual drivers → ${dbExecHtmlEscape(outcomeRow.topicEn)} (${totalItems} items across active model blocks).</span>
+  <span class="ar">محركات مفاهيمية → ${dbExecHtmlEscape(outcomeRow.topicAr)} (إجمالي ${totalItems} بندًا عبر كتل النموذج النشطة).</span>`;
+}
+
 function dbApplyPilotAnalysisOverrides() {
   const panel = document.getElementById('db-panel-pilot');
   if (!panel) return;
@@ -6316,14 +6464,9 @@ function dbApplyModelQualityOverrides() {
   if (dbModelQualityDefaultInnerHtml == null) dbModelQualityDefaultInnerHtml = panel.innerHTML;
   let pairs = null;
   let values = null;
-  try {
-    const raw = localStorage.getItem(MODEL_QUALITY_OVERRIDES_KEY);
-    if (raw) {
-      const o = JSON.parse(raw);
-      if (o && typeof o === 'object' && o.pairs && typeof o.pairs === 'object') pairs = o.pairs;
-      if (o && typeof o === 'object' && o.values && typeof o.values === 'object') values = o.values;
-    }
-  } catch (_) {}
+  const o = dbGetModelQualityOverrides();
+  if (o && typeof o === 'object' && o.pairs && typeof o.pairs === 'object') pairs = o.pairs;
+  if (o && typeof o === 'object' && o.values && typeof o.values === 'object') values = o.values;
   const hasPairs = !!(pairs && Object.keys(pairs).length);
   const hasValues = !!(values && Object.keys(values).length);
   if (!hasPairs && !hasValues) {
@@ -6603,9 +6746,7 @@ function dbApplyUnitsPerformanceDisplayOverrides() {
   if (!o) return;
   const esc = dbExecHtmlEscape;
   const titleEl = document.getElementById('dbSegDetailTitle');
-  const subEl = document.getElementById('dbSegDetailSub');
-  const bodyEl = document.getElementById('dbSegDetailBody');
-  if (!titleEl || !subEl || !bodyEl) return;
+  if (!titleEl) return;
 
   if (
     (o.segTitleEn != null && String(o.segTitleEn).trim() !== '') ||
@@ -6622,111 +6763,6 @@ function dbApplyUnitsPerformanceDisplayOverrides() {
     titleEl.innerHTML = `<span class="en">${esc(en)}</span><span class="ar">${esc(ar)}</span>`;
   }
 
-  if (
-    (o.segSubEn != null && String(o.segSubEn).trim() !== '') ||
-    (o.segSubAr != null && String(o.segSubAr).trim() !== '')
-  ) {
-    const en = o.segSubEn != null && String(o.segSubEn).trim() !== '' ? String(o.segSubEn).trim() : '';
-    const ar =
-      o.segSubAr != null && String(o.segSubAr).trim() !== ''
-        ? String(o.segSubAr).trim()
-        : en;
-    subEl.innerHTML = `<span class="en">${esc(en)}</span><span class="ar">${esc(ar)}</span>`;
-  }
-
-  const barsSource = (dbGetData().drivers || []).map((dr) => ({
-    nameEn: dr.name,
-    nameAr: dr.nameAr || dr.name,
-    impact: dr.impact,
-    impactPctLabel: '',
-    widthPct: '',
-  }));
-  if (!barsSource.length) return;
-
-  const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
-
-  const barsHtml = `
-    <div class="db-bar-list" style="margin-bottom:20px">
-      ${barsSource
-        .map((dr) => {
-          const wRaw = dr.widthPct;
-          const w =
-            wRaw != null && String(wRaw).trim() !== '' && !Number.isNaN(parseFloat(wRaw))
-              ? Math.min(100, Math.max(0, parseFloat(wRaw)))
-              : Math.min(100, ((Number(dr.impact) || 0) / 0.35) * 100);
-          const pct =
-            dr.impactPctLabel != null && String(dr.impactPctLabel).trim() !== ''
-              ? esc(String(dr.impactPctLabel).trim())
-              : dbImpactPct(Number(dr.impact));
-          return `<div class="db-bar-row">
-          <span class="db-bar-label"><span class="en">${esc(dr.nameEn || '')}</span><span class="ar">${esc(
-            dr.nameAr || dr.nameEn || ''
-          )}</span></span>
-          <div class="db-bar-track"><div class="db-bar-fill" style="width:${w}%"></div></div>
-          <span class="db-bar-val">${pct}</span>
-        </div>`;
-        })
-        .join('')}
-    </div>`;
-
-  const invTitleEn =
-    o.cardInvestTitleEn != null && String(o.cardInvestTitleEn).trim() !== ''
-      ? String(o.cardInvestTitleEn).trim()
-      : 'Invest Now';
-  const invTitleAr =
-    o.cardInvestTitleAr != null && String(o.cardInvestTitleAr).trim() !== ''
-      ? String(o.cardInvestTitleAr).trim()
-      : 'استثمر الآن';
-  const optTitleEn =
-    o.cardOptimizeTitleEn != null && String(o.cardOptimizeTitleEn).trim() !== ''
-      ? String(o.cardOptimizeTitleEn).trim()
-      : 'Optimize';
-  const optTitleAr =
-    o.cardOptimizeTitleAr != null && String(o.cardOptimizeTitleAr).trim() !== ''
-      ? String(o.cardOptimizeTitleAr).trim()
-      : 'حسّن';
-  const avTitleEn =
-    o.cardAvoidTitleEn != null && String(o.cardAvoidTitleEn).trim() !== ''
-      ? String(o.cardAvoidTitleEn).trim()
-      : 'Avoid';
-  const avTitleAr =
-    o.cardAvoidTitleAr != null && String(o.cardAvoidTitleAr).trim() !== ''
-      ? String(o.cardAvoidTitleAr).trim()
-      : 'تجنّب';
-
-  const investList = isAr
-    ? Array.isArray(o.investAr) && o.investAr.length
-      ? o.investAr
-      : o.investEn || []
-    : o.investEn || [];
-  const optimizeList = isAr
-    ? Array.isArray(o.optimizeAr) && o.optimizeAr.length
-      ? o.optimizeAr
-      : o.optimizeEn || []
-    : o.optimizeEn || [];
-  const avoidList = isAr
-    ? Array.isArray(o.avoidAr) && o.avoidAr.length
-      ? o.avoidAr
-      : o.avoidEn || []
-    : o.avoidEn || [];
-
-  const cardsHtml = `
-    <div class="db-exec-grid">
-      <div class="db-exec-card db-exec-invest">
-        <div class="db-exec-card-title"><span class="en">${esc(invTitleEn)}</span><span class="ar">${esc(invTitleAr)}</span></div>
-        <ul>${investList.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      </div>
-      <div class="db-exec-card db-exec-optimize">
-        <div class="db-exec-card-title"><span class="en">${esc(optTitleEn)}</span><span class="ar">${esc(optTitleAr)}</span></div>
-        <ul>${optimizeList.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      </div>
-      <div class="db-exec-card db-exec-avoid">
-        <div class="db-exec-card-title"><span class="en">${esc(avTitleEn)}</span><span class="ar">${esc(avTitleAr)}</span></div>
-        <ul>${avoidList.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      </div>
-    </div>`;
-
-  bodyEl.innerHTML = barsHtml + cardsHtml;
 }
 
 function dbRender() {
@@ -6876,6 +6912,7 @@ function dbRender() {
   dbApplyQuestionnaireOverrides();
   dbApplyPilotAnalysisOverrides();
   dbApplyModelQualityOverrides();
+  dbRenderMeasurementModelFromQuestionnaire();
 }
 
 /* ── Simulation ── */

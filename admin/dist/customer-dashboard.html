@@ -6168,7 +6168,21 @@ function dbGetExecutiveOverrides() {
     const raw = localStorage.getItem('roshd_executive_overrides');
     if (!raw) return null;
     const o = JSON.parse(raw);
-    return o && typeof o === 'object' ? o : null;
+    if (!o || typeof o !== 'object') return null;
+    if (o.byFilter && typeof o.byFilter === 'object') {
+      const key = [
+        (document.getElementById('dbBranch')?.value || 'All Branches').trim(),
+        (document.getElementById('dbGender')?.value || 'All Genders').trim(),
+        (document.getElementById('dbService')?.value || 'All Services').trim(),
+        (document.getElementById('dbFrequency')?.value || 'All Frequencies').trim(),
+        (document.getElementById('dbAge')?.value || 'All Ages').trim(),
+      ].join(' | ');
+      const scoped = o.byFilter[key];
+      if (scoped && typeof scoped === 'object') return scoped;
+      if (o.global && typeof o.global === 'object') return o.global;
+      return null;
+    }
+    return o;
   } catch (_) {
     return null;
   }
