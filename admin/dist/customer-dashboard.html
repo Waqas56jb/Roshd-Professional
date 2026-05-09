@@ -928,56 +928,262 @@ html[data-lang="ar"] .db-breadcrumb { font-family: 'Cairo', sans-serif; }
 }
 html[data-lang="ar"] .db-period-badge { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
 
+/* ── Filter bar — minimal thin strip (same theme: db-card + gold accent) ── */
 .db-filter-bar {
-  padding: 14px 28px;
+  padding: 8px 24px 10px;
   background: var(--db-card);
   border-bottom: 1px solid var(--db-border-subtle);
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px 18px;
+  flex-shrink: 0;
+}
+
+.db-filter-bar__lead {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
   flex-shrink: 0;
-  row-gap: 10px;
 }
 
-.db-filter-label { font-size: 11px; color: var(--db-muted); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
-html[data-lang="ar"] .db-filter-label { font-family: 'Cairo', sans-serif; letter-spacing: 0; }
+.db-filter-bar__title {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  line-height: 1;
+}
+html[data-lang="ar"] .db-filter-bar__title {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+  font-size: 11px;
+}
 
-.db-select {
-  background: var(--db-surface);
-  border: 1px solid var(--db-border-subtle);
-  color: var(--db-text);
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: 'DM Sans', sans-serif;
-  cursor: pointer;
-  outline: none;
-  transition: border-color 0.2s;
+.db-filter-bar-scroll-outer {
   min-width: 0;
-  flex: 1 1 130px;
+  position: relative;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.db-filter-bar-scroll-outer::before,
+.db-filter-bar-scroll-outer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.db-filter-bar-scroll-outer.is-scrollable-start::before,
+.db-filter-bar-scroll-outer.is-scrollable-end::after {
+  opacity: 1;
+}
+.db-filter-bar-scroll-outer::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--db-card), transparent);
+}
+.db-filter-bar-scroll-outer::after {
+  right: 0;
+  background: linear-gradient(270deg, var(--db-card), transparent);
+}
+html[data-lang="ar"] .db-filter-bar-scroll-outer::before {
+  left: auto;
+  right: 0;
+  background: linear-gradient(270deg, var(--db-card), transparent);
+}
+html[data-lang="ar"] .db-filter-bar-scroll-outer::after {
+  right: auto;
+  left: 0;
+  background: linear-gradient(90deg, var(--db-card), transparent);
+}
+
+.db-filter-bar-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 12px;
+  padding: 2px 0;
   max-width: 100%;
 }
-html[data-lang="ar"] .db-select { font-family: 'Cairo', sans-serif; direction: rtl; }
-.db-select:focus { border-color: var(--gold); }
-.db-select option { background: var(--db-card); }
+
+.db-filter-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1 1 128px;
+  max-width: 200px;
+}
+
+.db-filter-chip-lbl {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.32);
+  line-height: 1.2;
+  padding-inline-start: 1px;
+}
+html[data-lang="ar"] .db-filter-chip-lbl {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+  font-size: 10px;
+}
+
+.db-filter-chip-select-wrap {
+  position: relative;
+  border-radius: 6px;
+  transition: box-shadow 0.15s ease;
+}
+.db-filter-chip-select-wrap:focus-within {
+  box-shadow: 0 0 0 1px rgba(184, 150, 46, 0.55);
+}
+
+.db-select {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: rgba(255, 255, 255, 0.03);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23a89040' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m3.5 4.5 2.5 2.5 2.5-2.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 11px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 6px 26px 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.3;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+html[data-lang="ar"] .db-select {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  background-position: left 8px center;
+  padding: 6px 10px 6px 26px;
+}
+.db-select:hover {
+  border-color: rgba(184, 150, 46, 0.22);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.db-select:focus-visible {
+  border-color: rgba(184, 150, 46, 0.45);
+}
+.db-select:active {
+  transform: none;
+}
+.db-select option { background: var(--db-card); color: var(--db-text); }
+
+.db-filter-bar__trail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.db-period-badge--filter {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: rgba(184, 150, 46, 0.08);
+  border: 1px solid rgba(184, 150, 46, 0.22);
+  color: rgba(212, 175, 55, 0.95);
+}
+html[data-lang="ar"] .db-period-badge--filter {
+  font-family: 'Cairo', sans-serif;
+  letter-spacing: 0;
+}
 
 .db-export-btn {
-  margin-inline-start: auto;
-  display: flex; align-items: center; gap: 8px;
-  background: var(--gold);
-  color: var(--navy-deep);
-  border: none;
-  padding: 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  color: var(--gold-light);
+  border: 1px solid rgba(184, 150, 46, 0.4);
+  padding: 6px 14px;
   border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   white-space: nowrap;
+  box-shadow: none;
 }
 html[data-lang="ar"] .db-export-btn { font-family: 'Cairo', sans-serif; }
-.db-export-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+.db-export-btn:hover {
+  background: rgba(184, 150, 46, 0.1);
+  border-color: rgba(184, 150, 46, 0.65);
+  color: var(--gold-light);
+}
+.db-export-btn:active {
+  background: rgba(184, 150, 46, 0.06);
+}
+
+@media (max-width: 1100px) {
+  .db-filter-bar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .db-filter-bar__trail {
+    justify-content: space-between;
+    width: 100%;
+  }
+  .db-filter-bar-scroll-outer {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(184, 150, 46, 0.25) transparent;
+  }
+  .db-filter-bar-scroll-outer::-webkit-scrollbar {
+    height: 4px;
+  }
+  .db-filter-bar-scroll-outer::-webkit-scrollbar-thumb {
+    background: rgba(184, 150, 46, 0.28);
+    border-radius: 99px;
+  }
+  .db-filter-bar-inner {
+    flex-wrap: nowrap;
+    padding: 2px 0;
+    scroll-snap-type: x proximity;
+    width: max-content;
+    max-width: none;
+    min-width: 100%;
+    box-sizing: border-box;
+  }
+  .db-filter-chip {
+    flex: 0 0 auto;
+    width: min(184px, 70vw);
+    max-width: 200px;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .db-filter-chip {
+    width: min(220px, 82vw);
+  }
+}
 
 /* ── Panels ── */
 .db-content {
@@ -3191,25 +3397,21 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .db-topbar { padding: 0 16px; height: 56px; gap: 8px; }
   .db-page-title { font-size: 16px; }
   .db-filter-bar {
-    padding: 12px 14px;
-    gap: 10px;
-    overflow-x: visible;
-    flex-wrap: wrap;
+    padding: 10px 14px 12px;
+    gap: 8px;
   }
-  .db-filter-label { display: none; }
   .db-select {
-    flex: 1 1 calc(50% - 8px);
-    min-width: 0;
     min-height: 44px;
     font-size: 16px;
-    padding: 10px 12px;
+    padding: 8px 28px 8px 12px;
+  }
+  html[data-lang="ar"] .db-select {
+    padding: 8px 12px 8px 28px;
   }
   .db-export-btn {
-    flex: 1 1 100%;
-    margin-inline-start: 0;
-    justify-content: center;
     min-height: 44px;
-    font-size: 14px;
+    padding: 10px 16px;
+    font-size: 13px;
   }
 }
 
@@ -3252,13 +3454,26 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 @media (prefers-reduced-motion: reduce) {
   .modal-overlay.open .modal { animation: none; }
   #customerDashboard.open { animation: none; }
+  .db-export-btn:hover,
+  .db-export-btn:active { transform: none; }
+  .db-select:active { transform: none; }
 }
 
 /* ── Dashboard responsive polish ── */
 /* Make filter selects shrink gracefully so they don't overflow */
 @media (max-width: 900px) {
-  .db-select { min-width: 0; font-size: 14px; padding: 9px 11px; min-height: 42px; }
-  .db-filter-bar { gap: 8px; }
+  .db-select {
+    min-width: 0;
+    font-size: 13px;
+    padding: 6px 26px 6px 10px;
+    min-height: 40px;
+  }
+  html[data-lang="ar"] .db-select {
+    padding: 6px 10px 6px 26px;
+  }
+  .db-filter-bar-inner {
+    gap: 8px 10px;
+  }
   .db-kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .db-overviewviz-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -3268,8 +3483,17 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
   .db-overviewviz-metrics { grid-template-columns: 1fr !important; }
   .db-model-grid:not(.db-model-grid--wrap) { grid-template-columns: 1fr !important; }
   .db-topbar { padding: 0 12px; height: 52px; }
-  .db-filter-bar { padding: 10px 12px; }
-  .db-select { font-size: 11px; padding: 6px 8px; }
+  .db-filter-bar {
+    padding: 8px 12px 10px;
+  }
+  .db-select {
+    font-size: 16px;
+    padding: 8px 26px 8px 10px;
+    min-height: 44px;
+  }
+  html[data-lang="ar"] .db-select {
+    padding: 8px 10px 8px 26px;
+  }
   .db-page-title { font-size: 14px; }
 }
 
@@ -3880,43 +4104,21 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
       </div>
     </div>
 
-    <!-- Global Filter Bar -->
-    <div class="db-filter-bar">
-      <span class="db-filter-label"><span class="en">Filters:</span><span class="ar">التصفية:</span></span>
-      <select class="db-select" id="dbBranch" onchange="dbRender()">
-        <option value="All Branches" data-en="All Branches" data-ar="جميع الفروع">All Branches</option>
-        <option value="Riyadh"       data-en="Riyadh"       data-ar="الرياض">Riyadh</option>
-        <option value="Jeddah"       data-en="Jeddah"       data-ar="جدة">Jeddah</option>
-        <option value="Dammam"       data-en="Dammam"       data-ar="الدمام">Dammam</option>
-      </select>
-      <select class="db-select" id="dbGender" onchange="dbRender()">
-        <option value="All Genders" data-en="All Genders" data-ar="الجنسين">All Genders</option>
-        <option value="Male"        data-en="Male"        data-ar="ذكر">Male</option>
-        <option value="Female"      data-en="Female"      data-ar="أنثى">Female</option>
-      </select>
-      <select class="db-select" id="dbService" onchange="dbRender()">
-        <option value="All Services" data-en="All Services" data-ar="جميع الخدمات">All Services</option>
-        <option value="Mechanical"   data-en="Mechanical"   data-ar="ميكانيكي">Mechanical</option>
-        <option value="Bodyshop"     data-en="Bodyshop"     data-ar="هيكل السيارة">Bodyshop</option>
-      </select>
-      <select class="db-select" id="dbFrequency" onchange="dbRender()">
-        <option value="All Frequencies" data-en="All Frequencies" data-ar="كل التكرارات">All Frequencies</option>
-        <option value="1 Visit"       data-en="1 Visit"       data-ar="زيارة واحدة">1 Visit</option>
-        <option value="2–3 Visits"    data-en="2–3 Visits"    data-ar="2–3 زيارات">2–3 Visits</option>
-        <option value="4+ Visits"     data-en="4+ Visits"     data-ar="4+ زيارات">4+ Visits</option>
-      </select>
-      <select class="db-select" id="dbAge" onchange="dbRender()">
-        <option value="All Ages" data-en="All Ages" data-ar="كل الأعمار">All Ages</option>
-        <option value="&lt;25"   data-en="&lt;25"   data-ar="أقل من 25">&lt;25</option>
-        <option value="25–34"   data-en="25–34"   data-ar="25–34">25–34</option>
-        <option value="35–44"   data-en="35–44"   data-ar="35–44">35–44</option>
-        <option value="45+"     data-en="45+"     data-ar="45+">45+</option>
-      </select>
-      <span class="db-filter-label" style="margin-inline-start:8px;">Q2 2026</span>
-      <button class="db-export-btn" onclick="window.print()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <span class="en">Export</span><span class="ar">تصدير</span>
-      </button>
+    <!-- Global Filter Bar (8 configurable filters — built in JS from roshd_filter_bar_config) -->
+    <div class="db-filter-bar" aria-label="Segment filters">
+      <div class="db-filter-bar__lead">
+        <span class="db-filter-bar__title"><span class="en">Filters</span><span class="ar">التصفية</span></span>
+      </div>
+      <div class="db-filter-bar-scroll-outer">
+        <div id="dbFilterBarInner" class="db-filter-bar-inner"></div>
+      </div>
+      <div class="db-filter-bar__trail">
+        <span class="db-period-badge db-period-badge--filter" title="Reporting period"><span class="en">Q2 2026</span><span class="ar">٢٠٢٦ Q2</span></span>
+        <button type="button" class="db-export-btn" onclick="window.print()">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span class="en">Export</span><span class="ar">تصدير</span>
+        </button>
+      </div>
     </div>
 
     <!-- Scrollable Content -->
@@ -4131,7 +4333,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
               <span class="ar"><b>ملاحظة:</b> أدناه مخطط مدمج يناسب الوضع الداكن. لاستخدام صورتك، احفظها باسم <code style="opacity:.85">mode.png</code> في جذر الموقع لربطها لاحقًا بجانب هذا القسم.</span>
             </p>
             <div class="db-mq-measure-split">
-              <ul class="db-mq-construct-list">
+              <ul class="db-mq-construct-list" id="dbMqConstructList">
                 <li class="db-mq-ant db-mq-ant--quality">
                   <span class="db-mq-ico" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#93c5fd" stroke-width="1.75"/></svg>
@@ -4184,7 +4386,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                 </li>
               </ul>
               <div class="db-mq-diagram-panel">
-                <div class="db-mq-svg-wrap" dir="ltr">
+                <div class="db-mq-svg-wrap" dir="ltr" id="dbMqSvgWrap">
                   <svg class="db-mq-model-svg" viewBox="0 0 548 392" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <defs>
                       <marker id="dbMqMb" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto"><polygon points="0 0,9 4.5,0 9" fill="#60a5fa"/></marker>
@@ -4222,7 +4424,7 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
                     <path d="M 184 339 L 276 339 L 338 232" stroke="#a78bfa" stroke-width="1.85" fill="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8" marker-end="url(#dbMqMv)"/>
                   </svg>
                 </div>
-                <p class="db-mq-diagram-caption">
+                <p class="db-mq-diagram-caption" id="dbMqDiagramCaption">
                   <span class="en">Conceptual drivers → Customer Experience Score (19 items across all blocks pre-pilot).</span>
                   <span class="ar">محركات مفاهيمية → درجة تجربة العميل (١٩ بندًا إجمالًا قبل التجربة).</span>
                 </p>
@@ -4674,6 +4876,11 @@ function setLanguage(lang) {
   // Re-render dashboard if open
   if (document.getElementById('customerDashboard').classList.contains('open')) {
     dbRender();
+    try {
+      const fb = document.querySelector('.db-filter-bar-scroll-outer');
+      if (fb && typeof dbUpdateFilterBarScrollFade === 'function')
+        requestAnimationFrame(() => dbUpdateFilterBarScrollFade(fb));
+    } catch (_) {}
   }
 }
 
@@ -4964,15 +5171,265 @@ const DB_SVC_LIST = ["Mechanical", "Bodyshop"];
 const DB_FREQ_LIST = ["1 Visit", "2–3 Visits", "4+ Visits"];
 const DB_AGE_LIST = ["<25", "25–34", "35–44", "45+"];
 
-/** @type {Array<[string,string,string,string,string,string,number,number,number,number,number,string]>} */
-const DB_CUSTOMERS = [];
-(function dbGenerateCustomers() {
-  /** 100× each branch — shuffled independently of row index — so Branch filter never collides structurally with demographic slots (e.g. Riyadh≠0 while Jeddah>0 under same sidebar filters). */
-  const branchPool = [];
-  for (let zi = 0; zi < DB_BR_LIST.length; zi++) {
-    const b = DB_BR_LIST[zi];
-    for (let z = 0; z < DB_SAMPLE_TOTAL / DB_BR_LIST.length; z++) branchPool.push(b);
+/** Must match admin `FILTER_BAR_STORAGE_KEY` */
+const FILTER_BAR_STORAGE_KEY = 'roshd_filter_bar_config';
+let __dbgFilterCfgSig = '';
+
+function dbDefaultFilterBarConfig() {
+  return {
+    filters: [
+      { key: 'branch', labelEn: 'Branch', labelAr: 'الفرع', allValue: 'All Branches', allLabelEn: 'All Branches', allLabelAr: 'جميع الفروع', options: [{ value: 'Riyadh', labelEn: 'Riyadh', labelAr: 'الرياض' }, { value: 'Jeddah', labelEn: 'Jeddah', labelAr: 'جدة' }, { value: 'Dammam', labelEn: 'Dammam', labelAr: 'الدمام' }] },
+      { key: 'gender', labelEn: 'Gender', labelAr: 'الجنس', allValue: 'All Genders', allLabelEn: 'All Genders', allLabelAr: 'الجنسين', options: [{ value: 'Male', labelEn: 'Male', labelAr: 'ذكر' }, { value: 'Female', labelEn: 'Female', labelAr: 'أنثى' }] },
+      { key: 'service', labelEn: 'Service', labelAr: 'الخدمة', allValue: 'All Services', allLabelEn: 'All Services', allLabelAr: 'جميع الخدمات', options: [{ value: 'Mechanical', labelEn: 'Mechanical', labelAr: 'ميكانيكي' }, { value: 'Bodyshop', labelEn: 'Bodyshop', labelAr: 'هيكل السيارة' }] },
+      { key: 'frequency', labelEn: 'Frequency', labelAr: 'تكرار الزيارات', allValue: 'All Frequencies', allLabelEn: 'All Frequencies', allLabelAr: 'كل التكرارات', options: [{ value: '1 Visit', labelEn: '1 Visit', labelAr: 'زيارة واحدة' }, { value: '2–3 Visits', labelEn: '2–3 Visits', labelAr: '2–3 زيارات' }, { value: '4+ Visits', labelEn: '4+ Visits', labelAr: '4+ زيارات' }] },
+      { key: 'age', labelEn: 'Age', labelAr: 'العمر', allValue: 'All Ages', allLabelEn: 'All Ages', allLabelAr: 'كل الأعمار', options: [{ value: '<25', labelEn: '<25', labelAr: 'أقل من 25' }, { value: '25–34', labelEn: '25–34', labelAr: '25–34' }, { value: '35–44', labelEn: '35–44', labelAr: '35–44' }, { value: '45+', labelEn: '45+', labelAr: '45+' }] },
+      { key: 'extra1', labelEn: 'Channel', labelAr: 'القناة', allValue: '__ALL__', allLabelEn: 'All channels', allLabelAr: 'كل القنوات', options: [{ value: 'Walk-in', labelEn: 'Walk-in', labelAr: 'حضوري' }, { value: 'App', labelEn: 'App / Online', labelAr: 'التطبيق' }, { value: 'Phone', labelEn: 'Phone', labelAr: 'هاتف' }] },
+      { key: 'extra2', labelEn: 'Customer type', labelAr: 'نوع العميل', allValue: '__ALL__', allLabelEn: 'All types', allLabelAr: 'كل الأنواع', options: [{ value: 'New', labelEn: 'New', labelAr: 'جديد' }, { value: 'Returning', labelEn: 'Returning', labelAr: 'عائد' }] },
+      { key: 'extra3', labelEn: 'Day part', labelAr: 'فترة اليوم', allValue: '__ALL__', allLabelEn: 'All', allLabelAr: 'الكل', options: [{ value: 'Weekday', labelEn: 'Weekday', labelAr: 'يوم عمل' }, { value: 'Weekend', labelEn: 'Weekend', labelAr: 'عطلة' }] }
+    ]
+  };
+}
+
+function dbDeepCloneJson(x) {
+  try { return JSON.parse(JSON.stringify(x)); } catch (_) { return dbDefaultFilterBarConfig(); }
+}
+
+function dbNormalizeFilterBarConfig(parsed) {
+  const def = dbDefaultFilterBarConfig();
+  if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.filters)) return def;
+  const out = { filters: [] };
+  for (let i = 0; i < 8; i++) {
+    const d = dbDeepCloneJson(def).filters[i];
+    const s = parsed.filters[i];
+    if (!s || typeof s !== 'object') {
+      out.filters.push(d);
+      continue;
+    }
+    const merged = {
+      key: d.key,
+      labelEn: String(s.labelEn || d.labelEn),
+      labelAr: String(s.labelAr || d.labelAr),
+      allValue: String(s.allValue != null && s.allValue !== '' ? s.allValue : d.allValue),
+      allLabelEn: String(s.allLabelEn || d.allLabelEn),
+      allLabelAr: String(s.allLabelAr || d.allLabelAr),
+      options: dbDeepCloneJson(d.options)
+    };
+    const rawOpts = Array.isArray(s.options) ? s.options : [];
+    const seen = new Set();
+    const opts = [];
+    rawOpts.forEach((ro) => {
+      const v = String(ro && ro.value != null ? ro.value : '').trim();
+      if (!v || seen.has(v)) return;
+      seen.add(v);
+      opts.push({
+        value: v,
+        labelEn: String(ro.labelEn || v),
+        labelAr: String(ro.labelAr || ro.labelEn || v)
+      });
+    });
+    if (opts.length) merged.options = opts;
+    out.filters.push(merged);
   }
+  return out;
+}
+
+function dbGetFilterBarConfig() {
+  try {
+    const raw = localStorage.getItem(FILTER_BAR_STORAGE_KEY);
+    if (raw) return dbNormalizeFilterBarConfig(JSON.parse(raw));
+  } catch (_) {}
+  return dbDefaultFilterBarConfig();
+}
+
+function dbFilterConfigFingerprint() {
+  try { return JSON.stringify(dbGetFilterBarConfig().filters); } catch (_) { return ''; }
+}
+
+/** Column index for customer row: dims 1–5 at 1–5, extras at 12–14 (risk stays at 11). */
+function dbFilterDatasetCol(filterIndex) {
+  if (filterIndex < 5) return 1 + filterIndex;
+  return 12 + (filterIndex - 5);
+}
+
+function dbFilId(kind, i) {
+  if (kind === 'exec') return 'execFil' + i;
+  if (kind === 'cx') return 'cxFil' + i;
+  return 'dbFil' + i;
+}
+
+function dbGetFilValue(kind, i) {
+  const cfg = dbGetFilterBarConfig();
+  const f = cfg.filters[i];
+  if (!f) return '';
+  const el = document.getElementById(dbFilId(kind, i));
+  const allV = String(f.allValue ?? '').trim();
+  const raw = el ? String(el.value).trim() : allV;
+  if (raw === '') return allV;
+  return raw;
+}
+
+function dbFilValueByKey(key, fallbackWhenAll) {
+  const cfg = dbGetFilterBarConfig();
+  const ix = cfg.filters.findIndex((x) => x.key === key);
+  if (ix < 0) return fallbackWhenAll;
+  const f = cfg.filters[ix];
+  const v = dbGetFilValue('db', ix);
+  const allV = String(f.allValue ?? '').trim();
+  if (!v || v === allV) return fallbackWhenAll;
+  return v;
+}
+
+function dbFilMatchesCustomerRow(cust, filterIndex, selectedRaw) {
+  const cfg = dbGetFilterBarConfig();
+  const f = cfg.filters[filterIndex];
+  if (!f) return true;
+  const col = dbFilterDatasetCol(filterIndex);
+  const allV = String(f.allValue ?? '').trim();
+  const sel = String(selectedRaw ?? '').trim();
+  if (sel === '' || sel === allV) return true;
+  return String(cust[col] ?? '').trim() === sel;
+}
+
+function dbGetAllFilValues(kind) {
+  const cfg = dbGetFilterBarConfig();
+  const out = [];
+  for (let i = 0; i < 8; i++) out.push(dbGetFilValue(kind, i));
+  return out;
+}
+
+function dbPersistRoshdFilters() {
+  const cfg = dbGetFilterBarConfig();
+  const o = {};
+  cfg.filters.forEach((f, i) => {
+    const el = document.getElementById(dbFilId('db', i));
+    o[f.key] = el ? String(el.value) : String(f.allValue ?? '');
+  });
+  try {
+    localStorage.setItem('roshd_filters', JSON.stringify(o));
+  } catch (_) {}
+}
+
+function dbRestoreRoshdFilters(obj) {
+  if (!obj || typeof obj !== 'object') return;
+  const cfg = dbGetFilterBarConfig();
+  const legacy = {
+    branch: obj.branch,
+    gender: obj.gender,
+    service: obj.service,
+    frequency: obj.frequency,
+    age: obj.age
+  };
+  cfg.filters.forEach((f, i) => {
+    const el = document.getElementById(dbFilId('db', i));
+    if (!el) return;
+    let v = obj[f.key];
+    if (v == null || v === '') v = legacy[f.key];
+    if (v == null || v === '') return;
+    const has = Array.from(el.options).some((o) => String(o.value) === String(v));
+    if (has) el.value = String(v);
+  });
+}
+
+function dbSyncFilterBarAfterExternalConfigChange() {
+  try {
+    __dbgFilterCfgSig = '';
+    dbBuildCustomerFilterBar();
+    dbRestoreRoshdFilters(JSON.parse(localStorage.getItem('roshd_filters') || 'null'));
+    dbEnsureCustomersBuiltForFilters();
+    if (typeof dbRender === 'function') dbRender();
+  } catch (_) {}
+}
+
+function dbEnsureCustomersBuiltForFilters() {
+  const sig = dbFilterConfigFingerprint();
+  if (__dbgFilterCfgSig === sig && DB_CUSTOMERS.length) return;
+  __dbgFilterCfgSig = sig;
+  dbRegenerateCustomers();
+}
+
+function dbEscAttr(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
+function dbUpdateFilterBarScrollFade(outer) {
+  if (!outer) return;
+  const max = outer.scrollWidth - outer.clientWidth;
+  if (max <= 1) {
+    outer.classList.remove('is-scrollable-start', 'is-scrollable-end');
+    return;
+  }
+  const tol = 4;
+  const sl = outer.scrollLeft;
+  outer.classList.toggle('is-scrollable-start', sl > tol);
+  outer.classList.toggle('is-scrollable-end', sl < max - tol);
+}
+
+let __dbFilterScrollBound = false;
+function dbBindFilterBarScrollFade() {
+  const outer = document.querySelector('.db-filter-bar-scroll-outer');
+  if (!outer) return;
+  const upd = () => {
+    requestAnimationFrame(() => dbUpdateFilterBarScrollFade(outer));
+  };
+  upd();
+  if (__dbFilterScrollBound) return;
+  __dbFilterScrollBound = true;
+  outer.addEventListener('scroll', upd, { passive: true });
+  window.addEventListener('resize', upd);
+}
+
+function dbBuildCustomerFilterBar() {
+  const host = document.getElementById('dbFilterBarInner');
+  if (!host) return;
+  const cfg = dbGetFilterBarConfig();
+  host.innerHTML = cfg.filters.map((f, i) => {
+    const fid = dbFilId('db', i);
+    const lbl = `<label class="db-filter-chip-lbl" for="${fid}"><span class="en">${dbEscAttr(f.labelEn)}</span><span class="ar">${dbEscAttr(f.labelAr)}</span></label>`;
+    const optAll = `<option value="${dbEscAttr(f.allValue)}" data-en="${dbEscAttr(f.allLabelEn)}" data-ar="${dbEscAttr(f.allLabelAr)}">${dbEscAttr(f.allLabelEn)}</option>`;
+    const opts = (f.options || []).map(
+      (o) =>
+        `<option value="${dbEscAttr(o.value)}" data-en="${dbEscAttr(o.labelEn)}" data-ar="${dbEscAttr(o.labelAr)}">${dbEscAttr(o.labelEn)}</option>`
+    ).join('');
+    return `<div class="db-filter-chip">${lbl}<div class="db-filter-chip-select-wrap"><select class="db-select" id="${fid}" aria-label="${dbEscAttr(f.labelEn)}" onchange="dbRender()">${optAll}${opts}</select></div></div>`;
+  }).join('');
+  document.querySelectorAll('#dbFilterBarInner select option[data-en]').forEach((opt) => {
+    const en = opt.dataset.en;
+    const ar = opt.dataset.ar;
+    opt.textContent = document.documentElement.getAttribute('data-lang') === 'ar' ? (ar || en) : en;
+  });
+  dbBindFilterBarScrollFade();
+}
+
+/** @type {Array<any>} Customer rows: … + risk @11, extra1–3 @12–14 */
+const DB_CUSTOMERS = [];
+
+function dbRegenerateCustomers() {
+  DB_CUSTOMERS.length = 0;
+  const cfg = dbGetFilterBarConfig();
+
+  function optVals(ix) {
+    const o = (cfg.filters[ix] && cfg.filters[ix].options) || [];
+    const out = o.map((x) => String(x.value).trim()).filter(Boolean);
+    return out.length ? out : ['—'];
+  }
+
+  function pick(arr, seed) {
+    if (!arr.length) return '';
+    const u = (typeof seed === 'number' ? seed >>> 0 : 1) >>> 0;
+    return arr[(u * 7919 + 104729 + (seed || 1) * 993) % arr.length];
+  }
+
+  let branchChoicesFinal = optVals(0).filter((b) => DB_DATA[b]);
+  if (!branchChoicesFinal.length) branchChoicesFinal = DB_BR_LIST.slice();
+
+  const branchPool = [];
+  for (let zi = 0; zi < branchChoicesFinal.length; zi++) {
+    const b = branchChoicesFinal[zi];
+    const nEach = DB_SAMPLE_TOTAL / branchChoicesFinal.length;
+    for (let z = 0; z < nEach; z++) branchPool.push(b);
+  }
+  while (branchPool.length < DB_SAMPLE_TOTAL)
+    branchPool.push(branchChoicesFinal[branchPool.length % branchChoicesFinal.length]);
   for (let k = branchPool.length - 1; k > 0; k--) {
     const jj = ((k * 7919 + 104729 + k * k * 993) >>> 0) % (k + 1);
     const t = branchPool[k];
@@ -4981,26 +5438,58 @@ const DB_CUSTOMERS = [];
   }
 
   for (let i = 1; i <= DB_SAMPLE_TOTAL; i++) {
+    const seed = i * 31 + ((i ^ 997) >>> 0);
     let branch = branchPool[i - 1];
-    let gender = (i * 7) % 10 < 6 ? "Male" : "Female";
-    let service = (i * 11) % 5 < 3 ? "Mechanical" : "Bodyshop";
-    let frequency = (i * 13) % 10 < 3 ? "1 Visit" : (i * 13) % 10 < 8 ? "2–3 Visits" : "4+ Visits";
-    let ageBand = (i * 17) % 12;
-    let age = ageBand < 2 ? "<25" : ageBand < 6 ? "25–34" : ageBand < 10 ? "35–44" : "45+";
-    if (branch === "Riyadh" && i % 4 === 0) service = "Bodyshop";
-    if (branch === "Dammam" && i % 5 === 0) frequency = "4+ Visits";
-    let q = branch === "Riyadh" ? 3.7 : branch === "Jeddah" ? 3.3 : 3.1;
-    let c = branch === "Jeddah" ? 2.8 : 3.2;
-    let p = branch === "Dammam" ? 2.5 : 2.9;
+
+    let gender = pick(optVals(1), seed ^ 3);
+    if (!gender || gender === '—') gender = (i * 7) % 10 < 6 ? 'Male' : 'Female';
+    let service = pick(optVals(2), seed ^ 7);
+    if (!service || service === '—') service = (i * 11) % 5 < 3 ? 'Mechanical' : 'Bodyshop';
+    let frequency = pick(optVals(3), seed ^ 13);
+    if (!frequency || frequency === '—') frequency = (i * 13) % 10 < 3 ? '1 Visit' : (i * 13) % 10 < 8 ? '2–3 Visits' : '4+ Visits';
+    let age = pick(optVals(4), seed ^ 21);
+    if (!age || age === '—') {
+      let ageBand = (i * 17) % 12;
+      age = ageBand < 2 ? '<25' : ageBand < 6 ? '25–34' : ageBand < 10 ? '35–44' : '45+';
+    }
+    let ex1 = pick(optVals(5), seed ^ 103);
+    let ex2 = pick(optVals(6), seed ^ 107);
+    let ex3 = pick(optVals(7), seed ^ 109);
+
+    if (branch === 'Riyadh' && i % 4 === 0) service = 'Bodyshop';
+    if (branch === 'Dammam' && i % 5 === 0) frequency = '4+ Visits';
+
+    let q = branch === 'Riyadh' ? 3.7 : branch === 'Jeddah' ? 3.3 : 3.1;
+    let c = branch === 'Jeddah' ? 2.8 : 3.2;
+    let p = branch === 'Dammam' ? 2.5 : 2.9;
     let s = 1.2 + (i % 4) * 0.15;
-    if (frequency === "4+ Visits") q += 0.25;
-    if (age === "<25") p -= 0.25;
-    if (gender === "Female") c -= 0.1;
+    if (frequency === '4+ Visits') q += 0.25;
+    if (age === '<25') p -= 0.25;
+    if (gender === 'Female') c -= 0.1;
     const sat = Math.max(1, Math.min(5, q * 0.38 + c * 0.27 + p * 0.22 + s * 0.05 + 1.0));
-    const risk = sat < 3 ? "High" : sat < 3.6 ? "Medium" : "Low";
-    DB_CUSTOMERS.push(["C-" + String(i).padStart(3, "0"), branch, gender, service, frequency, age, +q.toFixed(1), +c.toFixed(1), +p.toFixed(1), +s.toFixed(1), +sat.toFixed(1), risk]);
+    const risk = sat < 3 ? 'High' : sat < 3.6 ? 'Medium' : 'Low';
+
+    DB_CUSTOMERS.push([
+      'C-' + String(i).padStart(3, '0'),
+      branch,
+      gender,
+      service,
+      frequency,
+      age,
+      +q.toFixed(1),
+      +c.toFixed(1),
+      +p.toFixed(1),
+      +s.toFixed(1),
+      +sat.toFixed(1),
+      risk,
+      ex1 || '—',
+      ex2 || '—',
+      ex3 || '—'
+    ]);
   }
-})();
+}
+
+dbRegenerateCustomers();
 
 function dbDedupeDrivers(arr) {
   const seen = new Set();
@@ -5012,33 +5501,17 @@ function dbDedupeDrivers(arr) {
 }
 
 function dbFilteredCustomers() {
-  const branch = (document.getElementById("dbBranch")?.value || "All Branches").trim();
-  const gender = (document.getElementById("dbGender")?.value || "All Genders").trim();
-  const service = (document.getElementById("dbService")?.value || "All Services").trim();
-  const frequency = (document.getElementById("dbFrequency")?.value || "All Frequencies").trim();
-  const age = (document.getElementById("dbAge")?.value || "All Ages").trim();
-  return DB_CUSTOMERS.filter(
-    c =>
-      (branch === "All Branches" || c[1] === branch) &&
-      (gender === "All Genders" || c[2] === gender) &&
-      (service === "All Services" || c[3] === service) &&
-      (frequency === "All Frequencies" || c[4] === frequency) &&
-      (age === "All Ages" || c[5] === age)
-  );
+  dbEnsureCustomersBuiltForFilters();
+  const vals = dbGetAllFilValues('db');
+  return DB_CUSTOMERS.filter((c) => vals.every((v, i) => dbFilMatchesCustomerRow(c, i, v)));
 }
 
 /** Benchmark for comparison charts: same demographics as toolbar, branches pooled (ignores Branch filter). */
 function dbFilteredCustomersBenchSameDemo() {
-  const gender = (document.getElementById("dbGender")?.value || "All Genders").trim();
-  const service = (document.getElementById("dbService")?.value || "All Services").trim();
-  const frequency = (document.getElementById("dbFrequency")?.value || "All Frequencies").trim();
-  const age = (document.getElementById("dbAge")?.value || "All Ages").trim();
-  return DB_CUSTOMERS.filter(
-    c =>
-      (gender === "All Genders" || c[2] === gender) &&
-      (service === "All Services" || c[3] === service) &&
-      (frequency === "All Frequencies" || c[4] === frequency) &&
-      (age === "All Ages" || c[5] === age)
+  dbEnsureCustomersBuiltForFilters();
+  const vals = dbGetAllFilValues('db');
+  return DB_CUSTOMERS.filter((c) =>
+    vals.every((v, i) => (i === 0 ? true : dbFilMatchesCustomerRow(c, i, v)))
   );
 }
 
@@ -5209,7 +5682,7 @@ function dbRenderCustomerPatterns(fc) {
   if (titleEl) titleEl.innerHTML = `<span class="en">${esc(cpS(O, 'titleEn', 'Customer Pattern View'))}</span><span class="ar">${esc(cpS(O, 'titleAr', 'عرض أنماط العملاء'))}</span>`;
   if (subEl) subEl.innerHTML = `<span class="en">${esc(cpS(O, 'subEn', 'Distribution charts respect Branch and all demographic filters in the toolbar'))}</span><span class="ar">${esc(cpS(O, 'subAr', 'مخططات التوزيع تلتزم بمرشّح الفرع وكل مرشّحات الديموغرافيا في شريط الأدوات'))}</span>`;
 
-  const branchSel = (document.getElementById('dbBranch')?.value || 'All Branches').trim();
+  const branchSel = dbFilValueByKey('branch', 'All Branches');
   const BR_AR = { Riyadh: 'الرياض', Jeddah: 'جدة', Dammam: 'الدمام' };
   const brEn = branchSel === 'All Branches' ? 'All branches' : branchSel;
   const brAr = branchSel === 'All Branches' ? 'جميع الفروع' : (BR_AR[branchSel] || branchSel);
@@ -5391,22 +5864,11 @@ function showDashboard(user) {
   const avatarEl = document.getElementById('dbAvatar');
   if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
 
-  // Restore saved filter selections
+  dbBuildCustomerFilterBar();
   try {
-    const filters = JSON.parse(localStorage.getItem('roshd_filters') || 'null');
-    if (filters) {
-      const branchEl  = document.getElementById('dbBranch');
-      const genderEl  = document.getElementById('dbGender');
-      const serviceEl = document.getElementById('dbService');
-      if (branchEl  && filters.branch)  branchEl.value  = filters.branch;
-      if (genderEl  && filters.gender)  genderEl.value  = filters.gender;
-      if (serviceEl && filters.service) serviceEl.value = filters.service;
-      const freqEl = document.getElementById("dbFrequency");
-      const ageEl = document.getElementById("dbAge");
-      if (freqEl && filters.frequency) freqEl.value = filters.frequency;
-      if (ageEl && filters.age) ageEl.value = filters.age;
-    }
-  } catch(_) {}
+    dbRestoreRoshdFilters(JSON.parse(localStorage.getItem('roshd_filters') || 'null'));
+  } catch (_) {}
+  dbEnsureCustomersBuiltForFilters();
 
   // Seed simulation levers from each driver's avg (top 4 only); dbRenderSimulation does the same if missing
   const d = dbGetData();
@@ -5444,11 +5906,11 @@ function hideDashboard() {
 
 /* ── Dashboard: Get Data ── */
 function dbGetData() {
-  const branch = (document.getElementById("dbBranch")?.value || "All Branches").trim();
-  const gender = (document.getElementById("dbGender")?.value || "All Genders").trim();
-  const service = (document.getElementById("dbService")?.value || "All Services").trim();
-  const freq = (document.getElementById("dbFrequency")?.value || "All Frequencies").trim();
-  const ageSel = (document.getElementById("dbAge")?.value || "All Ages").trim();
+  const branch = dbFilValueByKey("branch", "All Branches");
+  const gender = dbFilValueByKey("gender", "All Genders");
+  const service = dbFilValueByKey("service", "All Services");
+  const freq = dbFilValueByKey("frequency", "All Frequencies");
+  const ageSel = dbFilValueByKey("age", "All Ages");
 
   let d = JSON.parse(JSON.stringify(DB_DATA[branch] || DB_DATA["All Branches"]));
 
@@ -6168,21 +6630,7 @@ function dbGetExecutiveOverrides() {
     const raw = localStorage.getItem('roshd_executive_overrides');
     if (!raw) return null;
     const o = JSON.parse(raw);
-    if (!o || typeof o !== 'object') return null;
-    if (o.byFilter && typeof o.byFilter === 'object') {
-      const key = [
-        (document.getElementById('dbBranch')?.value || 'All Branches').trim(),
-        (document.getElementById('dbGender')?.value || 'All Genders').trim(),
-        (document.getElementById('dbService')?.value || 'All Services').trim(),
-        (document.getElementById('dbFrequency')?.value || 'All Frequencies').trim(),
-        (document.getElementById('dbAge')?.value || 'All Ages').trim(),
-      ].join(' | ');
-      const scoped = o.byFilter[key];
-      if (scoped && typeof scoped === 'object') return scoped;
-      if (o.global && typeof o.global === 'object') return o.global;
-      return null;
-    }
-    return o;
+    return o && typeof o === 'object' ? o : null;
   } catch (_) {
     return null;
   }
@@ -6222,6 +6670,17 @@ const PILOT_ANALYSIS_OVERRIDES_KEY = 'roshd_pilot_analysis_overrides';
 let dbPilotAnalysisDefaultInnerHtml = null;
 const MODEL_QUALITY_OVERRIDES_KEY = 'roshd_model_quality_overrides';
 let dbModelQualityDefaultInnerHtml = null;
+
+function dbGetModelQualityOverrides() {
+  try {
+    const raw = localStorage.getItem(MODEL_QUALITY_OVERRIDES_KEY);
+    if (!raw) return null;
+    const o = JSON.parse(raw);
+    return o && typeof o === 'object' ? o : null;
+  } catch (_) {
+    return null;
+  }
+}
 
 function dbGetQuestionnaireOverrides() {
   try {
@@ -6279,6 +6738,143 @@ function dbApplyQuestionnaireOverrides() {
   }
 }
 
+function dbExtractQuestionnaireSectionsFromPanel() {
+  const panel = document.getElementById('db-panel-questionnaire');
+  if (!panel) return [];
+  const out = [];
+  panel.querySelectorAll('.db-q-items-inner .db-q-section').forEach((sec) => {
+    const topicEn = (sec.querySelector('.db-q-section-head .en')?.textContent || '').trim();
+    const topicAr = (sec.querySelector('.db-q-section-head .ar')?.textContent || '').trim();
+    const qCount = sec.querySelectorAll('.db-q-lines > li').length;
+    if (!topicEn && !topicAr) return;
+    out.push({
+      topicEn: topicEn || topicAr || '—',
+      topicAr: topicAr || topicEn || '—',
+      qCount: qCount > 0 ? qCount : 1,
+    });
+  });
+  return out;
+}
+
+function dbMeasurementColor(idx) {
+  const palette = ['#60a5fa', '#34d399', '#eab308', '#a78bfa', '#f97316', '#22d3ee', '#f43f5e', '#84cc16'];
+  return palette[idx % palette.length];
+}
+
+function dbRenderMeasurementModelFromQuestionnaire() {
+  const listEl = document.getElementById('dbMqConstructList');
+  const svgWrap = document.getElementById('dbMqSvgWrap');
+  const capEl = document.getElementById('dbMqDiagramCaption');
+  if (!listEl || !svgWrap || !capEl) return;
+
+  const mqOverrides = dbGetModelQualityOverrides();
+  const mqRows = Array.isArray(mqOverrides && mqOverrides.flowBlocks)
+    ? mqOverrides.flowBlocks
+        .slice(0, 8)
+        .map((b) => ({
+          topicEn: String((b && b.nameEn) || '').trim(),
+          topicAr: String((b && b.nameAr) || '').trim(),
+          descEn: String((b && b.descEn) || '').trim(),
+          descAr: String((b && b.descAr) || '').trim(),
+          qCount: Math.max(1, Number.parseInt(String((b && b.qCount) || 1), 10) || 1),
+        }))
+        .filter((b) => b.topicEn || b.topicAr)
+    : [];
+
+  const allSections = dbExtractQuestionnaireSectionsFromPanel();
+  const antecedents = allSections.filter((s) => {
+    const t = `${s.topicEn} ${s.topicAr}`.toLowerCase();
+    return !(t.includes('customer experience score') || t.includes('درجة تجربة العميل') || t.includes('cx score'));
+  });
+  const outcome = allSections.find((s) => {
+    const t = `${s.topicEn} ${s.topicAr}`.toLowerCase();
+    return t.includes('customer experience score') || t.includes('درجة تجربة العميل') || t.includes('cx score');
+  });
+
+  const rows = (mqRows.length ? mqRows : antecedents).slice(0, 8);
+  if (!rows.length) return;
+  const outcomeRow = outcome || { topicEn: 'Customer Experience Score', topicAr: 'درجة تجربة العميل', qCount: 3 };
+  const totalItems = rows.reduce((a, b) => a + (Number(b.qCount) || 0), 0) + (Number(outcomeRow.qCount) || 0);
+
+  listEl.innerHTML = rows
+    .map((r, i) => {
+      const c = dbMeasurementColor(i);
+      return `<li class="db-mq-ant" style="border-color:${dbExecHtmlEscape(c)}66;background:color-mix(in srgb, ${dbExecHtmlEscape(c)} 12%, transparent)">
+        <span class="db-mq-ico" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="${dbExecHtmlEscape(c)}" stroke-width="1.75"/></svg>
+        </span>
+        <div class="db-mq-ant-text">
+          <strong><span class="en">${dbExecHtmlEscape(r.topicEn || r.topicAr || '—')}</span><span class="ar">${dbExecHtmlEscape(r.topicAr || r.topicEn || '—')}</span></strong>
+          <small><span class="en">${dbExecHtmlEscape(r.descEn || 'Block defined in Model Quality editor')}</span><span class="ar">${dbExecHtmlEscape(r.descAr || 'كتلة معرفة في محرر جودة النموذج')}</span></small>
+        </div>
+        <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">${Math.max(1, Number(r.qCount) || 1)}</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+      </li>`;
+    })
+    .join('') +
+    `<li class="db-mq-ant db-mq-ant--cx">
+      <span class="db-mq-ico" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#d4af55" stroke-width="1.75"/><circle cx="12" cy="7" r="4" stroke="#d4af55" stroke-width="1.75"/></svg>
+      </span>
+      <div class="db-mq-ant-text">
+        <strong><span class="en">${dbExecHtmlEscape(outcomeRow.topicEn)}</span><span class="ar">${dbExecHtmlEscape(outcomeRow.topicAr)}</span></strong>
+        <small><span class="en">Reflective latent · OS block</span><span class="ar">كتلة انعكاسية · OS</span></small>
+      </div>
+      <span class="db-mq-chip db-mq-chip-lg"><span class="db-mq-qty">${Math.max(1, Number(outcomeRow.qCount) || 1)}</span><span class="db-mq-q-note"><span class="en">Qs</span><span class="ar">أسئلة</span></span></span>
+    </li>`;
+
+  const n = rows.length;
+  const step = 68;
+  const topPad = 20;
+  const h = Math.max(260, topPad * 2 + (n - 1) * step + 50);
+  const rightBoxY = Math.max(24, (h - 130) / 2);
+  const rightJoinStart = rightBoxY + 28;
+  const rightJoinEnd = rightBoxY + 102;
+
+  const nodes = rows
+    .map((r, i) => {
+      const y = topPad + i * step;
+      const c = dbMeasurementColor(i);
+      const txtY = y + 23;
+      const subY = y + 40;
+      return `
+        <rect x="18" y="${y}" width="176" height="50" rx="12" stroke="${c}99" stroke-width="1.5" fill="${c}17"/>
+        <text x="106" y="${txtY}" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-size="12.5" font-weight="700">${dbExecHtmlEscape(r.topicEn)}</text>
+        <text x="106" y="${subY}" text-anchor="middle" fill="${c}" font-size="10.5" font-weight="700">× ${Math.max(1, Number(r.qCount) || 1)} questions</text>
+      `;
+    })
+    .join('');
+
+  const linkMarkers = rows
+    .map((_, i) => {
+      const c = dbMeasurementColor(i);
+      const marker = `dbMqDynArr${i}`;
+      return `<marker id="${marker}" markerWidth="9" markerHeight="9" refX="6" refY="4.5" orient="auto"><polygon points="0 0,9 4.5,0 9" fill="${c}"/></marker>`;
+    })
+    .join('');
+
+  const links = rows
+    .map((_, i) => {
+      const y = topPad + i * step + 25;
+      const targetY = rightJoinStart + ((rightJoinEnd - rightJoinStart) * (i + 1)) / (n + 1);
+      const c = dbMeasurementColor(i);
+      const marker = `dbMqDynArr${i}`;
+      return `<path d="M 194 ${y} L 282 ${y} L 338 ${targetY}" stroke="${c}" stroke-width="1.8" fill="none" marker-end="url(#${marker})"/>`;
+    })
+    .join('');
+
+  svgWrap.innerHTML = `<svg class="db-mq-model-svg" viewBox="0 0 548 ${h}" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs>${linkMarkers}</defs>
+    ${nodes}
+    ${links}
+    <rect x="338" y="${rightBoxY}" width="188" height="130" rx="16" stroke="rgba(212,175,85,0.58)" stroke-width="1.6" fill="rgba(184,150,46,0.1)"/>
+    <text x="432" y="${rightBoxY + 52}" text-anchor="middle" fill="rgba(255,255,255,0.95)" font-size="13.5" font-weight="700">${dbExecHtmlEscape(outcomeRow.topicEn)}</text>
+    <text x="432" y="${rightBoxY + 84}" text-anchor="middle" fill="#e8c65c" font-size="11.5" font-weight="700">${Math.max(1, Number(outcomeRow.qCount) || 1)} indicators</text>
+  </svg>`;
+
+  capEl.innerHTML = `<span class="en">Conceptual drivers → ${dbExecHtmlEscape(outcomeRow.topicEn)} (${totalItems} items across active model blocks).</span>
+  <span class="ar">محركات مفاهيمية → ${dbExecHtmlEscape(outcomeRow.topicAr)} (إجمالي ${totalItems} بندًا عبر كتل النموذج النشطة).</span>`;
+}
+
 function dbApplyPilotAnalysisOverrides() {
   const panel = document.getElementById('db-panel-pilot');
   if (!panel) return;
@@ -6330,14 +6926,9 @@ function dbApplyModelQualityOverrides() {
   if (dbModelQualityDefaultInnerHtml == null) dbModelQualityDefaultInnerHtml = panel.innerHTML;
   let pairs = null;
   let values = null;
-  try {
-    const raw = localStorage.getItem(MODEL_QUALITY_OVERRIDES_KEY);
-    if (raw) {
-      const o = JSON.parse(raw);
-      if (o && typeof o === 'object' && o.pairs && typeof o.pairs === 'object') pairs = o.pairs;
-      if (o && typeof o === 'object' && o.values && typeof o.values === 'object') values = o.values;
-    }
-  } catch (_) {}
+  const o = dbGetModelQualityOverrides();
+  if (o && typeof o === 'object' && o.pairs && typeof o.pairs === 'object') pairs = o.pairs;
+  if (o && typeof o === 'object' && o.values && typeof o.values === 'object') values = o.values;
   const hasPairs = !!(pairs && Object.keys(pairs).length);
   const hasValues = !!(values && Object.keys(values).length);
   if (!hasPairs && !hasValues) {
@@ -6617,9 +7208,7 @@ function dbApplyUnitsPerformanceDisplayOverrides() {
   if (!o) return;
   const esc = dbExecHtmlEscape;
   const titleEl = document.getElementById('dbSegDetailTitle');
-  const subEl = document.getElementById('dbSegDetailSub');
-  const bodyEl = document.getElementById('dbSegDetailBody');
-  if (!titleEl || !subEl || !bodyEl) return;
+  if (!titleEl) return;
 
   if (
     (o.segTitleEn != null && String(o.segTitleEn).trim() !== '') ||
@@ -6636,132 +7225,18 @@ function dbApplyUnitsPerformanceDisplayOverrides() {
     titleEl.innerHTML = `<span class="en">${esc(en)}</span><span class="ar">${esc(ar)}</span>`;
   }
 
-  if (
-    (o.segSubEn != null && String(o.segSubEn).trim() !== '') ||
-    (o.segSubAr != null && String(o.segSubAr).trim() !== '')
-  ) {
-    const en = o.segSubEn != null && String(o.segSubEn).trim() !== '' ? String(o.segSubEn).trim() : '';
-    const ar =
-      o.segSubAr != null && String(o.segSubAr).trim() !== ''
-        ? String(o.segSubAr).trim()
-        : en;
-    subEl.innerHTML = `<span class="en">${esc(en)}</span><span class="ar">${esc(ar)}</span>`;
-  }
-
-  const barsSource = (dbGetData().drivers || []).map((dr) => ({
-    nameEn: dr.name,
-    nameAr: dr.nameAr || dr.name,
-    impact: dr.impact,
-    impactPctLabel: '',
-    widthPct: '',
-  }));
-  if (!barsSource.length) return;
-
-  const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
-
-  const barsHtml = `
-    <div class="db-bar-list" style="margin-bottom:20px">
-      ${barsSource
-        .map((dr) => {
-          const wRaw = dr.widthPct;
-          const w =
-            wRaw != null && String(wRaw).trim() !== '' && !Number.isNaN(parseFloat(wRaw))
-              ? Math.min(100, Math.max(0, parseFloat(wRaw)))
-              : Math.min(100, ((Number(dr.impact) || 0) / 0.35) * 100);
-          const pct =
-            dr.impactPctLabel != null && String(dr.impactPctLabel).trim() !== ''
-              ? esc(String(dr.impactPctLabel).trim())
-              : dbImpactPct(Number(dr.impact));
-          return `<div class="db-bar-row">
-          <span class="db-bar-label"><span class="en">${esc(dr.nameEn || '')}</span><span class="ar">${esc(
-            dr.nameAr || dr.nameEn || ''
-          )}</span></span>
-          <div class="db-bar-track"><div class="db-bar-fill" style="width:${w}%"></div></div>
-          <span class="db-bar-val">${pct}</span>
-        </div>`;
-        })
-        .join('')}
-    </div>`;
-
-  const invTitleEn =
-    o.cardInvestTitleEn != null && String(o.cardInvestTitleEn).trim() !== ''
-      ? String(o.cardInvestTitleEn).trim()
-      : 'Invest Now';
-  const invTitleAr =
-    o.cardInvestTitleAr != null && String(o.cardInvestTitleAr).trim() !== ''
-      ? String(o.cardInvestTitleAr).trim()
-      : 'استثمر الآن';
-  const optTitleEn =
-    o.cardOptimizeTitleEn != null && String(o.cardOptimizeTitleEn).trim() !== ''
-      ? String(o.cardOptimizeTitleEn).trim()
-      : 'Optimize';
-  const optTitleAr =
-    o.cardOptimizeTitleAr != null && String(o.cardOptimizeTitleAr).trim() !== ''
-      ? String(o.cardOptimizeTitleAr).trim()
-      : 'حسّن';
-  const avTitleEn =
-    o.cardAvoidTitleEn != null && String(o.cardAvoidTitleEn).trim() !== ''
-      ? String(o.cardAvoidTitleEn).trim()
-      : 'Avoid';
-  const avTitleAr =
-    o.cardAvoidTitleAr != null && String(o.cardAvoidTitleAr).trim() !== ''
-      ? String(o.cardAvoidTitleAr).trim()
-      : 'تجنّب';
-
-  const investList = isAr
-    ? Array.isArray(o.investAr) && o.investAr.length
-      ? o.investAr
-      : o.investEn || []
-    : o.investEn || [];
-  const optimizeList = isAr
-    ? Array.isArray(o.optimizeAr) && o.optimizeAr.length
-      ? o.optimizeAr
-      : o.optimizeEn || []
-    : o.optimizeEn || [];
-  const avoidList = isAr
-    ? Array.isArray(o.avoidAr) && o.avoidAr.length
-      ? o.avoidAr
-      : o.avoidEn || []
-    : o.avoidEn || [];
-
-  const cardsHtml = `
-    <div class="db-exec-grid">
-      <div class="db-exec-card db-exec-invest">
-        <div class="db-exec-card-title"><span class="en">${esc(invTitleEn)}</span><span class="ar">${esc(invTitleAr)}</span></div>
-        <ul>${investList.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      </div>
-      <div class="db-exec-card db-exec-optimize">
-        <div class="db-exec-card-title"><span class="en">${esc(optTitleEn)}</span><span class="ar">${esc(optTitleAr)}</span></div>
-        <ul>${optimizeList.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      </div>
-      <div class="db-exec-card db-exec-avoid">
-        <div class="db-exec-card-title"><span class="en">${esc(avTitleEn)}</span><span class="ar">${esc(avTitleAr)}</span></div>
-        <ul>${avoidList.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>
-      </div>
-    </div>`;
-
-  bodyEl.innerHTML = barsHtml + cardsHtml;
 }
 
 function dbRender() {
-  // Persist current filter state so it survives refresh / reopen
-  try {
-    localStorage.setItem('roshd_filters', JSON.stringify({
-      branch:    (document.getElementById('dbBranch')?.value    || 'All Branches').trim(),
-      gender:    (document.getElementById('dbGender')?.value    || 'All Genders').trim(),
-      service:   (document.getElementById('dbService')?.value   || 'All Services').trim(),
-      frequency: (document.getElementById('dbFrequency')?.value || 'All Frequencies').trim(),
-      age:       (document.getElementById('dbAge')?.value       || 'All Ages').trim()
-    }));
-  } catch(_) {}
+  dbPersistRoshdFilters();
 
   const fc = dbFilteredCustomers();
   const segmentN = fc.length;
   const sharePct = segmentN ? Math.round((segmentN / DB_SAMPLE_TOTAL) * 100) : 0;
   const d = dbGetData();
   const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
-  const freqVal = document.getElementById('dbFrequency')?.value || 'All Frequencies';
-  const ageSel = document.getElementById('dbAge')?.value || 'All Ages';
+  const freqVal = dbFilValueByKey('frequency', 'All Frequencies');
+  const ageSel = dbFilValueByKey('age', 'All Ages');
 
   const kScore = document.getElementById('kpiScore');
   if (kScore) {
@@ -6890,6 +7365,7 @@ function dbRender() {
   dbApplyQuestionnaireOverrides();
   dbApplyPilotAnalysisOverrides();
   dbApplyModelQualityOverrides();
+  dbRenderMeasurementModelFromQuestionnaire();
 }
 
 /* ── Simulation ── */
@@ -6954,7 +7430,7 @@ function dbRenderSegments() {
 
   const d = dbGetData();
   const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
-  const branchVal = (document.getElementById('dbBranch')?.value || 'All Branches').trim();
+  const branchVal = dbFilValueByKey('branch', 'All Branches');
   const labels = {
     'All Branches': ['All Branches', 'جميع الفروع'],
     'Riyadh': ['Riyadh', 'الرياض'],
@@ -7120,6 +7596,10 @@ window.addEventListener('scroll', () => {
     const ch = new BroadcastChannel('roshd_dashboard_sync');
     ch.onmessage = (ev) => {
       const t = ev.data && ev.data.type;
+      if (t === 'filter-bar-config-updated') {
+        dbSyncFilterBarAfterExternalConfigChange();
+        return;
+      }
       if (
         t === 'cx-drivers-overrides-updated' ||
         t === 'executive-overrides-updated' ||
@@ -7145,6 +7625,15 @@ window.addEventListener('scroll', () => {
       e.key === 'roshd_model_quality_overrides'
     )
       refreshDashboardIfOpen();
+    if (e.key === FILTER_BAR_STORAGE_KEY) dbSyncFilterBarAfterExternalConfigChange();
+    if (e.key === 'roshd_filters') {
+      try {
+        const dash = document.getElementById('customerDashboard');
+        if (!dash || !dash.classList.contains('open')) return;
+        dbRestoreRoshdFilters(JSON.parse(e.newValue || 'null'));
+        dbRender();
+      } catch (_) {}
+    }
   });
 })();
 </script>

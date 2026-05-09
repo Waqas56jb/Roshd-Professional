@@ -2928,6 +2928,19 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
   JAVASCRIPT
 ════════════════════════════════════════ -->
 <script>
+/* Embedded admin (Vite/React iframe srcDoc): fetch cannot load /customer-dashboard.html (opaque origin).
+   Parent bundles ../../index.html and posts it here — see admin/src/App.jsx */
+(function setupCustomerDashboardHtmlFromParent() {
+  window.__ROSHD_CUSTOMER_DASHBOARD_HTML__ = '';
+  window.addEventListener('message', function (ev) {
+    try {
+      if (!ev.data || ev.data.type !== 'roshd-customer-dashboard-html') return;
+      const html = ev.data.html;
+      if (typeof html === 'string' && html.length > 100) window.__ROSHD_CUSTOMER_DASHBOARD_HTML__ = html;
+    } catch (_) {}
+  });
+})();
+
 /* When admin is embedded via React/Vite (`iframe srcDoc`), relative fetch('./customer-dashboard.html')
    resolves against about:srcdoc and fails silently on Vercel — editors show empty defaults. */
 function resolveCustomerDashboardHtmlUrl() {
@@ -2949,6 +2962,19 @@ function resolveCustomerDashboardHtmlUrl() {
 }
 
 async function fetchCustomerDashboardHtmlBundle() {
+  const cached = typeof window.__ROSHD_CUSTOMER_DASHBOARD_HTML__ === 'string' ? window.__ROSHD_CUSTOMER_DASHBOARD_HTML__ : '';
+  if (cached.length > 100) return cached;
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'roshd-request-customer-dashboard-html' }, '*');
+      const deadline = Date.now() + 2800;
+      while (Date.now() < deadline) {
+        const h = typeof window.__ROSHD_CUSTOMER_DASHBOARD_HTML__ === 'string' ? window.__ROSHD_CUSTOMER_DASHBOARD_HTML__ : '';
+        if (h.length > 100) return h;
+        await new Promise((r) => setTimeout(r, 40));
+      }
+    }
+  } catch (_) {}
   const urls = [];
   const push = (u) => {
     if (u && urls.indexOf(u) === -1) urls.push(u);
@@ -2974,11 +3000,13 @@ async function fetchCustomerDashboardHtmlBundle() {
   for (let i = 0; i < urls.length; i++) {
     const url = urls[i];
     try {
-      const res = await fetch(url, { cache: 'no-store', credentials: 'same-origin', mode: 'cors' });
+      const res = await fetch(url, { cache: 'no-store', credentials: 'omit', mode: 'cors' });
       if (res.ok) return await res.text();
     } catch (_) {}
   }
-  return '';
+  return typeof window.__ROSHD_CUSTOMER_DASHBOARD_HTML__ === 'string' && window.__ROSHD_CUSTOMER_DASHBOARD_HTML__.length > 100
+    ? window.__ROSHD_CUSTOMER_DASHBOARD_HTML__
+    : '';
 }
 
 /* ═══════════════════════════════════════════
