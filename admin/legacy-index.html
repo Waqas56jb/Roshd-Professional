@@ -1586,6 +1586,10 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M6 21v-.5a6 6 0 0 1 12 0V21"/></svg>
         Demographics
       </button>
+      <button class="nav-item" data-panel="dashboard-filters" onclick="showPanel('dashboard-filters',this)">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg>
+        Dashboard filters
+      </button>
       <button class="nav-item" data-panel="customer-patterns" onclick="showPanel('customer-patterns',this)">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Customer Patterns
@@ -1673,13 +1677,9 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
         <div class="exec-editor">
           <div class="exec-editor-section exec-editor-section--sticky">
             <h3>Editing context (same as customer filters)</h3>
-            <div class="exec-filter-strip">
+            <div class="exec-filter-strip" id="execFilterStripHost" style="flex-wrap:wrap">
               <div class="exec-filter-strip-label">Filters:</div>
-              <select class="filter-select" id="execCtxBranch" onchange="loadExecutiveEditorForm()"><option>All Branches</option><option>Riyadh</option><option>Jeddah</option><option>Dammam</option></select>
-              <select class="filter-select" id="execCtxGender" onchange="loadExecutiveEditorForm()"><option>All Genders</option><option>Male</option><option>Female</option></select>
-              <select class="filter-select" id="execCtxService" onchange="loadExecutiveEditorForm()"><option>All Services</option><option>Mechanical</option><option>Bodyshop</option></select>
-              <select class="filter-select" id="execCtxFrequency" onchange="loadExecutiveEditorForm()"><option>All Frequencies</option><option>1 Visit</option><option>2–3 Visits</option><option>4+ Visits</option></select>
-              <select class="filter-select" id="execCtxAge" onchange="loadExecutiveEditorForm()"><option>All Ages</option><option>&lt;25</option><option>25–34</option><option>35–44</option><option>45+</option></select>
+              <div id="execFilterStripInner" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"></div>
               <div class="exec-filter-strip-note" id="execCtxKeyView"></div>
             </div>
             <p class="exec-editor-hint">Filter badlain, form values us context par switch hongi. Save se isi filter combination ka text/description update hota hai.</p>
@@ -1789,13 +1789,9 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
 
           <div class="exec-editor-section exec-editor-section--sticky" style="margin-bottom:16px">
             <h3>Editing context (same as customer filters)</h3>
-            <div class="exec-filter-strip">
+            <div class="exec-filter-strip" id="cxFilterStripHost" style="flex-wrap:wrap">
               <div class="exec-filter-strip-label">Filters:</div>
-              <select class="filter-select" id="cxCtxBranch" onchange="loadCxDriversEditorForm()"><option>All Branches</option><option>Riyadh</option><option>Jeddah</option><option>Dammam</option></select>
-              <select class="filter-select" id="cxCtxGender" onchange="loadCxDriversEditorForm()"><option>All Genders</option><option>Male</option><option>Female</option></select>
-              <select class="filter-select" id="cxCtxService" onchange="loadCxDriversEditorForm()"><option>All Services</option><option>Mechanical</option><option>Bodyshop</option></select>
-              <select class="filter-select" id="cxCtxFrequency" onchange="loadCxDriversEditorForm()"><option>All Frequencies</option><option>1 Visit</option><option>2–3 Visits</option><option>4+ Visits</option></select>
-              <select class="filter-select" id="cxCtxAge" onchange="loadCxDriversEditorForm()"><option>All Ages</option><option>&lt;25</option><option>25–34</option><option>35–44</option><option>45+</option></select>
+              <div id="cxFilterStripInner" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"></div>
               <div class="exec-filter-strip-note" id="cxCtxKeyView"></div>
             </div>
             <p class="exec-editor-hint">Filter badlain, CX Drivers defaults isi context ke mutabiq load hongay. Save se isi filter combination ka data update hota hai.</p>
@@ -1943,6 +1939,29 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
           <div class="exec-editor-actions">
             <button type="button" class="btn btn-primary" onclick="saveDemographicsOverridesFromForm()">Save</button>
             <button type="button" class="btn btn-secondary" onclick="resetDemographicsOverrides()">Reset to defaults</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ DASHBOARD FILTERS — 8-toolbar config ══════════════ -->
+      <div class="panel" id="panel-dashboard-filters">
+        <div class="exec-editor">
+          <div class="page-header" style="margin-bottom:18px">
+            <div class="page-header-left">
+              <div class="page-title">Dashboard filters</div>
+              <div class="page-subtitle" style="font-size:13px;color:var(--text-dim);max-width:760px">
+                Configure eight customer-toolbar filters (labels, “All” row, unlimited options per filter). Persists as <code style="opacity:.85">roshd_filter_bar_config</code> and syncs the Executive/CX contexts + synthetic segment data.
+              </div>
+            </div>
+            <div class="page-header-actions">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="resetDashboardFiltersToDefaults()">Reset to defaults</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveDashboardFiltersFromForm()">Save</button>
+            </div>
+          </div>
+          <div id="dfEditorMount"></div>
+          <div class="exec-editor-actions">
+            <button type="button" class="btn btn-primary" onclick="saveDashboardFiltersFromForm()">Save</button>
+            <button type="button" class="btn btn-secondary" onclick="resetDashboardFiltersToDefaults()">Reset</button>
           </div>
         </div>
       </div>
@@ -2701,36 +2720,21 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
 /* When admin is embedded via React/Vite (`iframe srcDoc`), relative fetch('./customer-dashboard.html')
    resolves against about:srcdoc and fails silently on Vercel — editors show empty defaults. */
 function resolveCustomerDashboardHtmlUrl() {
-  let loc = null;
-  try {
-    if (window.parent && window.parent !== window) {
-      loc = window.parent.location;
-    }
-  } catch (_) {
-    loc = null;
-  }
-  if (!loc) {
+  function originHint() {
     try {
-      loc = window.location;
-    } catch (_) {
-      return '/customer-dashboard.html';
-    }
+      if (window.parent && window.parent !== window && window.parent.location?.origin)
+        return String(window.parent.location.origin);
+    } catch (_) {}
+    try {
+      if (window.location?.origin && window.location.origin !== 'null') return String(window.location.origin);
+    } catch (_) {}
+    try {
+      if (document.referrer) return new URL(document.referrer).origin;
+    } catch (_) {}
+    return '';
   }
-  let pathname = loc.pathname || '/';
-  if (pathname === '/' || pathname === '') {
-    return loc.origin + '/customer-dashboard.html';
-  }
-  if (pathname.endsWith('/')) {
-    return loc.origin + pathname + 'customer-dashboard.html';
-  }
-  const segments = pathname.split('/').filter(Boolean);
-  const last = segments.length ? segments[segments.length - 1] : '';
-  if (last && /\.[a-z0-9]{2,8}$/i.test(last)) {
-    segments.pop();
-    const dir = segments.length ? '/' + segments.join('/') + '/' : '/';
-    return loc.origin + dir + 'customer-dashboard.html';
-  }
-  return loc.origin + pathname + '/customer-dashboard.html';
+  const o = originHint().replace(/\/$/, '');
+  return (o || '') + '/customer-dashboard.html';
 }
 
 async function fetchCustomerDashboardHtmlBundle() {
@@ -2741,15 +2745,25 @@ async function fetchCustomerDashboardHtmlBundle() {
   push(resolveCustomerDashboardHtmlUrl());
   try {
     const p = window.parent && window.parent !== window ? window.parent : window;
-    push(p.location.origin + '/customer-dashboard.html');
+    const o = String(p.location?.origin || '').replace(/\/$/, '');
+    if (o && o !== 'null') push(o + '/customer-dashboard.html');
   } catch (_) {}
   try {
-    push(window.location.origin + '/customer-dashboard.html');
+    const o = String(window.location?.origin || '').replace(/\/$/, '');
+    if (o && o !== 'null') push(o + '/customer-dashboard.html');
+  } catch (_) {}
+  try {
+    if (document.referrer) push(new URL(document.referrer).origin + '/customer-dashboard.html');
+  } catch (_) {}
+  push('/customer-dashboard.html');
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (/^https?:\/\//i.test(base)) push(base + '/customer-dashboard.html');
   } catch (_) {}
   for (let i = 0; i < urls.length; i++) {
     const url = urls[i];
     try {
-      const res = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+      const res = await fetch(url, { cache: 'no-store', credentials: 'same-origin', mode: 'cors' });
       if (res.ok) return await res.text();
     } catch (_) {}
   }
@@ -2876,15 +2890,241 @@ function execDedupeDrivers(arr) {
   });
 }
 
+/** Must match customer dashboard */
+const FILTER_BAR_STORAGE_KEY = 'roshd_filter_bar_config';
+let __admExecFilterSig = '';
+let __admCustFilterSelectorsSig = '';
+
+function admDefaultFilterBarConfig() {
+  return {
+    filters: [
+      { key: 'branch', labelEn: 'Branch', labelAr: 'الفرع', allValue: 'All Branches', allLabelEn: 'All Branches', allLabelAr: 'جميع الفروع', options: [{ value: 'Riyadh', labelEn: 'Riyadh', labelAr: 'الرياض' }, { value: 'Jeddah', labelEn: 'Jeddah', labelAr: 'جدة' }, { value: 'Dammam', labelEn: 'Dammam', labelAr: 'الدمام' }] },
+      { key: 'gender', labelEn: 'Gender', labelAr: 'الجنس', allValue: 'All Genders', allLabelEn: 'All Genders', allLabelAr: 'الجنسين', options: [{ value: 'Male', labelEn: 'Male', labelAr: 'ذكر' }, { value: 'Female', labelEn: 'Female', labelAr: 'أنثى' }] },
+      { key: 'service', labelEn: 'Service', labelAr: 'الخدمة', allValue: 'All Services', allLabelEn: 'All Services', allLabelAr: 'جميع الخدمات', options: [{ value: 'Mechanical', labelEn: 'Mechanical', labelAr: 'ميكانيكي' }, { value: 'Bodyshop', labelEn: 'Bodyshop', labelAr: 'هيكل السيارة' }] },
+      { key: 'frequency', labelEn: 'Frequency', labelAr: 'تكرار الزيارات', allValue: 'All Frequencies', allLabelEn: 'All Frequencies', allLabelAr: 'كل التكرارات', options: [{ value: '1 Visit', labelEn: '1 Visit', labelAr: 'زيارة واحدة' }, { value: '2–3 Visits', labelEn: '2–3 Visits', labelAr: '2–3 زيارات' }, { value: '4+ Visits', labelEn: '4+ Visits', labelAr: '4+ زيارات' }] },
+      { key: 'age', labelEn: 'Age', labelAr: 'العمر', allValue: 'All Ages', allLabelEn: 'All Ages', allLabelAr: 'كل الأعمار', options: [{ value: '<25', labelEn: '<25', labelAr: 'أقل من 25' }, { value: '25–34', labelEn: '25–34', labelAr: '25–34' }, { value: '35–44', labelEn: '35–44', labelAr: '35–44' }, { value: '45+', labelEn: '45+', labelAr: '45+' }] },
+      { key: 'extra1', labelEn: 'Channel', labelAr: 'القناة', allValue: '__ALL__', allLabelEn: 'All channels', allLabelAr: 'كل القنوات', options: [{ value: 'Walk-in', labelEn: 'Walk-in', labelAr: 'حضوري' }, { value: 'App', labelEn: 'App / Online', labelAr: 'التطبيق' }, { value: 'Phone', labelEn: 'Phone', labelAr: 'هاتف' }] },
+      { key: 'extra2', labelEn: 'Customer type', labelAr: 'نوع العميل', allValue: '__ALL__', allLabelEn: 'All types', allLabelAr: 'كل الأنواع', options: [{ value: 'New', labelEn: 'New', labelAr: 'جديد' }, { value: 'Returning', labelEn: 'Returning', labelAr: 'عائد' }] },
+      { key: 'extra3', labelEn: 'Day part', labelAr: 'فترة اليوم', allValue: '__ALL__', allLabelEn: 'All', allLabelAr: 'الكل', options: [{ value: 'Weekday', labelEn: 'Weekday', labelAr: 'يوم عمل' }, { value: 'Weekend', labelEn: 'Weekend', labelAr: 'عطلة' }] }
+    ]
+  };
+}
+
+function admDeepCloneJson(x) {
+  try {
+    return JSON.parse(JSON.stringify(x));
+  } catch (_) {
+    return admDefaultFilterBarConfig();
+  }
+}
+
+function admNormalizeFilterBarConfig(parsed) {
+  const def = admDefaultFilterBarConfig();
+  if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.filters)) return def;
+  const out = { filters: [] };
+  for (let i = 0; i < 8; i++) {
+    const d = admDeepCloneJson(def).filters[i];
+    const s = parsed.filters[i];
+    if (!s || typeof s !== 'object') {
+      out.filters.push(d);
+      continue;
+    }
+    const merged = {
+      key: d.key,
+      labelEn: String(s.labelEn || d.labelEn),
+      labelAr: String(s.labelAr || d.labelAr),
+      allValue: String(s.allValue != null && s.allValue !== '' ? s.allValue : d.allValue),
+      allLabelEn: String(s.allLabelEn || d.allLabelEn),
+      allLabelAr: String(s.allLabelAr || d.allLabelAr),
+      options: admDeepCloneJson(d.options)
+    };
+    const rawOpts = Array.isArray(s.options) ? s.options : [];
+    const seen = new Set();
+    const opts = [];
+    rawOpts.forEach((ro) => {
+      const v = String(ro && ro.value != null ? ro.value : '').trim();
+      if (!v || seen.has(v)) return;
+      seen.add(v);
+      opts.push({
+        value: v,
+        labelEn: String(ro.labelEn || v),
+        labelAr: String(ro.labelAr || ro.labelEn || v)
+      });
+    });
+    if (opts.length) merged.options = opts;
+    out.filters.push(merged);
+  }
+  return out;
+}
+
+function admGetFilterBarConfig() {
+  try {
+    const raw = localStorage.getItem(FILTER_BAR_STORAGE_KEY);
+    if (raw) return admNormalizeFilterBarConfig(JSON.parse(raw));
+  } catch (_) {}
+  return admDefaultFilterBarConfig();
+}
+
+function admFilterFingerprint() {
+  try {
+    return JSON.stringify(admGetFilterBarConfig().filters);
+  } catch (_) {
+    return '';
+  }
+}
+
+function admFilterDatasetCol(filterIndex) {
+  if (filterIndex < 5) return 1 + filterIndex;
+  return 12 + (filterIndex - 5);
+}
+
+function admFilId(kind, i) {
+  if (kind === 'exec') return 'execFil' + i;
+  if (kind === 'cx') return 'cxFil' + i;
+  return 'admDf' + i;
+}
+
+function admGetFilValue(kind, i) {
+  const cfg = admGetFilterBarConfig();
+  const f = cfg.filters[i];
+  if (!f) return '';
+  const el = document.getElementById(admFilId(kind, i));
+  const allV = String(f.allValue ?? '').trim();
+  const raw = el ? String(el.value).trim() : allV;
+  if (raw === '') return allV;
+  return raw;
+}
+
+function admFilMatchesRow(row, filterIndex, selectedRaw) {
+  const cfg = admGetFilterBarConfig();
+  const f = cfg.filters[filterIndex];
+  if (!f) return true;
+  const col = admFilterDatasetCol(filterIndex);
+  const allV = String(f.allValue ?? '').trim();
+  const sel = String(selectedRaw ?? '').trim();
+  if (sel === '' || sel === allV) return true;
+  return String(row[col] ?? '').trim() === sel;
+}
+
+function admAttrEsc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
+function admRebuildCustomerFilterSelectors() {
+  const sig = admFilterFingerprint();
+  const execHost = document.getElementById('execFilterStripInner');
+  const cxHost = document.getElementById('cxFilterStripInner');
+  if (!execHost || !cxHost) return;
+  __admCustFilterSelectorsSig = sig;
+  function build(kind, host, onchg) {
+    const cfg = admGetFilterBarConfig();
+    host.innerHTML = cfg.filters
+      .map((f, i) => {
+        const fid = admFilId(kind, i);
+        const lbl = `<span class="exec-filter-strip-label">${admAttrEsc(f.labelEn)}:</span>`;
+        const optAll = `<option value="${admAttrEsc(f.allValue)}">${admAttrEsc(f.allLabelEn)}</option>`;
+        const opts = (f.options || [])
+          .map((o) => `<option value="${admAttrEsc(o.value)}">${admAttrEsc(o.labelEn)}</option>`)
+          .join('');
+        const ev = onchg ? ` onchange="${onchg}"` : '';
+        return lbl + `<select class="filter-select" id="${fid}"${ev}>${optAll}${opts}</select>`;
+      })
+      .join('');
+  }
+  build('exec', execHost, 'loadExecutiveEditorForm()');
+  build('cx', cxHost, 'loadCxDriversEditorForm()');
+}
+
+function admApplyRoshdSnapshotTo(kind) {
+  let snap = {};
+  try {
+    snap = JSON.parse(localStorage.getItem('roshd_filters') || 'null');
+  } catch (_) {
+    snap = {};
+  }
+  if (!snap || typeof snap !== 'object') snap = {};
+  const lb = snap.branch,
+    lg = snap.gender,
+    ls = snap.service,
+    lf = snap.frequency,
+    la = snap.age;
+  const cfg = admGetFilterBarConfig();
+  cfg.filters.forEach((f, i) => {
+    const el = document.getElementById(admFilId(kind, i));
+    if (!el) return;
+    let v = snap[f.key];
+    if (v == null || v === '') {
+      if (f.key === 'branch') v = lb;
+      else if (f.key === 'gender') v = lg;
+      else if (f.key === 'service') v = ls;
+      else if (f.key === 'frequency') v = lf;
+      else if (f.key === 'age') v = la;
+    }
+    if (v == null || v === '') return;
+    const has = Array.from(el.options).some((o) => String(o.value) === String(v));
+    if (has) el.value = String(v);
+  });
+}
+
+function admAfterFilterSelectorsRebuild() {
+  admApplyRoshdSnapshotTo('exec');
+  admApplyRoshdSnapshotTo('cx');
+}
+
+function execEnsureFilterSelectorsMounted() {
+  if (!document.getElementById('execFilterStripInner') || !document.getElementById('cxFilterStripInner')) return;
+  const sig = admFilterFingerprint();
+  const need = sig !== __admCustFilterSelectorsSig || !document.getElementById('execFil0');
+  if (need) {
+    admRebuildCustomerFilterSelectors();
+    admAfterFilterSelectorsRebuild();
+  }
+}
+
+function admAfterDashboardFiltersSaved() {
+  __admCustFilterSelectorsSig = '';
+  __admExecFilterSig = '';
+  execEnsureFilterSelectorsMounted();
+  execEnsureCustomersMatchFilterConfig();
+  try {
+    loadExecutiveEditorForm();
+  } catch (_) {}
+  try {
+    loadCxDriversEditorForm();
+  } catch (_) {}
+  try {
+    loadDashboardFiltersEditor();
+  } catch (_) {}
+  notifyCustomerDashboardOverrides('filter-bar-config-updated');
+}
+
 const EXEC_DB_SAMPLE_TOTAL = 300;
 const EXEC_DB_BR_LIST = ["Riyadh", "Jeddah", "Dammam"];
 const EXEC_DB_CUSTOMERS = [];
-(function execGenerateCustomers() {
-  const branchPool = [];
-  for (let zi = 0; zi < EXEC_DB_BR_LIST.length; zi++) {
-    const b = EXEC_DB_BR_LIST[zi];
-    for (let z = 0; z < EXEC_DB_SAMPLE_TOTAL / EXEC_DB_BR_LIST.length; z++) branchPool.push(b);
+
+function execRegenerateCustomersFromFilterConfig() {
+  EXEC_DB_CUSTOMERS.length = 0;
+  const cfg = admGetFilterBarConfig();
+  function optVals(ix) {
+    const o = (cfg.filters[ix] && cfg.filters[ix].options) || [];
+    const out = o.map((x) => String(x.value).trim()).filter(Boolean);
+    return out.length ? out : ['—'];
   }
+  function pick(arr, seed) {
+    if (!arr.length) return '';
+    const u = (typeof seed === 'number' ? seed >>> 0 : 1) >>> 0;
+    return arr[(u * 7919 + 104729 + (seed || 1) * 993) % arr.length];
+  }
+  let branchChoicesFinal = optVals(0).filter((b) => EXEC_DB_DATA[b]);
+  if (!branchChoicesFinal.length) branchChoicesFinal = EXEC_DB_BR_LIST.slice();
+  const branchPool = [];
+  for (let zi = 0; zi < branchChoicesFinal.length; zi++) {
+    const b = branchChoicesFinal[zi];
+    const nEach = EXEC_DB_SAMPLE_TOTAL / branchChoicesFinal.length;
+    for (let z = 0; z < nEach; z++) branchPool.push(b);
+  }
+  while (branchPool.length < EXEC_DB_SAMPLE_TOTAL)
+    branchPool.push(branchChoicesFinal[branchPool.length % branchChoicesFinal.length]);
   for (let k = branchPool.length - 1; k > 0; k--) {
     const jj = ((k * 7919 + 104729 + k * k * 993) >>> 0) % (k + 1);
     const t = branchPool[k];
@@ -2892,43 +3132,76 @@ const EXEC_DB_CUSTOMERS = [];
     branchPool[jj] = t;
   }
   for (let i = 1; i <= EXEC_DB_SAMPLE_TOTAL; i++) {
+    const seed = i * 31 + ((i ^ 997) >>> 0);
     let branch = branchPool[i - 1];
-    let gender = (i * 7) % 10 < 6 ? "Male" : "Female";
-    let service = (i * 11) % 5 < 3 ? "Mechanical" : "Bodyshop";
-    let frequency = (i * 13) % 10 < 3 ? "1 Visit" : (i * 13) % 10 < 8 ? "2–3 Visits" : "4+ Visits";
-    let ageBand = (i * 17) % 12;
-    let age = ageBand < 2 ? "<25" : ageBand < 6 ? "25–34" : ageBand < 10 ? "35–44" : "45+";
-    if (branch === "Riyadh" && i % 4 === 0) service = "Bodyshop";
-    if (branch === "Dammam" && i % 5 === 0) frequency = "4+ Visits";
-    let q = branch === "Riyadh" ? 3.7 : branch === "Jeddah" ? 3.3 : 3.1;
-    let c = branch === "Jeddah" ? 2.8 : 3.2;
-    let p = branch === "Dammam" ? 2.5 : 2.9;
+    let gender = pick(optVals(1), seed ^ 3);
+    if (!gender || gender === '—') gender = (i * 7) % 10 < 6 ? 'Male' : 'Female';
+    let service = pick(optVals(2), seed ^ 7);
+    if (!service || service === '—') service = (i * 11) % 5 < 3 ? 'Mechanical' : 'Bodyshop';
+    let frequency = pick(optVals(3), seed ^ 13);
+    if (!frequency || frequency === '—')
+      frequency = (i * 13) % 10 < 3 ? '1 Visit' : (i * 13) % 10 < 8 ? '2–3 Visits' : '4+ Visits';
+    let age = pick(optVals(4), seed ^ 21);
+    if (!age || age === '—') {
+      let ageBand = (i * 17) % 12;
+      age = ageBand < 2 ? '<25' : ageBand < 6 ? '25–34' : ageBand < 10 ? '35–44' : '45+';
+    }
+    let ex1 = pick(optVals(5), seed ^ 103);
+    let ex2 = pick(optVals(6), seed ^ 107);
+    let ex3 = pick(optVals(7), seed ^ 109);
+    if (branch === 'Riyadh' && i % 4 === 0) service = 'Bodyshop';
+    if (branch === 'Dammam' && i % 5 === 0) frequency = '4+ Visits';
+    let q = branch === 'Riyadh' ? 3.7 : branch === 'Jeddah' ? 3.3 : 3.1;
+    let c = branch === 'Jeddah' ? 2.8 : 3.2;
+    let p = branch === 'Dammam' ? 2.5 : 2.9;
     let s = 1.2 + (i % 4) * 0.15;
-    if (frequency === "4+ Visits") q += 0.25;
-    if (age === "<25") p -= 0.25;
-    if (gender === "Female") c -= 0.1;
+    if (frequency === '4+ Visits') q += 0.25;
+    if (age === '<25') p -= 0.25;
+    if (gender === 'Female') c -= 0.1;
     const sat = Math.max(1, Math.min(5, q * 0.38 + c * 0.27 + p * 0.22 + s * 0.05 + 1.0));
-    EXEC_DB_CUSTOMERS.push(["C-" + String(i).padStart(3, "0"), branch, gender, service, frequency, age, +q.toFixed(1), +c.toFixed(1), +p.toFixed(1), +s.toFixed(1), +sat.toFixed(1)]);
+    const risk = sat < 3 ? 'High' : sat < 3.6 ? 'Medium' : 'Low';
+    EXEC_DB_CUSTOMERS.push([
+      'C-' + String(i).padStart(3, '0'),
+      branch,
+      gender,
+      service,
+      frequency,
+      age,
+      +q.toFixed(1),
+      +c.toFixed(1),
+      +p.toFixed(1),
+      +s.toFixed(1),
+      +sat.toFixed(1),
+      risk,
+      ex1 || '—',
+      ex2 || '—',
+      ex3 || '—'
+    ]);
   }
-})();
+}
+
+function execEnsureCustomersMatchFilterConfig() {
+  const sig = admFilterFingerprint();
+  if (__admExecFilterSig === sig && EXEC_DB_CUSTOMERS.length) return;
+  __admExecFilterSig = sig;
+  execRegenerateCustomersFromFilterConfig();
+}
+
+execEnsureCustomersMatchFilterConfig();
 
 function execFilteredCustomers(ctx) {
+  execEnsureCustomersMatchFilterConfig();
   const c = ctx || getExecutiveFilterContext();
-  return EXEC_DB_CUSTOMERS.filter(
-    (row) =>
-      (c.branch === "All Branches" || row[1] === c.branch) &&
-      (c.gender === "All Genders" || row[2] === c.gender) &&
-      (c.service === "All Services" || row[3] === c.service) &&
-      (c.frequency === "All Frequencies" || row[4] === c.frequency) &&
-      (c.age === "All Ages" || row[5] === c.age)
-  );
+  const cfg = admGetFilterBarConfig();
+  const vals = cfg.filters.map((f, ix) => c[f.key]);
+  return EXEC_DB_CUSTOMERS.filter((row) => vals.every((v, i) => admFilMatchesRow(row, i, v)));
 }
 
 function execDataForContext(ctx) {
   const c = ctx || getExecutiveFilterContext();
-  const branch = EXEC_DB_DATA[c.branch] ? c.branch : "All Branches";
+  const branch = execBranchForAggregateData(c);
   const d = JSON.parse(JSON.stringify(EXEC_DB_DATA[branch] || EXEC_DB_DATA["All Branches"]));
-  if (c.gender === "Female") {
+  if (!admCtxIsAll(c, "gender") && admCtxSel(c, "gender") === "Female") {
     d.top = "Communication";
     d.topAr = "التواصل";
     d.drivers = [
@@ -2941,7 +3214,7 @@ function execDataForContext(ctx) {
     d.invest = ["Female segment: communication is the strongest driver.", "Improve proactive updates and clarity.", "Standardize advisor explanation before and after service."];
     d.investAr = ["شريحة الإناث: التواصل أقوى محرّك للرضا.", "حسّن التحديثات الاستباقية والوضوح.", "وحّد شرح المستشار قبل وبعد الخدمة."];
   }
-  if (c.gender === "Male" && c.branch === "All Branches") {
+  if (!admCtxIsAll(c, "gender") && admCtxSel(c, "gender") === "Male" && admCtxIsAll(c, "branch")) {
     d.top = "Quality";
     d.topAr = "الجودة";
     if (d.drivers[0]) d.drivers[0].impact = 0.29;
@@ -2949,12 +3222,12 @@ function execDataForContext(ctx) {
       d.drivers[1] = { name: "Price Fairness", nameAr: "عدالة السعر", avg: 3.0, impact: 0.16, decision: "Optimize", decisionAr: "حسّن", cls: "warning" };
     }
   }
-  if (c.service === "Bodyshop") {
+  if (!admCtxIsAll(c, "service") && admCtxSel(c, "service") === "Bodyshop") {
     d.score = Math.max(1, d.score - 0.2);
     d.explanatory = Math.max(55, d.explanatory - 3);
     if (d.drivers[0]) d.drivers[0].impact = Math.min(0.38, d.drivers[0].impact + 0.03);
   }
-  if (c.frequency === "4+ Visits") {
+  if (!admCtxIsAll(c, "frequency") && admCtxSel(c, "frequency") === "4+ Visits") {
     d.top = "Quality";
     d.topAr = "الجودة";
     d.drivers.unshift({ name: "Quality", nameAr: "الجودة", avg: 3.8, impact: 0.35, decision: "Invest", decisionAr: "استثمر", cls: "navy" });
@@ -2964,13 +3237,13 @@ function execDataForContext(ctx) {
     d.invest = ["High-frequency customers are quality-sensitive; protect retention through first-time-right discipline.", ...tail];
     d.investAr = ["عملاء الزيارات المتكررة أكثر حساسية للجودة؛ حافظ على الاحتفاظ عبر الانضباط في الإصلاح من أول مرة.", ...tailAr];
   }
-  if (c.frequency === "1 Visit") {
+  if (!admCtxIsAll(c, "frequency") && admCtxSel(c, "frequency") === "1 Visit") {
     d.top = "Communication";
     d.topAr = "التواصل";
     d.drivers.unshift({ name: "Communication", nameAr: "التواصل", avg: 2.9, impact: 0.24, decision: "Invest", decisionAr: "استثمر", cls: "navy" });
     d.drivers = execDedupeDrivers(d.drivers);
   }
-  if (c.age === "<25") {
+  if (!admCtxIsAll(c, "age") && admCtxSel(c, "age") === "<25") {
     d.top = "Price Fairness";
     d.topAr = "عدالة السعر";
     d.drivers.unshift({ name: "Price Fairness", nameAr: "عدالة السعر", avg: 2.6, impact: 0.25, decision: "Invest", decisionAr: "استثمر", cls: "navy" });
@@ -3027,6 +3300,7 @@ const I18N = {
       'cx-drivers': { title: 'CX Drivers Analysis', crumb: 'Analytics' },
       'units-performance': { title: 'Units Performance', crumb: 'Analytics' },
       demographics: { title: 'Demographics', crumb: 'Analytics' },
+      'dashboard-filters': { title: 'Dashboard filters', crumb: 'Analytics' },
       'customer-patterns': { title: 'Customer Patterns', crumb: 'Analytics' },
       questionnaire: { title: 'Questionnaire', crumb: 'Analytics' },
       'pilot-analysis': { title: 'Pilot Analysis', crumb: 'Analytics' },
@@ -3044,6 +3318,7 @@ const I18N = {
       navCxDrivers: 'CX Drivers Analysis',
       navUnitsPerformance: 'Units Performance',
       navDemographics: 'Demographics',
+      navDashboardFilters: 'Dashboard filters',
       navCustomerPatterns: 'Customer Patterns',
       navQuestionnaire: 'Questionnaire',
       navPilotAnalysis: 'Pilot Analysis',
@@ -3077,6 +3352,7 @@ const I18N = {
       'cx-drivers': { title: 'تحليل محركات تجربة العملاء', crumb: 'التحليلات' },
       'units-performance': { title: 'أداء الوحدات', crumb: 'التحليلات' },
       demographics: { title: 'التركيبة السكانية', crumb: 'التحليلات' },
+      'dashboard-filters': { title: 'مرشّحات اللوحة', crumb: 'التحليلات' },
       'customer-patterns': { title: 'أنماط العملاء', crumb: 'التحليلات' },
       questionnaire: { title: 'الاستبيان', crumb: 'التحليلات' },
       'pilot-analysis': { title: 'تحليل التجربة التجريبية', crumb: 'التحليلات' },
@@ -3094,6 +3370,7 @@ const I18N = {
       navCxDrivers: 'تحليل محركات تجربة العملاء',
       navUnitsPerformance: 'أداء الوحدات',
       navDemographics: 'التركيبة السكانية',
+      navDashboardFilters: 'مرشّحات اللوحة',
       navCustomerPatterns: 'أنماط العملاء',
       navQuestionnaire: 'الاستبيان',
       navPilotAnalysis: 'تحليل التجربة التجريبية',
@@ -3468,6 +3745,7 @@ function applyAdminLanguage() {
     'cx-drivers': tx('labels.navCxDrivers'),
     'units-performance': tx('labels.navUnitsPerformance'),
     demographics: tx('labels.navDemographics'),
+    'dashboard-filters': tx('labels.navDashboardFilters'),
     'customer-patterns': tx('labels.navCustomerPatterns'),
     questionnaire: tx('labels.navQuestionnaire'),
     'pilot-analysis': tx('labels.navPilotAnalysis'),
@@ -3832,18 +4110,38 @@ const PANEL_META = I18N.en.panelMeta;
 const EXEC_OVERRIDES_STORAGE_KEY = 'roshd_executive_overrides';
 
 function getExecutiveFilterContext() {
-  return {
-    branch: (document.getElementById('execCtxBranch')?.value || 'All Branches').trim(),
-    gender: (document.getElementById('execCtxGender')?.value || 'All Genders').trim(),
-    service: (document.getElementById('execCtxService')?.value || 'All Services').trim(),
-    frequency: (document.getElementById('execCtxFrequency')?.value || 'All Frequencies').trim(),
-    age: (document.getElementById('execCtxAge')?.value || 'All Ages').trim(),
-  };
+  execEnsureFilterSelectorsMounted();
+  const cfg = admGetFilterBarConfig();
+  const out = {};
+  cfg.filters.forEach((f, i) => {
+    out[f.key] = admGetFilValue('exec', i);
+  });
+  return out;
+}
+
+function admCtxSel(ctx, key) {
+  return ctx && ctx[key] != null ? String(ctx[key]).trim() : '';
+}
+
+function admCtxIsAll(ctx, key) {
+  const f = admGetFilterBarConfig().filters.find((x) => x.key === key);
+  if (!f) return true;
+  const v = admCtxSel(ctx, key);
+  const allV = String(f.allValue ?? '').trim();
+  return v === '' || v === allV;
+}
+
+function execBranchForAggregateData(ctx) {
+  const c = ctx || getExecutiveFilterContext();
+  if (admCtxIsAll(c, 'branch')) return 'All Branches';
+  const b = admCtxSel(c, 'branch');
+  return EXEC_DB_DATA[b] ? b : 'All Branches';
 }
 
 function buildExecutiveFilterKey(ctx) {
   const c = ctx || getExecutiveFilterContext();
-  return [c.branch, c.gender, c.service, c.frequency, c.age].join(' | ');
+  const cfg = admGetFilterBarConfig();
+  return cfg.filters.map((f) => admCtxSel(c, f.key) || String(f.allValue ?? '')).join(' | ');
 }
 
 function updateExecutiveContextKeyView() {
@@ -3854,16 +4152,7 @@ function updateExecutiveContextKeyView() {
 function syncExecutiveContextToCustomerFilters(ctx) {
   const c = ctx || getExecutiveFilterContext();
   try {
-    localStorage.setItem(
-      'roshd_filters',
-      JSON.stringify({
-        branch: c.branch || 'All Branches',
-        gender: c.gender || 'All Genders',
-        service: c.service || 'All Services',
-        frequency: c.frequency || 'All Frequencies',
-        age: c.age || 'All Ages',
-      })
-    );
+    localStorage.setItem('roshd_filters', JSON.stringify(Object.assign({}, c)));
   } catch (_) {}
 }
 
@@ -3886,7 +4175,7 @@ function getExecutiveDefaultOverrides(ctx) {
   const branchBars = ['Riyadh', 'Jeddah', 'Dammam'].map((b) => {
     const row = BRANCHES_DATA[b] || BRANCHES_DATA['All Branches'];
     let pct = Math.max(0, Math.min(100, Math.round((Number(row.score || 0) / 5) * 100)));
-    if (c.branch !== 'All Branches' && c.branch === b) pct = Math.min(100, pct + 4);
+    if (!admCtxIsAll(c, 'branch') && admCtxSel(c, 'branch') === b) pct = Math.min(100, pct + 4);
     return {
       labelEn: b,
       labelAr: tr('branch', b),
@@ -4119,6 +4408,7 @@ function applyExecutiveOverridesToForm(o) {
 
 function loadExecutiveEditorForm() {
   if (!document.getElementById('execEd_kpiTrend1')) return;
+  execEnsureFilterSelectorsMounted();
   syncExecutiveContextToCustomerFilters();
   updateExecutiveContextKeyView();
   ensureExecFlowEditorBuilt();
@@ -4187,18 +4477,19 @@ const CX_DRIVERS_OVERRIDES_STORAGE_KEY = 'roshd_cx_drivers_overrides';
 const CX_MAX_DRIVERS = 8;
 
 function getCxFilterContext() {
-  return {
-    branch: (document.getElementById('cxCtxBranch')?.value || 'All Branches').trim(),
-    gender: (document.getElementById('cxCtxGender')?.value || 'All Genders').trim(),
-    service: (document.getElementById('cxCtxService')?.value || 'All Services').trim(),
-    frequency: (document.getElementById('cxCtxFrequency')?.value || 'All Frequencies').trim(),
-    age: (document.getElementById('cxCtxAge')?.value || 'All Ages').trim(),
-  };
+  execEnsureFilterSelectorsMounted();
+  const cfg = admGetFilterBarConfig();
+  const out = {};
+  cfg.filters.forEach((f, i) => {
+    out[f.key] = admGetFilValue('cx', i);
+  });
+  return out;
 }
 
 function buildCxFilterKey(ctx) {
   const c = ctx || getCxFilterContext();
-  return [c.branch, c.gender, c.service, c.frequency, c.age].join(' | ');
+  const cfg = admGetFilterBarConfig();
+  return cfg.filters.map((f) => admCtxSel(c, f.key) || String(f.allValue ?? '')).join(' | ');
 }
 
 function updateCxContextKeyView() {
@@ -4209,13 +4500,7 @@ function updateCxContextKeyView() {
 function syncCxContextToCustomerFilters(ctx) {
   const c = ctx || getCxFilterContext();
   try {
-    localStorage.setItem('roshd_filters', JSON.stringify({
-      branch: c.branch || 'All Branches',
-      gender: c.gender || 'All Genders',
-      service: c.service || 'All Services',
-      frequency: c.frequency || 'All Frequencies',
-      age: c.age || 'All Ages',
-    }));
+    localStorage.setItem('roshd_filters', JSON.stringify(Object.assign({}, c)));
   } catch (_) {}
 }
 
@@ -4550,24 +4835,7 @@ function applyCxDriversOverridesToForm(o) {
 
 function loadCxDriversEditorForm() {
   if (!document.getElementById('cxEd_mapTitleEn')) return;
-  const branchEl = document.getElementById('cxCtxBranch');
-  if (branchEl && branchEl.dataset.initFromStore !== '1') {
-    try {
-      const f = JSON.parse(localStorage.getItem('roshd_filters') || 'null');
-      const setIf = (id, v) => {
-        const el = document.getElementById(id);
-        if (el && v) el.value = v;
-      };
-      if (f) {
-        setIf('cxCtxBranch', f.branch);
-        setIf('cxCtxGender', f.gender);
-        setIf('cxCtxService', f.service);
-        setIf('cxCtxFrequency', f.frequency);
-        setIf('cxCtxAge', f.age);
-      }
-    } catch (_) {}
-    branchEl.dataset.initFromStore = '1';
-  }
+  execEnsureFilterSelectorsMounted();
   syncCxContextToCustomerFilters();
   updateCxContextKeyView();
   ensureCxDriverRowEditorsBuilt();
@@ -4988,6 +5256,131 @@ function resetDemographicsOverrides() {
   toast('Demographics overrides cleared.', 'info');
 }
 
+function dfFormAttr(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;');
+}
+
+function dfAddOptionRow(si) {
+  const tb = document.getElementById('dfOptBody_' + si);
+  if (!tb) return;
+  const j = tb.querySelectorAll('tr').length;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td><input class="form-input df-opt-val" value="" placeholder="stored value"></td>
+    <td><input class="form-input df-opt-en" value="" placeholder="English label"></td>
+    <td><input class="form-input df-opt-ar" value="" placeholder="Arabic" dir="rtl"></td>
+    <td><button type="button" class="btn btn-secondary btn-sm" onclick="dfRemoveOptionRow(this)">Remove</button></td>`;
+  tb.appendChild(tr);
+}
+
+function dfRemoveOptionRow(btn) {
+  const tr = btn && btn.closest('tr');
+  if (tr) tr.remove();
+}
+
+function loadDashboardFiltersEditor() {
+  const mount = document.getElementById('dfEditorMount');
+  if (!mount) return;
+  const cfg = admGetFilterBarConfig();
+  const cards = cfg.filters
+    .map((f, si) => {
+      const opts = (f.options || [])
+        .map(
+          (o) =>
+            `<tr>
+          <td><input class="form-input df-opt-val" value="${dfFormAttr(o.value)}"></td>
+          <td><input class="form-input df-opt-en" value="${dfFormAttr(o.labelEn)}"></td>
+          <td><input class="form-input df-opt-ar" value="${dfFormAttr(o.labelAr)}" dir="rtl"></td>
+          <td><button type="button" class="btn btn-secondary btn-sm" onclick="dfRemoveOptionRow(this)">Remove</button></td>
+        </tr>`
+        )
+        .join('');
+      const keyNote = `<p class="exec-editor-hint">Fixed key: <code>${dfFormAttr(f.key)}</code></p>`;
+      return `
+    <div class="exec-editor-section" style="margin-bottom:16px;border:1px solid var(--border2);border-radius:12px;padding:14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px">
+        <h3 style="margin:0">Filter ${si + 1}</h3>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="dfAddOptionRow(${si})">Add option</button>
+      </div>
+      ${keyNote}
+      <div class="exec-editor-grid2" style="margin-bottom:12px">
+        <div class="form-group"><label class="form-label">Toolbar label EN</label><input class="form-input" id="dfLblEn_${si}" value="${dfFormAttr(f.labelEn)}"></div>
+        <div class="form-group"><label class="form-label">Toolbar label AR</label><input class="form-input" id="dfLblAr_${si}" value="${dfFormAttr(f.labelAr)}" dir="rtl"></div>
+        <div class="form-group"><label class="form-label">&quot;All&quot; stored value</label><input class="form-input" id="dfAllV_${si}" value="${dfFormAttr(f.allValue)}"></div>
+        <div class="form-group"><label class="form-label">&quot;All&quot; label EN</label><input class="form-input" id="dfAllLe_${si}" value="${dfFormAttr(f.allLabelEn)}"></div>
+        <div class="form-group"><label class="form-label">&quot;All&quot; label AR</label><input class="form-input" id="dfAllLa_${si}" value="${dfFormAttr(f.allLabelAr)}" dir="rtl"></div>
+      </div>
+      <h4 style="margin:8px 0">Options</h4>
+      <div style="overflow:auto">
+      <table class="data-table" style="width:100%;font-size:12px"><thead><tr><th>Value</th><th>English</th><th>Arabic</th><th></th></tr></thead>
+      <tbody id="dfOptBody_${si}">${opts}</tbody></table></div>
+    </div>`;
+    })
+    .join('');
+  mount.innerHTML =
+    '<p class="exec-editor-hint">Eight filters with fixed keys and order. Add as many option rows as you need. Branch option <b>values</b> must stay Riyadh/Jeddah/Dammam (or other keys present in branch data) so scores stay consistent.</p>' +
+    cards;
+}
+
+function dashboardFiltersGatherNormalized() {
+  const baseDef = admDefaultFilterBarConfig();
+  const cfg = admGetFilterBarConfig();
+  const merged = cfg.filters.map((f, si) => {
+    const gv = (id) => String(document.getElementById(id)?.value ?? '').trim();
+    const allValue = gv('dfAllV_' + si) || baseDef.filters[si].allValue;
+    const labelEn = gv('dfLblEn_' + si) || baseDef.filters[si].labelEn;
+    const labelAr = gv('dfLblAr_' + si) || baseDef.filters[si].labelAr;
+    const allLabelEn = gv('dfAllLe_' + si) || baseDef.filters[si].allLabelEn;
+    const allLabelAr = gv('dfAllLa_' + si) || baseDef.filters[si].allLabelAr;
+    const tb = document.getElementById('dfOptBody_' + si);
+    const opts = [];
+    if (tb) {
+      tb.querySelectorAll('tr').forEach((tr) => {
+        const v = tr.querySelector('.df-opt-val')?.value?.trim() ?? '';
+        if (!v) return;
+        const en = (tr.querySelector('.df-opt-en')?.value ?? '').trim() || v;
+        const ar = (tr.querySelector('.df-opt-ar')?.value ?? '').trim() || en;
+        opts.push({ value: v, labelEn: en, labelAr: ar });
+      });
+    }
+    const outFilter = Object.assign({}, baseDef.filters[si], f, {
+      key: baseDef.filters[si].key,
+      labelEn,
+      labelAr,
+      allValue,
+      allLabelEn,
+      allLabelAr,
+      options: opts.length ? opts : baseDef.filters[si].options
+    });
+    return outFilter;
+  });
+  return admNormalizeFilterBarConfig({ filters: merged });
+}
+
+function saveDashboardFiltersFromForm() {
+  const payload = dashboardFiltersGatherNormalized();
+  try {
+    localStorage.setItem(FILTER_BAR_STORAGE_KEY, JSON.stringify(payload));
+  } catch (_) {
+    toast('Could not save (storage blocked).', 'error');
+    return;
+  }
+  admAfterDashboardFiltersSaved();
+  addAuditEntry('UPDATE', 'Dashboard filters config', 'Customer toolbar filters saved');
+  toast('Dashboard filters saved. Reloaded admin filter strips and segment sample.', 'success');
+}
+
+function resetDashboardFiltersToDefaults() {
+  try {
+    localStorage.removeItem(FILTER_BAR_STORAGE_KEY);
+  } catch (_) {}
+  loadDashboardFiltersEditor();
+  admAfterDashboardFiltersSaved();
+  addAuditEntry('UPDATE', 'Dashboard filters config', 'Reset bundled defaults');
+  toast('Dashboard filters restored to defaults.', 'info');
+}
+
 const CUSTOMER_PATTERNS_OVERRIDES_STORAGE_KEY = 'roshd_customer_patterns_overrides';
 const CP_EDITOR_FIELDS = [
   { id:'cp_titleEn', key:'titleEn', lbl:'Panel title EN', def:'Customer Pattern View' },
@@ -5258,6 +5651,14 @@ async function loadQuestionnaireEditorForm(forceReloadDefaults) {
   if (!_qnDefaultSections.length || forceReloadDefaults) {
     const defHtml = await fetchDefaultQuestionnairePanelHtml();
     _qnDefaultSections = qnExtractSectionsFromHtml(defHtml);
+    if (!_qnDefaultSections.length) {
+      toast(
+        defHtml
+          ? 'Questionnaire panel HTML loaded but no sections were found (unexpected markup).'
+          : 'Could not fetch customer-dashboard.html for Questionnaire/Pilot/Model editors. Ensure /customer-dashboard.html is deployed and reachable.',
+        'error'
+      );
+    }
   }
   const storedSections = readQuestionnaireStoredSections();
   _qnSections = qnCloneSections(storedSections && storedSections.length ? storedSections : _qnDefaultSections);
@@ -5753,6 +6154,7 @@ function showPanel(id, btn) {
   if (id === 'cx-drivers')      loadCxDriversEditorForm();
   if (id === 'units-performance') loadUnitsPerformanceEditorForm();
   if (id === 'demographics')    loadDemographicsEditorForm();
+  if (id === 'dashboard-filters') loadDashboardFiltersEditor();
   if (id === 'customer-patterns') loadCustomerPatternsEditorForm();
   if (id === 'questionnaire')   loadQuestionnaireEditorForm();
   if (id === 'pilot-analysis')  loadPilotAnalysisEditorForm();
@@ -5788,6 +6190,7 @@ function initAllPanels() {
   loadCxDriversEditorForm();
   loadUnitsPerformanceEditorForm();
   loadDemographicsEditorForm();
+  loadDashboardFiltersEditor();
   loadCustomerPatternsEditorForm();
   loadQuestionnaireEditorForm();
   loadPilotAnalysisEditorForm();

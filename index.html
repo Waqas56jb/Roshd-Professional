@@ -3880,38 +3880,10 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
       </div>
     </div>
 
-    <!-- Global Filter Bar -->
+    <!-- Global Filter Bar (8 configurable filters — built in JS from roshd_filter_bar_config) -->
     <div class="db-filter-bar">
       <span class="db-filter-label"><span class="en">Filters:</span><span class="ar">التصفية:</span></span>
-      <select class="db-select" id="dbBranch" onchange="dbRender()">
-        <option value="All Branches" data-en="All Branches" data-ar="جميع الفروع">All Branches</option>
-        <option value="Riyadh"       data-en="Riyadh"       data-ar="الرياض">Riyadh</option>
-        <option value="Jeddah"       data-en="Jeddah"       data-ar="جدة">Jeddah</option>
-        <option value="Dammam"       data-en="Dammam"       data-ar="الدمام">Dammam</option>
-      </select>
-      <select class="db-select" id="dbGender" onchange="dbRender()">
-        <option value="All Genders" data-en="All Genders" data-ar="الجنسين">All Genders</option>
-        <option value="Male"        data-en="Male"        data-ar="ذكر">Male</option>
-        <option value="Female"      data-en="Female"      data-ar="أنثى">Female</option>
-      </select>
-      <select class="db-select" id="dbService" onchange="dbRender()">
-        <option value="All Services" data-en="All Services" data-ar="جميع الخدمات">All Services</option>
-        <option value="Mechanical"   data-en="Mechanical"   data-ar="ميكانيكي">Mechanical</option>
-        <option value="Bodyshop"     data-en="Bodyshop"     data-ar="هيكل السيارة">Bodyshop</option>
-      </select>
-      <select class="db-select" id="dbFrequency" onchange="dbRender()">
-        <option value="All Frequencies" data-en="All Frequencies" data-ar="كل التكرارات">All Frequencies</option>
-        <option value="1 Visit"       data-en="1 Visit"       data-ar="زيارة واحدة">1 Visit</option>
-        <option value="2–3 Visits"    data-en="2–3 Visits"    data-ar="2–3 زيارات">2–3 Visits</option>
-        <option value="4+ Visits"     data-en="4+ Visits"     data-ar="4+ زيارات">4+ Visits</option>
-      </select>
-      <select class="db-select" id="dbAge" onchange="dbRender()">
-        <option value="All Ages" data-en="All Ages" data-ar="كل الأعمار">All Ages</option>
-        <option value="&lt;25"   data-en="&lt;25"   data-ar="أقل من 25">&lt;25</option>
-        <option value="25–34"   data-en="25–34"   data-ar="25–34">25–34</option>
-        <option value="35–44"   data-en="35–44"   data-ar="35–44">35–44</option>
-        <option value="45+"     data-en="45+"     data-ar="45+">45+</option>
-      </select>
+      <div id="dbFilterBarInner" class="db-filter-bar-inner" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1;min-width:0"></div>
       <span class="db-filter-label" style="margin-inline-start:8px;">Q2 2026</span>
       <button class="db-export-btn" onclick="window.print()">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -4964,15 +4936,237 @@ const DB_SVC_LIST = ["Mechanical", "Bodyshop"];
 const DB_FREQ_LIST = ["1 Visit", "2–3 Visits", "4+ Visits"];
 const DB_AGE_LIST = ["<25", "25–34", "35–44", "45+"];
 
-/** @type {Array<[string,string,string,string,string,string,number,number,number,number,number,string]>} */
-const DB_CUSTOMERS = [];
-(function dbGenerateCustomers() {
-  /** 100× each branch — shuffled independently of row index — so Branch filter never collides structurally with demographic slots (e.g. Riyadh≠0 while Jeddah>0 under same sidebar filters). */
-  const branchPool = [];
-  for (let zi = 0; zi < DB_BR_LIST.length; zi++) {
-    const b = DB_BR_LIST[zi];
-    for (let z = 0; z < DB_SAMPLE_TOTAL / DB_BR_LIST.length; z++) branchPool.push(b);
+/** Must match admin `FILTER_BAR_STORAGE_KEY` */
+const FILTER_BAR_STORAGE_KEY = 'roshd_filter_bar_config';
+let __dbgFilterCfgSig = '';
+
+function dbDefaultFilterBarConfig() {
+  return {
+    filters: [
+      { key: 'branch', labelEn: 'Branch', labelAr: 'الفرع', allValue: 'All Branches', allLabelEn: 'All Branches', allLabelAr: 'جميع الفروع', options: [{ value: 'Riyadh', labelEn: 'Riyadh', labelAr: 'الرياض' }, { value: 'Jeddah', labelEn: 'Jeddah', labelAr: 'جدة' }, { value: 'Dammam', labelEn: 'Dammam', labelAr: 'الدمام' }] },
+      { key: 'gender', labelEn: 'Gender', labelAr: 'الجنس', allValue: 'All Genders', allLabelEn: 'All Genders', allLabelAr: 'الجنسين', options: [{ value: 'Male', labelEn: 'Male', labelAr: 'ذكر' }, { value: 'Female', labelEn: 'Female', labelAr: 'أنثى' }] },
+      { key: 'service', labelEn: 'Service', labelAr: 'الخدمة', allValue: 'All Services', allLabelEn: 'All Services', allLabelAr: 'جميع الخدمات', options: [{ value: 'Mechanical', labelEn: 'Mechanical', labelAr: 'ميكانيكي' }, { value: 'Bodyshop', labelEn: 'Bodyshop', labelAr: 'هيكل السيارة' }] },
+      { key: 'frequency', labelEn: 'Frequency', labelAr: 'تكرار الزيارات', allValue: 'All Frequencies', allLabelEn: 'All Frequencies', allLabelAr: 'كل التكرارات', options: [{ value: '1 Visit', labelEn: '1 Visit', labelAr: 'زيارة واحدة' }, { value: '2–3 Visits', labelEn: '2–3 Visits', labelAr: '2–3 زيارات' }, { value: '4+ Visits', labelEn: '4+ Visits', labelAr: '4+ زيارات' }] },
+      { key: 'age', labelEn: 'Age', labelAr: 'العمر', allValue: 'All Ages', allLabelEn: 'All Ages', allLabelAr: 'كل الأعمار', options: [{ value: '<25', labelEn: '<25', labelAr: 'أقل من 25' }, { value: '25–34', labelEn: '25–34', labelAr: '25–34' }, { value: '35–44', labelEn: '35–44', labelAr: '35–44' }, { value: '45+', labelEn: '45+', labelAr: '45+' }] },
+      { key: 'extra1', labelEn: 'Channel', labelAr: 'القناة', allValue: '__ALL__', allLabelEn: 'All channels', allLabelAr: 'كل القنوات', options: [{ value: 'Walk-in', labelEn: 'Walk-in', labelAr: 'حضوري' }, { value: 'App', labelEn: 'App / Online', labelAr: 'التطبيق' }, { value: 'Phone', labelEn: 'Phone', labelAr: 'هاتف' }] },
+      { key: 'extra2', labelEn: 'Customer type', labelAr: 'نوع العميل', allValue: '__ALL__', allLabelEn: 'All types', allLabelAr: 'كل الأنواع', options: [{ value: 'New', labelEn: 'New', labelAr: 'جديد' }, { value: 'Returning', labelEn: 'Returning', labelAr: 'عائد' }] },
+      { key: 'extra3', labelEn: 'Day part', labelAr: 'فترة اليوم', allValue: '__ALL__', allLabelEn: 'All', allLabelAr: 'الكل', options: [{ value: 'Weekday', labelEn: 'Weekday', labelAr: 'يوم عمل' }, { value: 'Weekend', labelEn: 'Weekend', labelAr: 'عطلة' }] }
+    ]
+  };
+}
+
+function dbDeepCloneJson(x) {
+  try { return JSON.parse(JSON.stringify(x)); } catch (_) { return dbDefaultFilterBarConfig(); }
+}
+
+function dbNormalizeFilterBarConfig(parsed) {
+  const def = dbDefaultFilterBarConfig();
+  if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.filters)) return def;
+  const out = { filters: [] };
+  for (let i = 0; i < 8; i++) {
+    const d = dbDeepCloneJson(def).filters[i];
+    const s = parsed.filters[i];
+    if (!s || typeof s !== 'object') {
+      out.filters.push(d);
+      continue;
+    }
+    const merged = {
+      key: d.key,
+      labelEn: String(s.labelEn || d.labelEn),
+      labelAr: String(s.labelAr || d.labelAr),
+      allValue: String(s.allValue != null && s.allValue !== '' ? s.allValue : d.allValue),
+      allLabelEn: String(s.allLabelEn || d.allLabelEn),
+      allLabelAr: String(s.allLabelAr || d.allLabelAr),
+      options: dbDeepCloneJson(d.options)
+    };
+    const rawOpts = Array.isArray(s.options) ? s.options : [];
+    const seen = new Set();
+    const opts = [];
+    rawOpts.forEach((ro) => {
+      const v = String(ro && ro.value != null ? ro.value : '').trim();
+      if (!v || seen.has(v)) return;
+      seen.add(v);
+      opts.push({
+        value: v,
+        labelEn: String(ro.labelEn || v),
+        labelAr: String(ro.labelAr || ro.labelEn || v)
+      });
+    });
+    if (opts.length) merged.options = opts;
+    out.filters.push(merged);
   }
+  return out;
+}
+
+function dbGetFilterBarConfig() {
+  try {
+    const raw = localStorage.getItem(FILTER_BAR_STORAGE_KEY);
+    if (raw) return dbNormalizeFilterBarConfig(JSON.parse(raw));
+  } catch (_) {}
+  return dbDefaultFilterBarConfig();
+}
+
+function dbFilterConfigFingerprint() {
+  try { return JSON.stringify(dbGetFilterBarConfig().filters); } catch (_) { return ''; }
+}
+
+/** Column index for customer row: dims 1–5 at 1–5, extras at 12–14 (risk stays at 11). */
+function dbFilterDatasetCol(filterIndex) {
+  if (filterIndex < 5) return 1 + filterIndex;
+  return 12 + (filterIndex - 5);
+}
+
+function dbFilId(kind, i) {
+  if (kind === 'exec') return 'execFil' + i;
+  if (kind === 'cx') return 'cxFil' + i;
+  return 'dbFil' + i;
+}
+
+function dbGetFilValue(kind, i) {
+  const cfg = dbGetFilterBarConfig();
+  const f = cfg.filters[i];
+  if (!f) return '';
+  const el = document.getElementById(dbFilId(kind, i));
+  const allV = String(f.allValue ?? '').trim();
+  const raw = el ? String(el.value).trim() : allV;
+  if (raw === '') return allV;
+  return raw;
+}
+
+function dbFilValueByKey(key, fallbackWhenAll) {
+  const cfg = dbGetFilterBarConfig();
+  const ix = cfg.filters.findIndex((x) => x.key === key);
+  if (ix < 0) return fallbackWhenAll;
+  const f = cfg.filters[ix];
+  const v = dbGetFilValue('db', ix);
+  const allV = String(f.allValue ?? '').trim();
+  if (!v || v === allV) return fallbackWhenAll;
+  return v;
+}
+
+function dbFilMatchesCustomerRow(cust, filterIndex, selectedRaw) {
+  const cfg = dbGetFilterBarConfig();
+  const f = cfg.filters[filterIndex];
+  if (!f) return true;
+  const col = dbFilterDatasetCol(filterIndex);
+  const allV = String(f.allValue ?? '').trim();
+  const sel = String(selectedRaw ?? '').trim();
+  if (sel === '' || sel === allV) return true;
+  return String(cust[col] ?? '').trim() === sel;
+}
+
+function dbGetAllFilValues(kind) {
+  const cfg = dbGetFilterBarConfig();
+  const out = [];
+  for (let i = 0; i < 8; i++) out.push(dbGetFilValue(kind, i));
+  return out;
+}
+
+function dbPersistRoshdFilters() {
+  const cfg = dbGetFilterBarConfig();
+  const o = {};
+  cfg.filters.forEach((f, i) => {
+    const el = document.getElementById(dbFilId('db', i));
+    o[f.key] = el ? String(el.value) : String(f.allValue ?? '');
+  });
+  try {
+    localStorage.setItem('roshd_filters', JSON.stringify(o));
+  } catch (_) {}
+}
+
+function dbRestoreRoshdFilters(obj) {
+  if (!obj || typeof obj !== 'object') return;
+  const cfg = dbGetFilterBarConfig();
+  const legacy = {
+    branch: obj.branch,
+    gender: obj.gender,
+    service: obj.service,
+    frequency: obj.frequency,
+    age: obj.age
+  };
+  cfg.filters.forEach((f, i) => {
+    const el = document.getElementById(dbFilId('db', i));
+    if (!el) return;
+    let v = obj[f.key];
+    if (v == null || v === '') v = legacy[f.key];
+    if (v == null || v === '') return;
+    const has = Array.from(el.options).some((o) => String(o.value) === String(v));
+    if (has) el.value = String(v);
+  });
+}
+
+function dbSyncFilterBarAfterExternalConfigChange() {
+  try {
+    __dbgFilterCfgSig = '';
+    dbBuildCustomerFilterBar();
+    dbRestoreRoshdFilters(JSON.parse(localStorage.getItem('roshd_filters') || 'null'));
+    dbEnsureCustomersBuiltForFilters();
+    if (typeof dbRender === 'function') dbRender();
+  } catch (_) {}
+}
+
+function dbEnsureCustomersBuiltForFilters() {
+  const sig = dbFilterConfigFingerprint();
+  if (__dbgFilterCfgSig === sig && DB_CUSTOMERS.length) return;
+  __dbgFilterCfgSig = sig;
+  dbRegenerateCustomers();
+}
+
+function dbEscAttr(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
+function dbBuildCustomerFilterBar() {
+  const host = document.getElementById('dbFilterBarInner');
+  if (!host) return;
+  const cfg = dbGetFilterBarConfig();
+  host.innerHTML = cfg.filters.map((f, i) => {
+    const fid = dbFilId('db', i);
+    const lbl = `<span class="db-filter-chip-lbl"><span class="en">${dbEscAttr(f.labelEn)}</span><span class="ar">${dbEscAttr(f.labelAr)}</span></span>`;
+    const optAll = `<option value="${dbEscAttr(f.allValue)}" data-en="${dbEscAttr(f.allLabelEn)}" data-ar="${dbEscAttr(f.allLabelAr)}">${dbEscAttr(f.allLabelEn)}</option>`;
+    const opts = (f.options || []).map(
+      (o) =>
+        `<option value="${dbEscAttr(o.value)}" data-en="${dbEscAttr(o.labelEn)}" data-ar="${dbEscAttr(o.labelAr)}">${dbEscAttr(o.labelEn)}</option>`
+    ).join('');
+    return lbl + `<select class="db-select" id="${fid}" aria-label="${dbEscAttr(f.labelEn)}" onchange="dbRender()">${optAll}${opts}</select>`;
+  }).join('');
+  document.querySelectorAll('#dbFilterBarInner select option[data-en]').forEach((opt) => {
+    const en = opt.dataset.en;
+    const ar = opt.dataset.ar;
+    opt.textContent = document.documentElement.getAttribute('data-lang') === 'ar' ? (ar || en) : en;
+  });
+}
+
+/** @type {Array<any>} Customer rows: … + risk @11, extra1–3 @12–14 */
+const DB_CUSTOMERS = [];
+
+function dbRegenerateCustomers() {
+  DB_CUSTOMERS.length = 0;
+  const cfg = dbGetFilterBarConfig();
+
+  function optVals(ix) {
+    const o = (cfg.filters[ix] && cfg.filters[ix].options) || [];
+    const out = o.map((x) => String(x.value).trim()).filter(Boolean);
+    return out.length ? out : ['—'];
+  }
+
+  function pick(arr, seed) {
+    if (!arr.length) return '';
+    const u = (typeof seed === 'number' ? seed >>> 0 : 1) >>> 0;
+    return arr[(u * 7919 + 104729 + (seed || 1) * 993) % arr.length];
+  }
+
+  let branchChoicesFinal = optVals(0).filter((b) => DB_DATA[b]);
+  if (!branchChoicesFinal.length) branchChoicesFinal = DB_BR_LIST.slice();
+
+  const branchPool = [];
+  for (let zi = 0; zi < branchChoicesFinal.length; zi++) {
+    const b = branchChoicesFinal[zi];
+    const nEach = DB_SAMPLE_TOTAL / branchChoicesFinal.length;
+    for (let z = 0; z < nEach; z++) branchPool.push(b);
+  }
+  while (branchPool.length < DB_SAMPLE_TOTAL)
+    branchPool.push(branchChoicesFinal[branchPool.length % branchChoicesFinal.length]);
   for (let k = branchPool.length - 1; k > 0; k--) {
     const jj = ((k * 7919 + 104729 + k * k * 993) >>> 0) % (k + 1);
     const t = branchPool[k];
@@ -4981,26 +5175,58 @@ const DB_CUSTOMERS = [];
   }
 
   for (let i = 1; i <= DB_SAMPLE_TOTAL; i++) {
+    const seed = i * 31 + ((i ^ 997) >>> 0);
     let branch = branchPool[i - 1];
-    let gender = (i * 7) % 10 < 6 ? "Male" : "Female";
-    let service = (i * 11) % 5 < 3 ? "Mechanical" : "Bodyshop";
-    let frequency = (i * 13) % 10 < 3 ? "1 Visit" : (i * 13) % 10 < 8 ? "2–3 Visits" : "4+ Visits";
-    let ageBand = (i * 17) % 12;
-    let age = ageBand < 2 ? "<25" : ageBand < 6 ? "25–34" : ageBand < 10 ? "35–44" : "45+";
-    if (branch === "Riyadh" && i % 4 === 0) service = "Bodyshop";
-    if (branch === "Dammam" && i % 5 === 0) frequency = "4+ Visits";
-    let q = branch === "Riyadh" ? 3.7 : branch === "Jeddah" ? 3.3 : 3.1;
-    let c = branch === "Jeddah" ? 2.8 : 3.2;
-    let p = branch === "Dammam" ? 2.5 : 2.9;
+
+    let gender = pick(optVals(1), seed ^ 3);
+    if (!gender || gender === '—') gender = (i * 7) % 10 < 6 ? 'Male' : 'Female';
+    let service = pick(optVals(2), seed ^ 7);
+    if (!service || service === '—') service = (i * 11) % 5 < 3 ? 'Mechanical' : 'Bodyshop';
+    let frequency = pick(optVals(3), seed ^ 13);
+    if (!frequency || frequency === '—') frequency = (i * 13) % 10 < 3 ? '1 Visit' : (i * 13) % 10 < 8 ? '2–3 Visits' : '4+ Visits';
+    let age = pick(optVals(4), seed ^ 21);
+    if (!age || age === '—') {
+      let ageBand = (i * 17) % 12;
+      age = ageBand < 2 ? '<25' : ageBand < 6 ? '25–34' : ageBand < 10 ? '35–44' : '45+';
+    }
+    let ex1 = pick(optVals(5), seed ^ 103);
+    let ex2 = pick(optVals(6), seed ^ 107);
+    let ex3 = pick(optVals(7), seed ^ 109);
+
+    if (branch === 'Riyadh' && i % 4 === 0) service = 'Bodyshop';
+    if (branch === 'Dammam' && i % 5 === 0) frequency = '4+ Visits';
+
+    let q = branch === 'Riyadh' ? 3.7 : branch === 'Jeddah' ? 3.3 : 3.1;
+    let c = branch === 'Jeddah' ? 2.8 : 3.2;
+    let p = branch === 'Dammam' ? 2.5 : 2.9;
     let s = 1.2 + (i % 4) * 0.15;
-    if (frequency === "4+ Visits") q += 0.25;
-    if (age === "<25") p -= 0.25;
-    if (gender === "Female") c -= 0.1;
+    if (frequency === '4+ Visits') q += 0.25;
+    if (age === '<25') p -= 0.25;
+    if (gender === 'Female') c -= 0.1;
     const sat = Math.max(1, Math.min(5, q * 0.38 + c * 0.27 + p * 0.22 + s * 0.05 + 1.0));
-    const risk = sat < 3 ? "High" : sat < 3.6 ? "Medium" : "Low";
-    DB_CUSTOMERS.push(["C-" + String(i).padStart(3, "0"), branch, gender, service, frequency, age, +q.toFixed(1), +c.toFixed(1), +p.toFixed(1), +s.toFixed(1), +sat.toFixed(1), risk]);
+    const risk = sat < 3 ? 'High' : sat < 3.6 ? 'Medium' : 'Low';
+
+    DB_CUSTOMERS.push([
+      'C-' + String(i).padStart(3, '0'),
+      branch,
+      gender,
+      service,
+      frequency,
+      age,
+      +q.toFixed(1),
+      +c.toFixed(1),
+      +p.toFixed(1),
+      +s.toFixed(1),
+      +sat.toFixed(1),
+      risk,
+      ex1 || '—',
+      ex2 || '—',
+      ex3 || '—'
+    ]);
   }
-})();
+}
+
+dbRegenerateCustomers();
 
 function dbDedupeDrivers(arr) {
   const seen = new Set();
@@ -5012,33 +5238,17 @@ function dbDedupeDrivers(arr) {
 }
 
 function dbFilteredCustomers() {
-  const branch = (document.getElementById("dbBranch")?.value || "All Branches").trim();
-  const gender = (document.getElementById("dbGender")?.value || "All Genders").trim();
-  const service = (document.getElementById("dbService")?.value || "All Services").trim();
-  const frequency = (document.getElementById("dbFrequency")?.value || "All Frequencies").trim();
-  const age = (document.getElementById("dbAge")?.value || "All Ages").trim();
-  return DB_CUSTOMERS.filter(
-    c =>
-      (branch === "All Branches" || c[1] === branch) &&
-      (gender === "All Genders" || c[2] === gender) &&
-      (service === "All Services" || c[3] === service) &&
-      (frequency === "All Frequencies" || c[4] === frequency) &&
-      (age === "All Ages" || c[5] === age)
-  );
+  dbEnsureCustomersBuiltForFilters();
+  const vals = dbGetAllFilValues('db');
+  return DB_CUSTOMERS.filter((c) => vals.every((v, i) => dbFilMatchesCustomerRow(c, i, v)));
 }
 
 /** Benchmark for comparison charts: same demographics as toolbar, branches pooled (ignores Branch filter). */
 function dbFilteredCustomersBenchSameDemo() {
-  const gender = (document.getElementById("dbGender")?.value || "All Genders").trim();
-  const service = (document.getElementById("dbService")?.value || "All Services").trim();
-  const frequency = (document.getElementById("dbFrequency")?.value || "All Frequencies").trim();
-  const age = (document.getElementById("dbAge")?.value || "All Ages").trim();
-  return DB_CUSTOMERS.filter(
-    c =>
-      (gender === "All Genders" || c[2] === gender) &&
-      (service === "All Services" || c[3] === service) &&
-      (frequency === "All Frequencies" || c[4] === frequency) &&
-      (age === "All Ages" || c[5] === age)
+  dbEnsureCustomersBuiltForFilters();
+  const vals = dbGetAllFilValues('db');
+  return DB_CUSTOMERS.filter((c) =>
+    vals.every((v, i) => (i === 0 ? true : dbFilMatchesCustomerRow(c, i, v)))
   );
 }
 
@@ -5209,7 +5419,7 @@ function dbRenderCustomerPatterns(fc) {
   if (titleEl) titleEl.innerHTML = `<span class="en">${esc(cpS(O, 'titleEn', 'Customer Pattern View'))}</span><span class="ar">${esc(cpS(O, 'titleAr', 'عرض أنماط العملاء'))}</span>`;
   if (subEl) subEl.innerHTML = `<span class="en">${esc(cpS(O, 'subEn', 'Distribution charts respect Branch and all demographic filters in the toolbar'))}</span><span class="ar">${esc(cpS(O, 'subAr', 'مخططات التوزيع تلتزم بمرشّح الفرع وكل مرشّحات الديموغرافيا في شريط الأدوات'))}</span>`;
 
-  const branchSel = (document.getElementById('dbBranch')?.value || 'All Branches').trim();
+  const branchSel = dbFilValueByKey('branch', 'All Branches');
   const BR_AR = { Riyadh: 'الرياض', Jeddah: 'جدة', Dammam: 'الدمام' };
   const brEn = branchSel === 'All Branches' ? 'All branches' : branchSel;
   const brAr = branchSel === 'All Branches' ? 'جميع الفروع' : (BR_AR[branchSel] || branchSel);
@@ -5391,22 +5601,11 @@ function showDashboard(user) {
   const avatarEl = document.getElementById('dbAvatar');
   if (avatarEl) avatarEl.textContent = displayName.charAt(0).toUpperCase();
 
-  // Restore saved filter selections
+  dbBuildCustomerFilterBar();
   try {
-    const filters = JSON.parse(localStorage.getItem('roshd_filters') || 'null');
-    if (filters) {
-      const branchEl  = document.getElementById('dbBranch');
-      const genderEl  = document.getElementById('dbGender');
-      const serviceEl = document.getElementById('dbService');
-      if (branchEl  && filters.branch)  branchEl.value  = filters.branch;
-      if (genderEl  && filters.gender)  genderEl.value  = filters.gender;
-      if (serviceEl && filters.service) serviceEl.value = filters.service;
-      const freqEl = document.getElementById("dbFrequency");
-      const ageEl = document.getElementById("dbAge");
-      if (freqEl && filters.frequency) freqEl.value = filters.frequency;
-      if (ageEl && filters.age) ageEl.value = filters.age;
-    }
-  } catch(_) {}
+    dbRestoreRoshdFilters(JSON.parse(localStorage.getItem('roshd_filters') || 'null'));
+  } catch (_) {}
+  dbEnsureCustomersBuiltForFilters();
 
   // Seed simulation levers from each driver's avg (top 4 only); dbRenderSimulation does the same if missing
   const d = dbGetData();
@@ -5444,11 +5643,11 @@ function hideDashboard() {
 
 /* ── Dashboard: Get Data ── */
 function dbGetData() {
-  const branch = (document.getElementById("dbBranch")?.value || "All Branches").trim();
-  const gender = (document.getElementById("dbGender")?.value || "All Genders").trim();
-  const service = (document.getElementById("dbService")?.value || "All Services").trim();
-  const freq = (document.getElementById("dbFrequency")?.value || "All Frequencies").trim();
-  const ageSel = (document.getElementById("dbAge")?.value || "All Ages").trim();
+  const branch = dbFilValueByKey("branch", "All Branches");
+  const gender = dbFilValueByKey("gender", "All Genders");
+  const service = dbFilValueByKey("service", "All Services");
+  const freq = dbFilValueByKey("frequency", "All Frequencies");
+  const ageSel = dbFilValueByKey("age", "All Ages");
 
   let d = JSON.parse(JSON.stringify(DB_DATA[branch] || DB_DATA["All Branches"]));
 
@@ -6766,24 +6965,15 @@ function dbApplyUnitsPerformanceDisplayOverrides() {
 }
 
 function dbRender() {
-  // Persist current filter state so it survives refresh / reopen
-  try {
-    localStorage.setItem('roshd_filters', JSON.stringify({
-      branch:    (document.getElementById('dbBranch')?.value    || 'All Branches').trim(),
-      gender:    (document.getElementById('dbGender')?.value    || 'All Genders').trim(),
-      service:   (document.getElementById('dbService')?.value   || 'All Services').trim(),
-      frequency: (document.getElementById('dbFrequency')?.value || 'All Frequencies').trim(),
-      age:       (document.getElementById('dbAge')?.value       || 'All Ages').trim()
-    }));
-  } catch(_) {}
+  dbPersistRoshdFilters();
 
   const fc = dbFilteredCustomers();
   const segmentN = fc.length;
   const sharePct = segmentN ? Math.round((segmentN / DB_SAMPLE_TOTAL) * 100) : 0;
   const d = dbGetData();
   const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
-  const freqVal = document.getElementById('dbFrequency')?.value || 'All Frequencies';
-  const ageSel = document.getElementById('dbAge')?.value || 'All Ages';
+  const freqVal = dbFilValueByKey('frequency', 'All Frequencies');
+  const ageSel = dbFilValueByKey('age', 'All Ages');
 
   const kScore = document.getElementById('kpiScore');
   if (kScore) {
@@ -6977,7 +7167,7 @@ function dbRenderSegments() {
 
   const d = dbGetData();
   const isAr = document.documentElement.getAttribute('data-lang') === 'ar';
-  const branchVal = (document.getElementById('dbBranch')?.value || 'All Branches').trim();
+  const branchVal = dbFilValueByKey('branch', 'All Branches');
   const labels = {
     'All Branches': ['All Branches', 'جميع الفروع'],
     'Riyadh': ['Riyadh', 'الرياض'],
@@ -7143,6 +7333,10 @@ window.addEventListener('scroll', () => {
     const ch = new BroadcastChannel('roshd_dashboard_sync');
     ch.onmessage = (ev) => {
       const t = ev.data && ev.data.type;
+      if (t === 'filter-bar-config-updated') {
+        dbSyncFilterBarAfterExternalConfigChange();
+        return;
+      }
       if (
         t === 'cx-drivers-overrides-updated' ||
         t === 'executive-overrides-updated' ||
@@ -7168,6 +7362,15 @@ window.addEventListener('scroll', () => {
       e.key === 'roshd_model_quality_overrides'
     )
       refreshDashboardIfOpen();
+    if (e.key === FILTER_BAR_STORAGE_KEY) dbSyncFilterBarAfterExternalConfigChange();
+    if (e.key === 'roshd_filters') {
+      try {
+        const dash = document.getElementById('customerDashboard');
+        if (!dash || !dash.classList.contains('open')) return;
+        dbRestoreRoshdFilters(JSON.parse(e.newValue || 'null'));
+        dbRender();
+      } catch (_) {}
+    }
   });
 })();
 </script>
