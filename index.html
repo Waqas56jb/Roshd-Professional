@@ -7816,6 +7816,23 @@ window.addEventListener('scroll', () => {
         dbSyncFilterBarAfterExternalConfigChange();
         return;
       }
+      if (t === 'dashboard-db-model-updated') {
+        try {
+          const raw = localStorage.getItem(ROSHD_DB_MODEL_KEY);
+          if (raw) {
+            const o = JSON.parse(raw);
+            if (o && typeof o === 'object') window.__ROSHD_DB_MODEL__ = o;
+          } else {
+            try {
+              delete window.__ROSHD_DB_MODEL__;
+            } catch (_) {
+              window.__ROSHD_DB_MODEL__ = null;
+            }
+          }
+        } catch (_) {}
+        refreshDashboardIfOpen();
+        return;
+      }
       if (
         t === 'cx-drivers-overrides-updated' ||
         t === 'executive-overrides-updated' ||
@@ -7832,8 +7849,16 @@ window.addEventListener('scroll', () => {
   window.addEventListener('storage', (e) => {
     if (e.key === ROSHD_DB_MODEL_KEY) {
       try {
-        const o = JSON.parse(e.newValue || 'null');
-        if (o && typeof o === 'object') window.__ROSHD_DB_MODEL__ = o;
+        if (e.newValue == null) {
+          try {
+            delete window.__ROSHD_DB_MODEL__;
+          } catch (_) {
+            window.__ROSHD_DB_MODEL__ = null;
+          }
+        } else {
+          const o = JSON.parse(e.newValue);
+          if (o && typeof o === 'object') window.__ROSHD_DB_MODEL__ = o;
+        }
       } catch (_) {}
     }
     if (

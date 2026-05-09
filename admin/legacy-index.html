@@ -3325,6 +3325,7 @@ async function admPullAllRoshdConfigClicked() {
     ch.close();
   } catch (_) {}
   toast('Loaded full config bundle from server (localStorage).', 'success');
+  admHydrateAdminFromStoredDashboardDbModel();
 }
 
 async function admPushAllRoshdConfigClicked() {
@@ -3848,6 +3849,108 @@ let modelOverrides = {};
 Object.keys(DRIVERS_DATA).forEach(b => {
   modelOverrides[b] = DRIVERS_DATA[b].map(d => ({...d}));
 });
+
+/** Same key as customer `ROSHD_DB_MODEL_KEY` — full branch-keyed model (EXEC_DB_DATA shape). */
+const ROSHD_DASHBOARD_DB_MODEL_KEY = 'roshd_dashboard_db_model';
+
+function admDriverPathFromImpact(imp) {
+  const x = Number(imp);
+  if (Number.isNaN(x)) return 0;
+  return Math.round(x * 200) / 100;
+}
+
+function admBuildRoshdDashboardDbModelFromAdmin() {
+  const out = {};
+  for (const branchKey of Object.keys(EXEC_DB_DATA)) {
+    const base = JSON.parse(JSON.stringify(EXEC_DB_DATA[branchKey]));
+    const ovDrivers = modelOverrides[branchKey];
+    if (Array.isArray(ovDrivers) && Array.isArray(base.drivers)) {
+      for (const dr of base.drivers) {
+        const m = ovDrivers.find((x) => x && x.name === dr.name);
+        if (m) {
+          dr.impact = Number(m.impact);
+          dr.avg = Number(m.avg);
+          dr.decision = m.decision;
+          if (m.decisionAr) dr.decisionAr = m.decisionAr;
+          dr.path =
+            m.path != null && !Number.isNaN(Number(m.path))
+              ? Number(m.path)
+              : admDriverPathFromImpact(dr.impact);
+        }
+      }
+    }
+    const brOv = branchOverrides[branchKey];
+    if (brOv) {
+      if (brOv.score != null) base.score = Number(brOv.score);
+      if (brOv.explanatory != null) base.explanatory = Number(brOv.explanatory);
+      if (brOv.top) base.top = brOv.top;
+      if (brOv.topAr) base.topAr = brOv.topAr;
+    }
+    out[branchKey] = base;
+  }
+  return out;
+}
+
+function admApplyRoshdDashboardDbModelToAdmin(obj) {
+  if (!obj || typeof obj !== 'object') return;
+  for (const branchKey of Object.keys(EXEC_DB_DATA)) {
+    const row = obj[branchKey];
+    if (!row || typeof row !== 'object') continue;
+    if (!branchOverrides[branchKey]) {
+      branchOverrides[branchKey] = BRANCHES_DATA[branchKey]
+        ? { ...BRANCHES_DATA[branchKey] }
+        : { score: 3.8, explanatory: 72, top: 'Quality', topAr: 'الجودة', n: 100 };
+    }
+    if (row.score != null) branchOverrides[branchKey].score = Number(row.score);
+    if (row.explanatory != null) branchOverrides[branchKey].explanatory = Number(row.explanatory);
+    if (row.top) branchOverrides[branchKey].top = row.top;
+    if (row.topAr) branchOverrides[branchKey].topAr = row.topAr;
+    if (Array.isArray(row.drivers)) {
+      const template = DRIVERS_DATA[branchKey] || DRIVERS_DATA['All Branches'];
+      modelOverrides[branchKey] = template.map((t) => {
+        const s = row.drivers.find((x) => x && x.name === t.name);
+        if (!s) return { ...t };
+        const out = {
+          name: t.name,
+          impact: Number(s.impact != null ? s.impact : t.impact),
+          avg: Number(s.avg != null ? s.avg : t.avg),
+          decision: s.decision != null ? s.decision : t.decision,
+        };
+        if (s.decisionAr) out.decisionAr = s.decisionAr;
+        if (s.path != null && !Number.isNaN(Number(s.path))) out.path = Number(s.path);
+        return out;
+      });
+    }
+  }
+}
+
+function admHydrateAdminFromStoredDashboardDbModel() {
+  try {
+    const raw = localStorage.getItem(ROSHD_DASHBOARD_DB_MODEL_KEY);
+    if (raw) {
+      const o = JSON.parse(raw);
+      admApplyRoshdDashboardDbModelToAdmin(o);
+    }
+  } catch (_) {}
+  renderBranchPanel();
+  if (document.getElementById('modelWeightsEditor')) renderModelWeights();
+}
+
+async function admPersistRoshdDashboardDbModel(summaryForKv) {
+  const payload = admBuildRoshdDashboardDbModelFromAdmin();
+  try {
+    localStorage.setItem(ROSHD_DASHBOARD_DB_MODEL_KEY, JSON.stringify(payload));
+  } catch (_) {
+    toast('Could not save dashboard model (storage blocked).', 'error');
+    return;
+  }
+  try {
+    window.__ROSHD_DB_MODEL__ = payload;
+  } catch (_) {}
+  notifyCustomerDashboardOverrides('dashboard-db-model-updated');
+  addAuditEntry('UPDATE', 'Dashboard DB model', summaryForKv || 'Branch scores + driver weights synced to customer');
+  await admFinishDashboardKvSave(ROSHD_DASHBOARD_DB_MODEL_KEY, summaryForKv || 'Dashboard model');
+}
 
 /* State */
 let currentAdmin = null;
@@ -4642,8 +4745,7 @@ function executeConfirmedAction() {
     modelOverrides = {};
     Object.keys(DRIVERS_DATA).forEach(b => { modelOverrides[b] = DRIVERS_DATA[b].map(d=>({...d})); });
     renderModelWeights();
-    addAuditEntry('OVERRIDE','Model Weights','All driver weight overrides reset to defaults');
-    toast('Model weights reset to defaults.','success');
+    void admPersistRoshdDashboardDbModel('Model weights reset to defaults');
   } else if (a === 'clear-audit') {
     auditLog = [];
     renderAuditLog();
@@ -4665,6 +4767,7 @@ function launchAdmin(user, opts) {
   if (av) av.textContent = (user.name || 'A').charAt(0).toUpperCase();
   if (!opts.quiet) addAuditEntry('LOGIN', 'Admin Auth', 'Successful admin login');
   initAllPanels();
+  admHydrateAdminFromStoredDashboardDbModel();
   applyAdminLanguage();
   if (!opts.quiet) toast(I18N[currentLang].messages.welcome(user.name), 'success');
 }
@@ -7392,9 +7495,8 @@ function resetBranchScore(b) {
   renderBranchPanel();
 }
 
-function saveBranchScores() {
-  addAuditEntry('UPDATE','Branch Scores','CX score overrides saved for all branches');
-  toast('Branch scores saved.','success');
+async function saveBranchScores() {
+  await admPersistRoshdDashboardDbModel('Branch CX scores');
 }
 
 function openCreateBranch() {
@@ -7425,7 +7527,7 @@ function editBranch(bid) {
   openModal('branchModal');
 }
 
-function saveBranch() {
+async function saveBranch() {
   const en   = document.getElementById('bNameEn').value.trim();
   const ar   = document.getElementById('bNameAr').value.trim();
   const mgr  = document.getElementById('bManager').value.trim();
@@ -7448,6 +7550,7 @@ function saveBranch() {
   }
   closeModalById('branchModal');
   renderBranchPanel();
+  if (EXEC_DB_DATA[en]) await admPersistRoshdDashboardDbModel(`Branch record: ${en}`);
 }
 
 /* ═══════════════════════════════════════════
@@ -7792,9 +7895,9 @@ function updateDecision(branch, driverName, val) {
   if (drivers) { const d=drivers.find(x=>x.name===driverName); if(d) d.decision=val; }
 }
 
-function saveModelWeights() {
-  addAuditEntry('OVERRIDE','Model Weights',`Driver weights saved for ${document.getElementById('modelBranchSelect')?.value||'All'}`);
-  toast('Model weights saved and applied.','success');
+async function saveModelWeights() {
+  const br = document.getElementById('modelBranchSelect')?.value || 'All Branches';
+  await admPersistRoshdDashboardDbModel(`Driver weights · ${br}`);
 }
 
 function resetModelWeights() {
