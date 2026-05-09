@@ -2151,6 +2151,17 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
               <button type="button" class="btn btn-primary btn-sm" onclick="saveDashboardFiltersFromForm()">Save</button>
             </div>
           </div>
+          <div class="exec-editor-section" style="margin-bottom:16px;border:1px solid var(--border2);border-radius:12px;padding:14px" id="dfServerSyncBar">
+            <h3 style="margin:0 0 8px">Server sync</h3>
+            <p class="exec-editor-hint">Deploy <code>GET /api/filters</code> and <code>PUT /api/filters</code> (see API). Run <code>server/sql/filter_bar_remote_config.sql</code> in Supabase. Set env <code>ROSHD_FILTERS_ADMIN_TOKEN</code> on the server. Paste the same token below — stored <b>only in this browser session</b>. Then <b>Save</b> pushes config to the database; customer dashboards fetch on open.</p>
+            <div class="exec-editor-grid2">
+              <div class="form-group"><label class="form-label">Write token (session)</label><input type="password" class="form-input" id="dfApiWriteToken" placeholder="Matches ROSHD_FILTERS_ADMIN_TOKEN" autocomplete="off"></div>
+              <div class="form-group" style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px">
+                <button type="button" class="btn btn-secondary btn-sm" onclick="dfRememberWriteToken()">Remember token</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="admPullFiltersFromServerClicked()">Pull from server</button>
+              </div>
+            </div>
+          </div>
           <div id="dfEditorMount"></div>
           <div class="exec-editor-actions">
             <button type="button" class="btn btn-primary" onclick="saveDashboardFiltersFromForm()">Save</button>
@@ -3131,8 +3142,95 @@ function execDedupeDrivers(arr) {
 
 /** Must match customer dashboard */
 const FILTER_BAR_STORAGE_KEY = 'roshd_filter_bar_config';
+/** Session-only token for PUT /api/filters (matches env ROSHD_FILTERS_ADMIN_TOKEN on server). */
+const FILTERS_API_TOKEN_KEY = 'roshd_filters_api_write_token';
 let __admExecFilterSig = '';
 let __admCustFilterSelectorsSig = '';
+
+async function admFetchRemoteFilterBarConfig() {
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (!base) return null;
+    const res = await fetch(base + '/api/filters', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data || !data.success || data.config == null || typeof data.config !== 'object') return null;
+    return admNormalizeFilterBarConfig(data.config);
+  } catch (_) {
+    return null;
+  }
+}
+
+async function admPullFiltersFromServerIfAvailable() {
+  const remote = await admFetchRemoteFilterBarConfig();
+  if (!remote) return false;
+  try {
+    localStorage.setItem(FILTER_BAR_STORAGE_KEY, JSON.stringify(remote));
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+async function admPushFiltersToServer(payload) {
+  let token = '';
+  try {
+    token = sessionStorage.getItem(FILTERS_API_TOKEN_KEY) || '';
+  } catch (_) {}
+  if (!token) return { ok: false, skipped: true };
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    const res = await fetch(base + '/api/filters', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify(payload),
+    });
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (_) {}
+    if (!res.ok) return { ok: false, skipped: false, message: data.message || res.statusText };
+    return { ok: true, skipped: false };
+  } catch (e) {
+    return { ok: false, skipped: false, message: String(e.message || e) };
+  }
+}
+
+function dfRememberWriteToken() {
+  const el = document.getElementById('dfApiWriteToken');
+  const v = el && el.value ? String(el.value).trim() : '';
+  if (!v) {
+    try {
+      sessionStorage.removeItem(FILTERS_API_TOKEN_KEY);
+    } catch (_) {}
+    toast('Session token cleared.', 'info');
+    return;
+  }
+  try {
+    sessionStorage.setItem(FILTERS_API_TOKEN_KEY, v);
+  } catch (_) {}
+  toast('Write token saved for this browser session.', 'success');
+}
+
+function dfPrefillWriteTokenField() {
+  const el = document.getElementById('dfApiWriteToken');
+  if (!el) return;
+  try {
+    el.value = sessionStorage.getItem(FILTERS_API_TOKEN_KEY) || '';
+  } catch (_) {}
+}
+
+async function admPullFiltersFromServerClicked() {
+  const ok = await admPullFiltersFromServerIfAvailable();
+  loadDashboardFiltersEditor();
+  dfPrefillWriteTokenField();
+  if (ok) {
+    admAfterDashboardFiltersSaved();
+    toast('Loaded filter configuration from server.', 'success');
+  } else {
+    toast('Remote filters unavailable or empty — showing local configuration.', 'info');
+  }
+}
 
 function admDefaultFilterBarConfig() {
   return {
@@ -3187,7 +3285,8 @@ function admNormalizeFilterBarConfig(parsed) {
       opts.push({
         value: v,
         labelEn: String(ro.labelEn || v),
-        labelAr: String(ro.labelAr || ro.labelEn || v)
+        labelAr: String(ro.labelAr || ro.labelEn || v),
+        active: ro.active === false ? false : true
       });
     });
     if (opts.length) merged.options = opts;
@@ -3302,6 +3401,7 @@ function admRebuildCustomerFilterSelectors() {
         const lbl = `<label class="db-filter-chip-lbl" for="${fid}"><span class="en">${admAttrEsc(f.labelEn)}</span><span class="ar">${admAttrEsc(f.labelAr)}</span></label>`;
         const optAll = `<option value="${admAttrEsc(f.allValue)}" data-en="${admAttrEsc(f.allLabelEn)}" data-ar="${admAttrEsc(f.allLabelAr)}">${admAttrEsc(f.allLabelEn)}</option>`;
         const opts = (f.options || [])
+          .filter((o) => o && o.active !== false)
           .map(
             (o) =>
               `<option value="${admAttrEsc(o.value)}" data-en="${admAttrEsc(o.labelEn)}" data-ar="${admAttrEsc(o.labelAr)}">${admAttrEsc(o.labelEn)}</option>`
@@ -3391,7 +3491,10 @@ function execRegenerateCustomersFromFilterConfig() {
   const cfg = admGetFilterBarConfig();
   function optVals(ix) {
     const o = (cfg.filters[ix] && cfg.filters[ix].options) || [];
-    const out = o.map((x) => String(x.value).trim()).filter(Boolean);
+    const out = o
+      .filter((x) => x && x.active !== false)
+      .map((x) => String(x.value).trim())
+      .filter(Boolean);
     return out.length ? out : ['—'];
   }
   function pick(arr, seed) {
@@ -3399,8 +3502,11 @@ function execRegenerateCustomersFromFilterConfig() {
     const u = (typeof seed === 'number' ? seed >>> 0 : 1) >>> 0;
     return arr[(u * 7919 + 104729 + (seed || 1) * 993) % arr.length];
   }
-  let branchChoicesFinal = optVals(0).filter((b) => EXEC_DB_DATA[b]);
-  if (!branchChoicesFinal.length) branchChoicesFinal = EXEC_DB_BR_LIST.slice();
+  const brOpts = optVals(0).filter((b) => b && b !== '—');
+  let branchChoicesFinal = brOpts.filter((b) => EXEC_DB_DATA[b]);
+  if (!branchChoicesFinal.length) {
+    branchChoicesFinal = brOpts.length ? brOpts : EXEC_DB_BR_LIST.slice();
+  }
   const branchPool = [];
   for (let zi = 0; zi < branchChoicesFinal.length; zi++) {
     const b = branchChoicesFinal[zi];
@@ -5543,6 +5649,7 @@ function dfAddOptionRow(si) {
   tr.innerHTML = `<td><input class="form-input df-opt-val" value="" placeholder="stored value"></td>
     <td><input class="form-input df-opt-en" value="" placeholder="English label"></td>
     <td><input class="form-input df-opt-ar" value="" placeholder="Arabic" dir="rtl"></td>
+    <td style="text-align:center"><label class="form-label" style="display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin:0"><input type="checkbox" class="df-opt-active" checked title="Show in dropdowns"> Active</label></td>
     <td><button type="button" class="btn btn-secondary btn-sm" onclick="dfRemoveOptionRow(this)">Remove</button></td>`;
   tb.appendChild(tr);
 }
@@ -5565,6 +5672,7 @@ function loadDashboardFiltersEditor() {
           <td><input class="form-input df-opt-val" value="${dfFormAttr(o.value)}"></td>
           <td><input class="form-input df-opt-en" value="${dfFormAttr(o.labelEn)}"></td>
           <td><input class="form-input df-opt-ar" value="${dfFormAttr(o.labelAr)}" dir="rtl"></td>
+          <td style="text-align:center"><label class="form-label" style="display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;margin:0"><input type="checkbox" class="df-opt-active" ${o.active === false ? '' : 'checked'} title="Show in customer dropdowns"> Active</label></td>
           <td><button type="button" class="btn btn-secondary btn-sm" onclick="dfRemoveOptionRow(this)">Remove</button></td>
         </tr>`
         )
@@ -5586,14 +5694,15 @@ function loadDashboardFiltersEditor() {
       </div>
       <h4 style="margin:8px 0">Options</h4>
       <div style="overflow:auto">
-      <table class="data-table" style="width:100%;font-size:12px"><thead><tr><th>Value</th><th>English</th><th>Arabic</th><th></th></tr></thead>
+      <table class="data-table" style="width:100%;font-size:12px"><thead><tr><th>Value</th><th>English</th><th>Arabic</th><th>Active</th><th></th></tr></thead>
       <tbody id="dfOptBody_${si}">${opts}</tbody></table></div>
     </div>`;
     })
     .join('');
   mount.innerHTML =
-    '<p class="exec-editor-hint">Eight filters with fixed keys and order. Add as many option rows as you need. Branch option <b>values</b> must stay Riyadh/Jeddah/Dammam (or other keys present in branch data) so scores stay consistent.</p>' +
+    '<p class="exec-editor-hint">Eight filters with fixed keys and order. Add or rename options here (e.g. new branches). Stored <b>values</b> are used for filtering — keep them stable when renaming labels. Uncheck <b>Active</b> to hide an option without deleting history. Customer dashboards load this config via <code>GET /api/filters</code> when deployed.</p>' +
     cards;
+  dfPrefillWriteTokenField();
 }
 
 function dashboardFiltersGatherNormalized() {
@@ -5614,7 +5723,9 @@ function dashboardFiltersGatherNormalized() {
         if (!v) return;
         const en = (tr.querySelector('.df-opt-en')?.value ?? '').trim() || v;
         const ar = (tr.querySelector('.df-opt-ar')?.value ?? '').trim() || en;
-        opts.push({ value: v, labelEn: en, labelAr: ar });
+        const ac = tr.querySelector('.df-opt-active');
+        const active = ac ? !!ac.checked : true;
+        opts.push({ value: v, labelEn: en, labelAr: ar, active });
       });
     }
     const outFilter = Object.assign({}, baseDef.filters[si], f, {
@@ -5632,16 +5743,23 @@ function dashboardFiltersGatherNormalized() {
 }
 
 function saveDashboardFiltersFromForm() {
-  const payload = dashboardFiltersGatherNormalized();
-  try {
-    localStorage.setItem(FILTER_BAR_STORAGE_KEY, JSON.stringify(payload));
-  } catch (_) {
-    toast('Could not save (storage blocked).', 'error');
-    return;
-  }
-  admAfterDashboardFiltersSaved();
-  addAuditEntry('UPDATE', 'Dashboard filters config', 'Customer toolbar filters saved');
-  toast('Dashboard filters saved. Reloaded admin filter strips and segment sample.', 'success');
+  (async () => {
+    const payload = dashboardFiltersGatherNormalized();
+    try {
+      localStorage.setItem(FILTER_BAR_STORAGE_KEY, JSON.stringify(payload));
+    } catch (_) {
+      toast('Could not save (storage blocked).', 'error');
+      return;
+    }
+    const sync = await admPushFiltersToServer(payload);
+    admAfterDashboardFiltersSaved();
+    addAuditEntry('UPDATE', 'Dashboard filters config', 'Customer toolbar filters saved');
+    if (!sync.skipped && !sync.ok) {
+      toast('Saved locally. Server sync failed: ' + (sync.message || ''), 'warning');
+    } else {
+      toast('Dashboard filters saved. Reloaded admin filter strips and segment sample.', 'success');
+    }
+  })();
 }
 
 function resetDashboardFiltersToDefaults() {
@@ -5675,23 +5793,26 @@ function openToolbarFilterLabelsModal() {
 }
 
 function saveToolbarFilterLabelsFromModal() {
-  const base = admGetFilterBarConfig();
-  const merged = base.filters.map((f, si) => {
-    const labelEn = String(document.getElementById('tblLblEn_' + si)?.value ?? '').trim() || f.labelEn;
-    const labelAr = String(document.getElementById('tblLblAr_' + si)?.value ?? '').trim() || f.labelAr;
-    return Object.assign({}, f, { labelEn, labelAr });
-  });
-  const payload = admNormalizeFilterBarConfig({ filters: merged });
-  try {
-    localStorage.setItem(FILTER_BAR_STORAGE_KEY, JSON.stringify(payload));
-  } catch (_) {
-    toast('Could not save (storage blocked).', 'error');
-    return;
-  }
-  closeModalById('toolbarFilterLabelsModal');
-  admAfterDashboardFiltersSaved();
-  addAuditEntry('UPDATE', 'Dashboard filters config', 'Toolbar filter labels (EN/AR) updated');
-  toast('Filter names saved. Customer dashboard and admin strips updated.', 'success');
+  (async () => {
+    const base = admGetFilterBarConfig();
+    const merged = base.filters.map((f, si) => {
+      const labelEn = String(document.getElementById('tblLblEn_' + si)?.value ?? '').trim() || f.labelEn;
+      const labelAr = String(document.getElementById('tblLblAr_' + si)?.value ?? '').trim() || f.labelAr;
+      return Object.assign({}, f, { labelEn, labelAr });
+    });
+    const payload = admNormalizeFilterBarConfig({ filters: merged });
+    try {
+      localStorage.setItem(FILTER_BAR_STORAGE_KEY, JSON.stringify(payload));
+    } catch (_) {
+      toast('Could not save (storage blocked).', 'error');
+      return;
+    }
+    await admPushFiltersToServer(payload);
+    closeModalById('toolbarFilterLabelsModal');
+    admAfterDashboardFiltersSaved();
+    addAuditEntry('UPDATE', 'Dashboard filters config', 'Toolbar filter labels (EN/AR) updated');
+    toast('Filter names saved. Customer dashboard and admin strips updated.', 'success');
+  })();
 }
 
 const CUSTOMER_PATTERNS_OVERRIDES_STORAGE_KEY = 'roshd_customer_patterns_overrides';

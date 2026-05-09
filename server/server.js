@@ -116,6 +116,62 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+/** Customer + admin toolbar filters (same JSON as localStorage `roshd_filter_bar_config`). */
+const ROSHD_FILTERS_ADMIN_TOKEN = process.env.ROSHD_FILTERS_ADMIN_TOKEN || '';
+
+app.get('/api/filters', async (_req, res) => {
+  try {
+    if (!supabaseAdmin) {
+      return res.json({ success: true, config: null, source: 'no_db' });
+    }
+    const { data, error } = await supabaseAdmin
+      .from('filter_bar_remote_config')
+      .select('config')
+      .eq('id', 1)
+      .maybeSingle();
+    if (error) {
+      console.warn('[api/filters GET]', error.message);
+      return res.json({ success: true, config: null, source: 'error' });
+    }
+    return res.json({ success: true, config: data?.config ?? null, source: 'remote' });
+  } catch (e) {
+    console.error('[api/filters GET]', e);
+    return res.status(500).json({ success: false, message: e.message || 'Failed to load filters.' });
+  }
+});
+
+app.put('/api/filters', async (req, res) => {
+  try {
+    const auth = req.headers.authorization || '';
+    const bearer = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+    if (!ROSHD_FILTERS_ADMIN_TOKEN || bearer !== ROSHD_FILTERS_ADMIN_TOKEN) {
+      return res.status(401).json({
+        success: false,
+        message:
+          'Unauthorized. Set ROSHD_FILTERS_ADMIN_TOKEN in server env and send Authorization: Bearer <token> when saving from admin.',
+      });
+    }
+    const body = req.body || {};
+    if (!body.filters || !Array.isArray(body.filters)) {
+      return res.status(400).json({ success: false, message: 'Body must include a filters array.' });
+    }
+    if (!supabaseAdmin) {
+      return res.status(503).json({ success: false, message: 'Database not configured.' });
+    }
+    const row = {
+      id: 1,
+      config: body,
+      updated_at: new Date().toISOString(),
+    };
+    const { error } = await supabaseAdmin.from('filter_bar_remote_config').upsert(row, { onConflict: 'id' });
+    if (error) throw error;
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('[api/filters PUT]', e);
+    return res.status(500).json({ success: false, message: e.message || 'Failed to save filters.' });
+  }
+});
+
 const statRoot = path.join(__dirname, '..');
 
 /** Quick DB reachability check (local dev only). */

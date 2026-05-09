@@ -5224,7 +5224,8 @@ function dbNormalizeFilterBarConfig(parsed) {
       opts.push({
         value: v,
         labelEn: String(ro.labelEn || v),
-        labelAr: String(ro.labelAr || ro.labelEn || v)
+        labelAr: String(ro.labelAr || ro.labelEn || v),
+        active: ro.active === false ? false : true
       });
     });
     if (opts.length) merged.options = opts;
@@ -5239,6 +5240,20 @@ function dbGetFilterBarConfig() {
     if (raw) return dbNormalizeFilterBarConfig(JSON.parse(raw));
   } catch (_) {}
   return dbDefaultFilterBarConfig();
+}
+
+/** Pull latest toolbar filters from API (same JSON as localStorage). No-op if API missing or empty. */
+async function dbTrySyncFiltersFromApi() {
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (!base) return;
+    const res = await fetch(base + '/api/filters', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || !data.success || data.config == null || typeof data.config !== 'object') return;
+    const merged = dbNormalizeFilterBarConfig(data.config);
+    localStorage.setItem(FILTER_BAR_STORAGE_KEY, JSON.stringify(merged));
+  } catch (_) {}
 }
 
 function dbFilterConfigFingerprint() {
@@ -5386,7 +5401,9 @@ function dbBuildCustomerFilterBar() {
     const fid = dbFilId('db', i);
     const lbl = `<label class="db-filter-chip-lbl" for="${fid}"><span class="en">${dbEscAttr(f.labelEn)}</span><span class="ar">${dbEscAttr(f.labelAr)}</span></label>`;
     const optAll = `<option value="${dbEscAttr(f.allValue)}" data-en="${dbEscAttr(f.allLabelEn)}" data-ar="${dbEscAttr(f.allLabelAr)}">${dbEscAttr(f.allLabelEn)}</option>`;
-    const opts = (f.options || []).map(
+    const opts = (f.options || [])
+      .filter((o) => o && o.active !== false)
+      .map(
       (o) =>
         `<option value="${dbEscAttr(o.value)}" data-en="${dbEscAttr(o.labelEn)}" data-ar="${dbEscAttr(o.labelAr)}">${dbEscAttr(o.labelEn)}</option>`
     ).join('');
@@ -5409,7 +5426,10 @@ function dbRegenerateCustomers() {
 
   function optVals(ix) {
     const o = (cfg.filters[ix] && cfg.filters[ix].options) || [];
-    const out = o.map((x) => String(x.value).trim()).filter(Boolean);
+    const out = o
+      .filter((x) => x && x.active !== false)
+      .map((x) => String(x.value).trim())
+      .filter(Boolean);
     return out.length ? out : ['—'];
   }
 
@@ -5419,8 +5439,11 @@ function dbRegenerateCustomers() {
     return arr[(u * 7919 + 104729 + (seed || 1) * 993) % arr.length];
   }
 
-  let branchChoicesFinal = optVals(0).filter((b) => DB_DATA[b]);
-  if (!branchChoicesFinal.length) branchChoicesFinal = DB_BR_LIST.slice();
+  const brOpts = optVals(0).filter((b) => b && b !== '—');
+  let branchChoicesFinal = brOpts.filter((b) => DB_DATA[b]);
+  if (!branchChoicesFinal.length) {
+    branchChoicesFinal = brOpts.length ? brOpts : DB_BR_LIST.slice();
+  }
 
   const branchPool = [];
   for (let zi = 0; zi < branchChoicesFinal.length; zi++) {
@@ -5489,7 +5512,14 @@ function dbRegenerateCustomers() {
   }
 }
 
-dbRegenerateCustomers();
+(function dbBootstrapFiltersAndCustomers() {
+  (async () => {
+    try {
+      await dbTrySyncFiltersFromApi();
+    } catch (_) {}
+    dbRegenerateCustomers();
+  })();
+})();
 
 function dbDedupeDrivers(arr) {
   const seen = new Set();
@@ -5849,11 +5879,15 @@ function dbAdminEmbedInitialPanel() {
 }
 
 /* ── Dashboard: Show/Hide ── */
-function showDashboard(user) {
+async function showDashboard(user) {
   const db = document.getElementById('customerDashboard');
   db.classList.add('open');
   if (dbIsAdminEmbedPreview()) db.classList.add('db-admin-embed-shell');
   document.body.style.overflow = 'hidden';
+
+  try {
+    await dbTrySyncFiltersFromApi();
+  } catch (_) {}
 
   // Set user info
   const displayName = user?.first_name
