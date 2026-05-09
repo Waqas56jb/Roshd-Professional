@@ -60,6 +60,12 @@ body {
   min-height: 100vh;
 }
 
+/* Mobile browsers should not auto-zoom text unexpectedly */
+html, body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 html[data-lang="ar"] {
   direction: rtl;
 }
@@ -1442,6 +1448,20 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
   .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
   .driver-weight-row { grid-template-columns: 1fr; gap: 8px; }
+
+  /* Keep fixed filter bars aligned when sidebar is hidden */
+  #panel-executive .exec-editor {
+    padding-top: 156px;
+  }
+  #panel-cx-drivers .exec-editor {
+    padding-top: 156px;
+  }
+  #panel-executive .exec-editor-section--sticky,
+  #panel-cx-drivers .exec-editor-section--sticky {
+    left: max(18px, env(safe-area-inset-left, 0px));
+    right: max(18px, env(safe-area-inset-right, 0px));
+    top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));
+  }
 }
 
 @media (max-width: 768px) {
@@ -1468,6 +1488,17 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
   }
   .modal-header, .modal-body, .modal-footer { padding-left: 20px; padding-right: 20px; }
   .btn, .filter-select, .form-input, .q-input { min-height: 42px; }
+  .topbar-right {
+    min-width: 0;
+    gap: 6px;
+  }
+  .lang-toggle-nav {
+    flex-shrink: 0;
+  }
+  .exec-editor-section,
+  .card {
+    padding: 16px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1481,6 +1512,31 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
     border-radius: 10px;
   }
   .modal-header, .modal-body, .modal-footer { padding-left: 16px; padding-right: 16px; }
+  .content {
+    padding-left: max(12px, env(safe-area-inset-left, 0px));
+    padding-right: max(12px, env(safe-area-inset-right, 0px));
+  }
+  .page-title {
+    font-size: 18px;
+  }
+  .page-subtitle {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .table-wrap {
+    margin: 0 -8px;
+    padding: 0 8px;
+  }
+}
+
+/* RTL mobile sidebar should slide from right edge */
+@media (max-width: 1024px) {
+  html[data-lang="ar"] .sidebar {
+    transform: translateX(100%);
+  }
+  html[data-lang="ar"] .sidebar.open {
+    transform: translateX(0);
+  }
 }
 </style>
 </head>
