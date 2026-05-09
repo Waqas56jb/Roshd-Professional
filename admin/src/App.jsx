@@ -7,8 +7,6 @@ const MSG_CUSTOMER_HTML = "roshd-customer-dashboard-html";
 const MSG_REQUEST_HTML = "roshd-request-customer-dashboard-html";
 
 function App() {
-  const iframeRef = useRef(null);
-
   const pushCustomerHtmlToChild = useCallback((win) => {
     if (!win || typeof customerDashboardHtml !== "string" || !customerDashboardHtml.length) return;
     try {
