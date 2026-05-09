@@ -6684,18 +6684,41 @@ async function saveModelQualityOverridesFromForm() {
     if (vv === v.value) return;
     values[v.key] = vv;
   });
-  const payload = {};
-  if (Object.keys(pairs).length) payload.pairs = pairs;
-  if (Object.keys(values).length) payload.values = values;
-  const currFlow = JSON.stringify((_mqFlowBlocks || []).slice(0, 16));
-  const defFlow = JSON.stringify((_mqDefaultFlowBlocks || []).slice(0, 16));
-  if (currFlow !== defFlow) payload.flowBlocks = JSON.parse(currFlow);
-  if (!Object.keys(payload).length) {
+
+  const prev = readModelQualityStored();
+  const prevPairs = prev.pairs && typeof prev.pairs === 'object' ? prev.pairs : {};
+  const prevValues = prev.values && typeof prev.values === 'object' ? prev.values : {};
+  const prevFlowStr =
+    Array.isArray(prev.flowBlocks) && prev.flowBlocks.length
+      ? JSON.stringify(prev.flowBlocks.slice(0, 16))
+      : null;
+
+  const flowSnap = JSON.parse(JSON.stringify((_mqFlowBlocks || []).slice(0, 16)));
+  const currFlowStr = JSON.stringify(flowSnap);
+  const defFlowStr = JSON.stringify((_mqDefaultFlowBlocks || []).slice(0, 16));
+  const needPersistFlow =
+    currFlowStr !== defFlowStr || (prevFlowStr != null && prevFlowStr !== currFlowStr);
+
+  const fullPersist = {};
+  if (Object.keys(pairs).length) fullPersist.pairs = pairs;
+  else if (Object.keys(prevPairs).length) fullPersist.pairs = prevPairs;
+  if (Object.keys(values).length) fullPersist.values = values;
+  else if (Object.keys(prevValues).length) fullPersist.values = prevValues;
+  if (needPersistFlow) fullPersist.flowBlocks = flowSnap;
+  else if (Array.isArray(prev.flowBlocks) && prev.flowBlocks.length) fullPersist.flowBlocks = prev.flowBlocks.slice(0, 16);
+
+  const sig = (o) =>
+    JSON.stringify({
+      pairs: o.pairs && typeof o.pairs === 'object' ? o.pairs : {},
+      values: o.values && typeof o.values === 'object' ? o.values : {},
+      flowBlocks: Array.isArray(o.flowBlocks) ? o.flowBlocks : null,
+    });
+  if (sig(fullPersist) === sig(prev)) {
     toast('No changes to save.', 'info');
     return;
   }
   try {
-    localStorage.setItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, JSON.stringify(payload));
+    localStorage.setItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, JSON.stringify(fullPersist));
   } catch (_) {
     toast('Could not save (storage blocked).', 'error');
     return;
