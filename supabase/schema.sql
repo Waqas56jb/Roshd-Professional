@@ -19,6 +19,15 @@ create table if not exists public.branches (
   created_at timestamptz default now ()
 );
 
+-- Older projects may already have `public.branches` without these columns; CREATE TABLE is skipped.
+alter table public.branches add column if not exists slug text;
+alter table public.branches add column if not exists name_en text;
+alter table public.branches add column if not exists name_ar text;
+alter table public.branches add column if not exists city text;
+alter table public.branches add column if not exists sort_order int default 0;
+alter table public.branches add column if not exists is_active boolean default true;
+alter table public.branches add column if not exists created_at timestamptz default now ();
+
 -- ─── Profiles (linked to auth.users) ────────────────────────────────────────────
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
@@ -170,8 +179,60 @@ create index if not exists idx_admin_audit_created on public.admin_audit_log (
 );
 
 -- ─── Seeds ─────────────────────────────────────────────────────────────────────
-insert into public.branches (slug, name_en, name_ar, sort_order)
-  values ('Riyadh', 'Riyadh', 'الرياض', 1), ('Jeddah', 'Jeddah', 'جدة', 2), ('Dammam',
-    'Dammam', 'الدمام', 3)
-on conflict (slug) do nothing;
+-- Legacy `branches` tables may require NOT NULL `name` and/or `city`; new schema may omit them.
+do $$
+declare
+  has_name boolean;
+  has_city boolean;
+begin
+  select exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'branches' and column_name = 'name'
+  ) into has_name;
+  select exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'branches' and column_name = 'city'
+  ) into has_city;
 
+  if has_name and has_city then
+    insert into public.branches (slug, name_en, name_ar, sort_order, name, city)
+    select v.slug, v.name_en, v.name_ar, v.sort_order, v.name_en, v.city_seed
+    from (
+      values
+        ('Riyadh', 'Riyadh', 'الرياض', 1, 'Riyadh'),
+        ('Jeddah', 'Jeddah', 'جدة', 2, 'Jeddah'),
+        ('Dammam', 'Dammam', 'الدمام', 3, 'Dammam')
+    ) as v (slug, name_en, name_ar, sort_order, city_seed)
+    where not exists (select 1 from public.branches b where b.slug = v.slug);
+  elsif has_name then
+    insert into public.branches (slug, name_en, name_ar, sort_order, name)
+    select v.slug, v.name_en, v.name_ar, v.sort_order, v.name_en
+    from (
+      values
+        ('Riyadh', 'Riyadh', 'الرياض', 1),
+        ('Jeddah', 'Jeddah', 'جدة', 2),
+        ('Dammam', 'Dammam', 'الدمام', 3)
+    ) as v (slug, name_en, name_ar, sort_order)
+    where not exists (select 1 from public.branches b where b.slug = v.slug);
+  elsif has_city then
+    insert into public.branches (slug, name_en, name_ar, sort_order, city)
+    select v.slug, v.name_en, v.name_ar, v.sort_order, v.city_seed
+    from (
+      values
+        ('Riyadh', 'Riyadh', 'الرياض', 1, 'Riyadh'),
+        ('Jeddah', 'Jeddah', 'جدة', 2, 'Jeddah'),
+        ('Dammam', 'Dammam', 'الدمام', 3, 'Dammam')
+    ) as v (slug, name_en, name_ar, sort_order, city_seed)
+    where not exists (select 1 from public.branches b where b.slug = v.slug);
+  else
+    insert into public.branches (slug, name_en, name_ar, sort_order)
+    select v.slug, v.name_en, v.name_ar, v.sort_order
+    from (
+      values
+        ('Riyadh', 'Riyadh', 'الرياض', 1),
+        ('Jeddah', 'Jeddah', 'جدة', 2),
+        ('Dammam', 'Dammam', 'الدمام', 3)
+    ) as v (slug, name_en, name_ar, sort_order)
+    where not exists (select 1 from public.branches b where b.slug = v.slug);
+  end if;
+end $$;

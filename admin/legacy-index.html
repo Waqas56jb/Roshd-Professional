@@ -2153,12 +2153,14 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
           </div>
           <div class="exec-editor-section" style="margin-bottom:16px;border:1px solid var(--border2);border-radius:12px;padding:14px" id="dfServerSyncBar">
             <h3 style="margin:0 0 8px">Server sync</h3>
-            <p class="exec-editor-hint">Deploy <code>GET /api/filters</code> and <code>PUT /api/filters</code> (see API). Run <code>server/sql/filter_bar_remote_config.sql</code> in Supabase. Set env <code>ROSHD_FILTERS_ADMIN_TOKEN</code> on the server. Paste the same token below — stored <b>only in this browser session</b>. Then <b>Save</b> pushes config to the database; customer dashboards fetch on open.</p>
+            <p class="exec-editor-hint">Toolbar filters: <code>GET/PUT /api/filters</code> + table <code>filter_bar_remote_config</code>. Full dashboard bundle (all localStorage keys + optional <code>roshd_dashboard_db_model</code>): <code>GET/PUT /api/roshd/config</code> + table <code>roshd_config_kv</code> — run <code>server/sql/roshd_config_kv.sql</code> in Supabase. Set <code>ROSHD_FILTERS_ADMIN_TOKEN</code> or <code>ROSHD_DASHBOARD_ADMIN_TOKEN</code> on the server. Paste the same token below (session only). <b>Save</b> pushes filters to <code>filter_bar_remote_config</code>; <b>Push all config</b> sends every key below to <code>roshd_config_kv</code>. Customer dashboard hydrates from <code>/api/roshd/config</code> on load.</p>
             <div class="exec-editor-grid2">
               <div class="form-group"><label class="form-label">Write token (session)</label><input type="password" class="form-input" id="dfApiWriteToken" placeholder="Matches ROSHD_FILTERS_ADMIN_TOKEN" autocomplete="off"></div>
               <div class="form-group" style="display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px">
                 <button type="button" class="btn btn-secondary btn-sm" onclick="dfRememberWriteToken()">Remember token</button>
                 <button type="button" class="btn btn-secondary btn-sm" onclick="admPullFiltersFromServerClicked()">Pull from server</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="admPullAllRoshdConfigClicked()">Pull all config</button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="admPushAllRoshdConfigClicked()">Push all config</button>
               </div>
             </div>
           </div>
@@ -2488,7 +2490,7 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
               <h3 style="margin:0">Flow card blocks (left side)</h3>
               <button type="button" class="btn btn-secondary btn-sm" onclick="mqAddFlowBlock()">Add block</button>
             </div>
-            <p class="exec-editor-hint">Add up to 8 blocks. These blocks render in customer Model Quality flow card with responsive arrows to the right-side outcome box.</p>
+            <p class="exec-editor-hint">Add up to 16 blocks. These blocks render in the customer Model Quality flow card with arrows to the right-side outcome box (same elbow style as the built-in diagram).</p>
             <div id="mqFlowBlocksMount"></div>
           </div>
           <div class="exec-editor-section">
@@ -3144,6 +3146,21 @@ function execDedupeDrivers(arr) {
 const FILTER_BAR_STORAGE_KEY = 'roshd_filter_bar_config';
 /** Session-only token for PUT /api/filters (matches env ROSHD_FILTERS_ADMIN_TOKEN on server). */
 const FILTERS_API_TOKEN_KEY = 'roshd_filters_api_write_token';
+
+/** Keys upserted by Push all config → GET/PUT /api/roshd/config (same as customer dashboard localStorage). */
+const ROSHD_CONFIG_KV_KEYS = [
+  FILTER_BAR_STORAGE_KEY,
+  'roshd_executive_overrides',
+  'roshd_cx_drivers_overrides',
+  'roshd_units_performance_overrides',
+  'roshd_demographics_overrides',
+  'roshd_customer_patterns_overrides',
+  'roshd_questionnaire_overrides',
+  'roshd_pilot_analysis_overrides',
+  'roshd_model_quality_overrides',
+  'roshd_dashboard_db_model',
+];
+
 let __admExecFilterSig = '';
 let __admCustFilterSelectorsSig = '';
 
@@ -3230,6 +3247,135 @@ async function admPullFiltersFromServerClicked() {
   } else {
     toast('Remote filters unavailable or empty — showing local configuration.', 'info');
   }
+}
+
+async function admFetchAllRoshdConfig() {
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (!base) return null;
+    const res = await fetch(base + '/api/roshd/config', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data || !data.success) return null;
+    return data.configs && typeof data.configs === 'object' ? data.configs : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+async function admPullAllRoshdConfigClicked() {
+  const configs = await admFetchAllRoshdConfig();
+  if (!configs || !Object.keys(configs).length) {
+    loadDashboardFiltersEditor();
+    dfPrefillWriteTokenField();
+    toast('Remote config unavailable or empty.', 'info');
+    return;
+  }
+  for (const [k, v] of Object.entries(configs)) {
+    if (v == null) continue;
+    try {
+      if (k === 'roshd_dashboard_db_model' && typeof v === 'object') {
+        localStorage.setItem(k, JSON.stringify(v));
+      } else {
+        localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+      }
+    } catch (_) {}
+  }
+  loadDashboardFiltersEditor();
+  dfPrefillWriteTokenField();
+  admAfterDashboardFiltersSaved();
+  try {
+    const ch = new BroadcastChannel('roshd_dashboard_sync');
+    ch.postMessage({ type: 'config-kv-pulled' });
+    ch.close();
+  } catch (_) {}
+  toast('Loaded full config bundle from server (localStorage).', 'success');
+}
+
+async function admPushAllRoshdConfigClicked() {
+  let token = '';
+  try {
+    token = sessionStorage.getItem(FILTERS_API_TOKEN_KEY) || '';
+  } catch (_) {}
+  if (!token) {
+    dfPrefillWriteTokenField();
+    toast('Set write token first (Remember token).', 'warning');
+    return;
+  }
+  const configs = {};
+  for (const k of ROSHD_CONFIG_KV_KEYS) {
+    const raw = localStorage.getItem(k);
+    if (!raw) continue;
+    try {
+      configs[k] = JSON.parse(raw);
+    } catch (_) {
+      configs[k] = raw;
+    }
+  }
+  if (!Object.keys(configs).length) {
+    toast('Nothing to push — config keys are empty locally.', 'info');
+    return;
+  }
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    const res = await fetch(base + '/api/roshd/config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ configs }),
+    });
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (_) {}
+    if (!res.ok) {
+      toast('Push failed: ' + (data.message || res.statusText), 'error');
+      return;
+    }
+    toast('Pushed ' + (data.upserted || Object.keys(configs).length) + ' config key(s) to server.', 'success');
+    addAuditEntry('UPDATE', 'Dashboard config KV', 'Push all to roshd_config_kv');
+  } catch (e) {
+    toast('Push failed: ' + String(e.message || e), 'error');
+  }
+}
+
+/** Upsert one localStorage document to `roshd_config_kv` (Bearer = session write token). Skipped if no token or key missing. */
+async function admSyncConfigKeyToServerIfToken(storageKey) {
+  let token = '';
+  try {
+    token = sessionStorage.getItem(FILTERS_API_TOKEN_KEY) || '';
+  } catch (_) {}
+  if (!token) return { ok: true, skipped: true };
+  const raw = localStorage.getItem(storageKey);
+  if (raw == null) return { ok: true, skipped: true };
+  let payload;
+  try {
+    payload = JSON.parse(raw);
+  } catch (_) {
+    return { ok: false, skipped: false, message: 'Invalid JSON in local storage' };
+  }
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    const res = await fetch(base + '/api/roshd/config', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ key: storageKey, payload }),
+    });
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (_) {}
+    if (!res.ok) return { ok: false, skipped: false, message: data.message || res.statusText };
+    return { ok: true, skipped: false };
+  } catch (e) {
+    return { ok: false, skipped: false, message: String(e.message || e) };
+  }
+}
+
+function admTryKvSyncToast(storageKey) {
+  void admSyncConfigKeyToServerIfToken(storageKey).then((r) => {
+    if (!r || r.skipped || r.ok) return;
+    toast('Saved locally; production config sync failed: ' + (r.message || ''), 'warning');
+  });
 }
 
 function admDefaultFilterBarConfig() {
@@ -4809,6 +4955,7 @@ function notifyCustomerDashboardOverrides(msgType) {
 }
 
 function saveExecutiveOverridesFromForm() {
+  syncExecutiveContextToCustomerFilters();
   const ctxKey = buildExecutiveFilterKey();
   const payload = gatherExecutiveOverridesFromForm();
   const current = readExecutiveOverridesFromStorage();
@@ -4825,6 +4972,7 @@ function saveExecutiveOverridesFromForm() {
   addAuditEntry('UPDATE', 'Executive overrides', `Customer Executive KPIs and copy saved for filter: ${ctxKey}`);
   notifyCustomerDashboardOverrides('executive-overrides-updated');
   toast(`Saved for filter context: ${ctxKey}`, 'success');
+  admTryKvSyncToast(EXEC_OVERRIDES_STORAGE_KEY);
 }
 
 function resetExecutiveOverrides() {
@@ -5238,6 +5386,7 @@ function saveCxDriversOverridesFromForm() {
   addAuditEntry('UPDATE', 'CX Drivers overrides', `Customer CX Drivers content saved for filter: ${ctxKey}`);
   notifyCustomerDashboardOverrides('cx-drivers-overrides-updated');
   toast(`Saved for filter context: ${ctxKey}`, 'success');
+  admTryKvSyncToast(CX_DRIVERS_OVERRIDES_STORAGE_KEY);
 }
 
 function resetCxDriversOverrides() {
@@ -5343,6 +5492,7 @@ function saveUnitsPerformanceOverridesFromForm() {
   addAuditEntry('UPDATE', 'Units Performance overrides', 'Customer Units Performance content saved to localStorage');
   notifyCustomerDashboardOverrides('units-performance-overrides-updated');
   toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
+  admTryKvSyncToast(UNITS_PERF_OVERRIDES_STORAGE_KEY);
 }
 
 function resetUnitsPerformanceOverrides() {
@@ -5623,6 +5773,7 @@ function saveDemographicsOverridesFromForm() {
   addAuditEntry('UPDATE', 'Demographics overrides', 'Customer Demographics content saved to localStorage');
   notifyCustomerDashboardOverrides('demographics-overrides-updated');
   toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
+  admTryKvSyncToast(DEMOGRAPHICS_OVERRIDES_STORAGE_KEY);
 }
 
 function resetDemographicsOverrides() {
@@ -5752,10 +5903,13 @@ function saveDashboardFiltersFromForm() {
       return;
     }
     const sync = await admPushFiltersToServer(payload);
+    const kv = await admSyncConfigKeyToServerIfToken(FILTER_BAR_STORAGE_KEY);
     admAfterDashboardFiltersSaved();
     addAuditEntry('UPDATE', 'Dashboard filters config', 'Customer toolbar filters saved');
     if (!sync.skipped && !sync.ok) {
       toast('Saved locally. Server sync failed: ' + (sync.message || ''), 'warning');
+    } else if (!kv.skipped && !kv.ok) {
+      toast('Saved. Production config bundle sync failed: ' + (kv.message || ''), 'warning');
     } else {
       toast('Dashboard filters saved. Reloaded admin filter strips and segment sample.', 'success');
     }
@@ -5808,10 +5962,15 @@ function saveToolbarFilterLabelsFromModal() {
       return;
     }
     await admPushFiltersToServer(payload);
+    const kv = await admSyncConfigKeyToServerIfToken(FILTER_BAR_STORAGE_KEY);
     closeModalById('toolbarFilterLabelsModal');
     admAfterDashboardFiltersSaved();
     addAuditEntry('UPDATE', 'Dashboard filters config', 'Toolbar filter labels (EN/AR) updated');
-    toast('Filter names saved. Customer dashboard and admin strips updated.', 'success');
+    if (!kv.skipped && !kv.ok) {
+      toast('Filter names saved; production config sync failed: ' + (kv.message || ''), 'warning');
+    } else {
+      toast('Filter names saved. Customer dashboard and admin strips updated.', 'success');
+    }
   })();
 }
 
@@ -5933,6 +6092,7 @@ function saveCustomerPatternsOverridesFromForm() {
   addAuditEntry('UPDATE', 'Customer Patterns overrides', 'Customer Patterns content saved to localStorage');
   notifyCustomerDashboardOverrides('customer-patterns-overrides-updated');
   toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
+  admTryKvSyncToast(CUSTOMER_PATTERNS_OVERRIDES_STORAGE_KEY);
 }
 function resetCustomerPatternsOverrides() {
   try {
@@ -6124,6 +6284,7 @@ function saveQuestionnaireOverridesFromForm() {
   addAuditEntry('UPDATE', 'Questionnaire overrides', 'Customer Questionnaire labels saved to localStorage');
   notifyCustomerDashboardOverrides('questionnaire-overrides-updated');
   toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
+  admTryKvSyncToast(QUESTIONNAIRE_OVERRIDES_STORAGE_KEY);
 }
 
 function resetQuestionnaireOverrides() {
@@ -6264,6 +6425,7 @@ function savePilotAnalysisOverridesFromForm() {
   addAuditEntry('UPDATE', 'Pilot Analysis overrides', 'Customer Pilot Analysis labels saved to localStorage');
   notifyCustomerDashboardOverrides('pilot-analysis-overrides-updated');
   toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
+  admTryKvSyncToast(PILOT_ANALYSIS_OVERRIDES_STORAGE_KEY);
 }
 
 function resetPilotAnalysisOverrides() {
@@ -6356,7 +6518,7 @@ function readModelQualityStored() {
     return {
       pairs: o.pairs && typeof o.pairs === 'object' ? o.pairs : {},
       values: o.values && typeof o.values === 'object' ? o.values : {},
-      flowBlocks: Array.isArray(o.flowBlocks) ? o.flowBlocks.slice(0, 8) : null,
+      flowBlocks: Array.isArray(o.flowBlocks) ? o.flowBlocks.slice(0, 16) : null,
     };
   } catch (_) {
     return { pairs: {}, values: {}, flowBlocks: null };
@@ -6400,8 +6562,8 @@ function mqSetFlowBlockField(i, key, value) {
 
 function mqAddFlowBlock() {
   if (!Array.isArray(_mqFlowBlocks)) _mqFlowBlocks = [];
-  if (_mqFlowBlocks.length >= 8) {
-    toast('Maximum 8 blocks allowed.', 'info');
+  if (_mqFlowBlocks.length >= 16) {
+    toast('Maximum 16 blocks allowed.', 'info');
     return;
   }
   _mqFlowBlocks.push({
@@ -6447,8 +6609,8 @@ function renderModelQualityEditor(pairs, values, stored) {
   }).join('') || '<div class="exec-editor-hint">No value fields found.</div>';
 
   _mqFlowBlocks = Array.isArray(stored.flowBlocks) && stored.flowBlocks.length
-    ? JSON.parse(JSON.stringify(stored.flowBlocks.slice(0, 8)))
-    : JSON.parse(JSON.stringify(_mqDefaultFlowBlocks.slice(0, 8)));
+    ? JSON.parse(JSON.stringify(stored.flowBlocks.slice(0, 16)))
+    : JSON.parse(JSON.stringify(_mqDefaultFlowBlocks.slice(0, 16)));
   mqRenderFlowBlocksEditor();
 }
 
@@ -6484,8 +6646,8 @@ function saveModelQualityOverridesFromForm() {
   const payload = {};
   if (Object.keys(pairs).length) payload.pairs = pairs;
   if (Object.keys(values).length) payload.values = values;
-  const currFlow = JSON.stringify((_mqFlowBlocks || []).slice(0, 8));
-  const defFlow = JSON.stringify((_mqDefaultFlowBlocks || []).slice(0, 8));
+  const currFlow = JSON.stringify((_mqFlowBlocks || []).slice(0, 16));
+  const defFlow = JSON.stringify((_mqDefaultFlowBlocks || []).slice(0, 16));
   if (currFlow !== defFlow) payload.flowBlocks = JSON.parse(currFlow);
   try {
     localStorage.setItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, JSON.stringify(payload));
@@ -6496,6 +6658,7 @@ function saveModelQualityOverridesFromForm() {
   addAuditEntry('UPDATE', 'Model Quality overrides', 'Customer Model Quality labels/values/flow blocks saved to localStorage');
   notifyCustomerDashboardOverrides('model-quality-overrides-updated');
   toast('Saved. Customer dashboard will update if it is open (same site).', 'success');
+  admTryKvSyncToast(MODEL_QUALITY_OVERRIDES_STORAGE_KEY);
 }
 
 function resetModelQualityOverrides() {

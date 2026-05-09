@@ -106,7 +106,7 @@ const corsOptions = {
 const app = express();
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Handle all OPTIONS preflight requests
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '5mb' }));
 
 app.get('/api/health', (_req, res) => {
   res.json({
@@ -169,6 +169,79 @@ app.put('/api/filters', async (req, res) => {
   } catch (e) {
     console.error('[api/filters PUT]', e);
     return res.status(500).json({ success: false, message: e.message || 'Failed to save filters.' });
+  }
+});
+
+/** All admin→customer JSON blobs (localStorage keys + optional embedded DB model). */
+const ROSHD_DASHBOARD_ADMIN_TOKEN =
+  process.env.ROSHD_DASHBOARD_ADMIN_TOKEN || process.env.ROSHD_FILTERS_ADMIN_TOKEN || '';
+
+function roshdConfigWriteOk(req) {
+  const auth = req.headers.authorization || '';
+  const bearer = auth.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+  if (!ROSHD_DASHBOARD_ADMIN_TOKEN || bearer !== ROSHD_DASHBOARD_ADMIN_TOKEN) return false;
+  return true;
+}
+
+app.get('/api/roshd/config', async (_req, res) => {
+  try {
+    if (!supabaseAdmin) {
+      return res.json({ success: true, configs: {}, source: 'no_db' });
+    }
+    const { data, error } = await supabaseAdmin.from('roshd_config_kv').select('config_key, payload, updated_at');
+    if (error) {
+      console.warn('[api/roshd/config GET]', error.message);
+      return res.json({ success: true, configs: {}, source: 'error' });
+    }
+    const configs = {};
+    for (const row of data || []) {
+      if (row.config_key) configs[row.config_key] = row.payload;
+    }
+    return res.json({ success: true, configs, source: 'remote' });
+  } catch (e) {
+    console.error('[api/roshd/config GET]', e);
+    return res.status(500).json({ success: false, message: e.message || 'Failed to load config bundle.' });
+  }
+});
+
+app.put('/api/roshd/config', async (req, res) => {
+  try {
+    if (!roshdConfigWriteOk(req)) {
+      return res.status(401).json({
+        success: false,
+        message:
+          'Unauthorized. Set ROSHD_DASHBOARD_ADMIN_TOKEN (or ROSHD_FILTERS_ADMIN_TOKEN) and Authorization: Bearer <token>.',
+      });
+    }
+    if (!supabaseAdmin) {
+      return res.status(503).json({ success: false, message: 'Database not configured.' });
+    }
+    const body = req.body || {};
+    const now = new Date().toISOString();
+    const rows = [];
+    if (body.configs && typeof body.configs === 'object' && !Array.isArray(body.configs)) {
+      for (const [config_key, payload] of Object.entries(body.configs)) {
+        if (typeof config_key === 'string' && config_key && payload != null) {
+          rows.push({ config_key, payload, updated_at: now });
+        }
+      }
+    } else if (body.key && body.payload != null) {
+      rows.push({ config_key: String(body.key), payload: body.payload, updated_at: now });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: 'Send { configs: { [key]: json } } or { key, payload }.',
+      });
+    }
+    if (!rows.length) {
+      return res.status(400).json({ success: false, message: 'No config rows to upsert.' });
+    }
+    const { error } = await supabaseAdmin.from('roshd_config_kv').upsert(rows, { onConflict: 'config_key' });
+    if (error) throw error;
+    return res.json({ success: true, upserted: rows.length });
+  } catch (e) {
+    console.error('[api/roshd/config PUT]', e);
+    return res.status(500).json({ success: false, message: e.message || 'Failed to save config bundle.' });
   }
 });
 
@@ -426,21 +499,28 @@ app.get('/api/dashboard/data', async (_req, res) => {
         .filter((m) => m.branch_key === row.branch_key)
         .map((m) => ({
           name: m.name,
+          nameAr: m.name_ar || m.name,
           avg: Number(m.avg),
           path: Number(m.path),
           impact: Number(m.impact),
           decision: m.decision,
+          decisionAr: m.decision_ar || m.decision,
           cls: m.badge_class || '',
         }));
       byBranch[row.branch_key] = {
         score: Number(row.score),
         explanatory: row.explanatory,
         top: row.top_driver,
+        topAr: row.top_driver_ar || row.top_driver,
         risk: row.risk_driver,
+        riskAr: row.risk_driver_ar || row.risk_driver,
         drivers,
         invest: row.invest_bullets || [],
+        investAr: row.invest_bullets_ar || [],
         optimize: row.optimize_bullets || [],
+        optimizeAr: row.optimize_bullets_ar || [],
         avoid: row.avoid_bullets || [],
+        avoidAr: row.avoid_bullets_ar || [],
       };
     }
     return res.json({ success: true, data: byBranch });

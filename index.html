@@ -5164,6 +5164,132 @@ const DB_DATA = {
   }
 };
 
+/** Full branch-keyed dashboard model (same shape as `DB_DATA`). Optional remote override via `/api/roshd/config`. */
+const ROSHD_DB_MODEL_KEY = 'roshd_dashboard_db_model';
+
+/** Same filter signature as admin `buildExecutiveFilterKey` / `buildCxFilterKey` (all 8 filters, ` | `). */
+function dbBuildDashboardFilterKey() {
+  const cfg = dbGetFilterBarConfig();
+  return cfg.filters
+    .map((f, i) => {
+      const sel = String(dbGetFilValue('db', i) ?? '').trim();
+      return sel || String(f.allValue ?? '');
+    })
+    .join(' | ');
+}
+
+/** Merge `GET /api/dashboard/data` (segment_insights + metrics) over embedded `DB_DATA` when no full KV model. */
+function dbMergeStaticModelWithSegmentApi(base) {
+  let api;
+  try {
+    api = typeof window !== 'undefined' ? window.__ROSHD_SEGMENT_API__ : null;
+  } catch (_) {
+    api = null;
+  }
+  if (!api || typeof api !== 'object' || !Object.keys(api).length) return base;
+  const out = JSON.parse(JSON.stringify(base));
+  for (const [bk, payload] of Object.entries(api)) {
+    if (!payload || typeof payload !== 'object') continue;
+    const prev = out[bk] || out['All Branches'];
+    if (!prev) continue;
+    const merged = Object.assign({}, prev, {
+      score: payload.score != null ? Number(payload.score) : prev.score,
+      explanatory: payload.explanatory != null ? payload.explanatory : prev.explanatory,
+      top: payload.top != null ? payload.top : prev.top,
+      topAr: payload.topAr != null ? payload.topAr : prev.topAr,
+      risk: payload.risk != null ? payload.risk : prev.risk,
+      riskAr: payload.riskAr != null ? payload.riskAr : prev.riskAr,
+      invest: Array.isArray(payload.invest) ? payload.invest : prev.invest,
+      investAr: Array.isArray(payload.investAr) ? payload.investAr : prev.investAr,
+      optimize: Array.isArray(payload.optimize) ? payload.optimize : prev.optimize,
+      optimizeAr: Array.isArray(payload.optimizeAr) ? payload.optimizeAr : prev.optimizeAr,
+      avoid: Array.isArray(payload.avoid) ? payload.avoid : prev.avoid,
+      avoidAr: Array.isArray(payload.avoidAr) ? payload.avoidAr : prev.avoidAr,
+    });
+    if (Array.isArray(payload.drivers) && payload.drivers.length) {
+      merged.drivers = payload.drivers.slice(0, 8).map((dr) => ({
+        name: dr.name,
+        nameAr: dr.nameAr || dr.name_ar || dr.name,
+        avg: Number(dr.avg),
+        path: Number(dr.path != null ? dr.path : dr.impact),
+        impact: Number(dr.impact != null ? dr.impact : dr.path),
+        decision: dr.decision,
+        decisionAr: dr.decisionAr || dr.decision_ar || dr.decision,
+        cls: dr.cls || '',
+      }));
+    }
+    out[bk] = merged;
+  }
+  return out;
+}
+
+function dbModelRoot() {
+  try {
+    const w = typeof window !== 'undefined' ? window.__ROSHD_DB_MODEL__ : null;
+    if (w && typeof w === 'object') return w;
+  } catch (_) {}
+  try {
+    const raw = localStorage.getItem(ROSHD_DB_MODEL_KEY);
+    if (raw) {
+      const o = JSON.parse(raw);
+      if (o && typeof o === 'object') {
+        try {
+          window.__ROSHD_DB_MODEL__ = o;
+        } catch (_) {}
+        return o;
+      }
+    }
+  } catch (_) {}
+  return dbMergeStaticModelWithSegmentApi(DB_DATA);
+}
+
+/** Loads all admin-controlled JSON from `GET /api/roshd/config` into localStorage + optional embedded DB model. */
+async function roshdHydrateAllConfigFromApi() {
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (!base) return;
+    const res = await fetch(base + '/api/roshd/config', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || !data.success || !data.configs || typeof data.configs !== 'object') return;
+    const configs = data.configs;
+    const gotFiltersFromKv = Object.prototype.hasOwnProperty.call(configs, FILTER_BAR_STORAGE_KEY);
+    for (const [key, val] of Object.entries(configs)) {
+      if (val == null) continue;
+      if (key === ROSHD_DB_MODEL_KEY) {
+        if (val && typeof val === 'object') {
+          try {
+            window.__ROSHD_DB_MODEL__ = val;
+          } catch (_) {}
+          try {
+            localStorage.setItem(ROSHD_DB_MODEL_KEY, JSON.stringify(val));
+          } catch (_) {}
+        }
+        continue;
+      }
+      try {
+        localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val));
+      } catch (_) {}
+    }
+    if (!gotFiltersFromKv) await dbTrySyncFiltersFromApi();
+  } catch (_) {}
+}
+
+/** Load segment_insights + segment_driver_metrics via API and merge into live scores (unless full KV model replaced DB_DATA). */
+async function dbTrySyncDashboardDataFromApi() {
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (!base) return;
+    const res = await fetch(base + '/api/dashboard/data', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || !data.success || !data.data || typeof data.data !== 'object') return;
+    try {
+      window.__ROSHD_SEGMENT_API__ = data.data;
+    } catch (_) {}
+  } catch (_) {}
+}
+
 const DB_SAMPLE_TOTAL = 300;
 const DB_BR_LIST = ["Riyadh", "Jeddah", "Dammam"];
 const DB_GENDER_LIST = ["Male", "Female"];
@@ -5440,7 +5566,7 @@ function dbRegenerateCustomers() {
   }
 
   const brOpts = optVals(0).filter((b) => b && b !== '—');
-  let branchChoicesFinal = brOpts.filter((b) => DB_DATA[b]);
+  let branchChoicesFinal = brOpts.filter((b) => dbModelRoot()[b]);
   if (!branchChoicesFinal.length) {
     branchChoicesFinal = brOpts.length ? brOpts : DB_BR_LIST.slice();
   }
@@ -5515,7 +5641,7 @@ function dbRegenerateCustomers() {
 (function dbBootstrapFiltersAndCustomers() {
   (async () => {
     try {
-      await dbTrySyncFiltersFromApi();
+      await roshdHydrateAllConfigFromApi();
     } catch (_) {}
     dbRegenerateCustomers();
   })();
@@ -5886,7 +6012,8 @@ async function showDashboard(user) {
   document.body.style.overflow = 'hidden';
 
   try {
-    await dbTrySyncFiltersFromApi();
+    await roshdHydrateAllConfigFromApi();
+    await dbTrySyncDashboardDataFromApi();
   } catch (_) {}
 
   // Set user info
@@ -5946,7 +6073,8 @@ function dbGetData() {
   const freq = dbFilValueByKey("frequency", "All Frequencies");
   const ageSel = dbFilValueByKey("age", "All Ages");
 
-  let d = JSON.parse(JSON.stringify(DB_DATA[branch] || DB_DATA["All Branches"]));
+  const root = dbModelRoot();
+  let d = JSON.parse(JSON.stringify(root[branch] || root["All Branches"]));
 
   if (gender === "Female") {
     d.top = "Communication";
@@ -6058,7 +6186,7 @@ function dbGetData() {
       name: r.name || r.nameAr || '—',
       nameAr: r.nameAr || r.name || '—',
       avg: r.avg,
-      path: r.impact,
+      path: Number.isFinite(Number(r.path)) ? Number(r.path) : Number(r.impact),
       impact: r.impact,
       decision: r.decision || '—',
       decisionAr: r.decisionAr || r.decision || '—',
@@ -6664,7 +6792,12 @@ function dbGetExecutiveOverrides() {
     const raw = localStorage.getItem('roshd_executive_overrides');
     if (!raw) return null;
     const o = JSON.parse(raw);
-    return o && typeof o === 'object' ? o : null;
+    if (!o || typeof o !== 'object') return null;
+    if (o.byFilter && typeof o.byFilter === 'object') {
+      const scoped = o.byFilter[dbBuildDashboardFilterKey()];
+      return scoped && typeof scoped === 'object' ? scoped : null;
+    }
+    return o;
   } catch (_) {
     return null;
   }
@@ -6791,7 +6924,10 @@ function dbExtractQuestionnaireSectionsFromPanel() {
 }
 
 function dbMeasurementColor(idx) {
-  const palette = ['#60a5fa', '#34d399', '#eab308', '#a78bfa', '#f97316', '#22d3ee', '#f43f5e', '#84cc16'];
+  const palette = [
+    '#60a5fa', '#34d399', '#eab308', '#a78bfa', '#f97316', '#22d3ee', '#f43f5e', '#84cc16',
+    '#38bdf8', '#4ade80', '#fb923c', '#c084fc', '#2dd4bf', '#f472b6', '#a3e635', '#818cf8', '#94a3b8',
+  ];
   return palette[idx % palette.length];
 }
 
@@ -6804,7 +6940,7 @@ function dbRenderMeasurementModelFromQuestionnaire() {
   const mqOverrides = dbGetModelQualityOverrides();
   const mqRows = Array.isArray(mqOverrides && mqOverrides.flowBlocks)
     ? mqOverrides.flowBlocks
-        .slice(0, 8)
+        .slice(0, 16)
         .map((b) => ({
           topicEn: String((b && b.nameEn) || '').trim(),
           topicAr: String((b && b.nameAr) || '').trim(),
@@ -6812,7 +6948,7 @@ function dbRenderMeasurementModelFromQuestionnaire() {
           descAr: String((b && b.descAr) || '').trim(),
           qCount: Math.max(1, Number.parseInt(String((b && b.qCount) || 1), 10) || 1),
         }))
-        .filter((b) => b.topicEn || b.topicAr)
+        .filter((b) => b.topicEn || b.topicAr || b.descEn || b.descAr)
     : [];
 
   const allSections = dbExtractQuestionnaireSectionsFromPanel();
@@ -6825,7 +6961,7 @@ function dbRenderMeasurementModelFromQuestionnaire() {
     return t.includes('customer experience score') || t.includes('درجة تجربة العميل') || t.includes('cx score');
   });
 
-  const rows = (mqRows.length ? mqRows : antecedents).slice(0, 8);
+  const rows = (mqRows.length ? mqRows : antecedents).slice(0, 16);
   if (!rows.length) return;
   const outcomeRow = outcome || { topicEn: 'Customer Experience Score', topicAr: 'درجة تجربة العميل', qCount: 3 };
   const totalItems = rows.reduce((a, b) => a + (Number(b.qCount) || 0), 0) + (Number(outcomeRow.qCount) || 0);
@@ -6892,7 +7028,7 @@ function dbRenderMeasurementModelFromQuestionnaire() {
       const targetY = rightJoinStart + ((rightJoinEnd - rightJoinStart) * (i + 1)) / (n + 1);
       const c = dbMeasurementColor(i);
       const marker = `dbMqDynArr${i}`;
-      return `<path d="M 194 ${y} L 282 ${y} L 338 ${targetY}" stroke="${c}" stroke-width="1.8" fill="none" marker-end="url(#${marker})"/>`;
+      return `<path d="M 194 ${y} L 282 ${y} L 338 ${targetY}" stroke="${c}" stroke-width="1.85" fill="none" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8" marker-end="url(#${marker})"/>`;
     })
     .join('');
 
@@ -6965,13 +7101,14 @@ function dbApplyModelQualityOverrides() {
   if (o && typeof o === 'object' && o.values && typeof o.values === 'object') values = o.values;
   const hasPairs = !!(pairs && Object.keys(pairs).length);
   const hasValues = !!(values && Object.keys(values).length);
-  if (!hasPairs && !hasValues) {
+  const hasFlowBlocks = !!(o && Array.isArray(o.flowBlocks) && o.flowBlocks.length);
+  if (!hasPairs && !hasValues && !hasFlowBlocks) {
     if (dbModelQualityDefaultInnerHtml != null && panel.innerHTML !== dbModelQualityDefaultInnerHtml) {
       panel.innerHTML = dbModelQualityDefaultInnerHtml;
     }
     return;
   }
-  if (dbModelQualityDefaultInnerHtml != null && panel.innerHTML !== dbModelQualityDefaultInnerHtml) {
+  if ((hasPairs || hasValues) && dbModelQualityDefaultInnerHtml != null) {
     panel.innerHTML = dbModelQualityDefaultInnerHtml;
   }
   if (hasPairs) {
@@ -7001,7 +7138,12 @@ function dbGetCxDriversOverrides() {
     const raw = localStorage.getItem(CX_DRIVERS_OVERRIDES_KEY);
     if (!raw) return null;
     const o = JSON.parse(raw);
-    return o && typeof o === 'object' ? o : null;
+    if (!o || typeof o !== 'object') return null;
+    if (o.byFilter && typeof o.byFilter === 'object') {
+      const scoped = o.byFilter[dbBuildDashboardFilterKey()];
+      return scoped && typeof scoped === 'object' ? scoped : null;
+    }
+    return o;
   } catch (_) {
     return null;
   }
@@ -7324,11 +7466,14 @@ function dbRender() {
 
   const branchPerf = document.getElementById('dbBranchPerfBars');
   if (branchPerf) {
-    branchPerf.innerHTML = DB_BR_LIST.map(b => {
-      const bd = DB_DATA[b];
+    const brModel = dbModelRoot();
+    const branchKeys = Object.keys(brModel).filter((k) => k && k !== 'All Branches');
+    const barBranches = branchKeys.length ? branchKeys : DB_BR_LIST;
+    branchPerf.innerHTML = barBranches.map((b) => {
+      const bd = brModel[b] || {};
       const w = Math.min(100, Math.round(((bd.score || 3) / 5) * 100));
       return `<div class="db-bar-row">
-        <span class="db-bar-label"><span class="en">${b}</span><span class="ar">${b === 'Riyadh' ? 'الرياض' : b === 'Jeddah' ? 'جدة' : 'الدمام'}</span></span>
+        <span class="db-bar-label"><span class="en">${b}</span><span class="ar">${b === 'Riyadh' ? 'الرياض' : b === 'Jeddah' ? 'جدة' : b === 'Dammam' ? 'الدمام' : b}</span></span>
         <div class="db-bar-track"><div class="db-bar-fill" style="width:${w}%"></div></div>
         <span class="db-bar-val">${dbFormatMean5(bd.score, 1)}</span>
       </div>`;
@@ -7648,6 +7793,12 @@ window.addEventListener('scroll', () => {
     };
   } catch (_) {}
   window.addEventListener('storage', (e) => {
+    if (e.key === ROSHD_DB_MODEL_KEY) {
+      try {
+        const o = JSON.parse(e.newValue || 'null');
+        if (o && typeof o === 'object') window.__ROSHD_DB_MODEL__ = o;
+      } catch (_) {}
+    }
     if (
       e.key === 'roshd_cx_drivers_overrides' ||
       e.key === 'roshd_executive_overrides' ||
@@ -7656,7 +7807,8 @@ window.addEventListener('scroll', () => {
       e.key === 'roshd_customer_patterns_overrides' ||
       e.key === 'roshd_questionnaire_overrides' ||
       e.key === 'roshd_pilot_analysis_overrides' ||
-      e.key === 'roshd_model_quality_overrides'
+      e.key === 'roshd_model_quality_overrides' ||
+      e.key === ROSHD_DB_MODEL_KEY
     )
       refreshDashboardIfOpen();
     if (e.key === FILTER_BAR_STORAGE_KEY) dbSyncFilterBarAfterExternalConfigChange();
