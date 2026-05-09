@@ -2486,7 +2486,9 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
               <h3 style="margin:0">Flow card blocks (left side)</h3>
               <button type="button" class="btn btn-secondary btn-sm" onclick="mqAddFlowBlock()">Add block</button>
             </div>
-            <p class="exec-editor-hint">Add up to 16 blocks. These blocks render in the customer Model Quality flow card with arrows to the right-side outcome box (same elbow style as the built-in diagram).</p>
+            <p class="exec-editor-hint">
+              Blocks here match the customer <b>Model Quality</b> left column. If you have not saved overrides yet, topics from <b>Questionnaire</b> (except the Customer Experience Score section) appear here automatically so you can edit names, counts, add/remove blocks, then <b>Save</b> to store them in <code>flowBlocks</code> and Supabase.
+            </p>
             <div id="mqFlowBlocksMount"></div>
           </div>
           <div class="exec-editor-section">
@@ -6543,7 +6545,51 @@ function mqExtractFlowBlocksFromHtml(innerHtml) {
       qCount: Number.isFinite(qCount) && qCount > 0 ? qCount : 4,
     });
   });
-  return rows.slice(0, 8);
+  return rows.slice(0, 16);
+}
+
+/** Same filter as customer `dbRenderMeasurementModelFromQuestionnaire` antecedents. */
+function mqIsCxOutcomeTopic(sec) {
+  const t = `${String(sec && sec.topicEn != null ? sec.topicEn : '')} ${String(sec && sec.topicAr != null ? sec.topicAr : '')}`.toLowerCase();
+  return (
+    t.includes('customer experience score') || t.includes('درجة تجربة العميل') || t.includes('cx score')
+  );
+}
+
+/** When no saved `flowBlocks`, customer builds the left column from Questionnaire topics — mirror that here. */
+function mqFlowBlocksFromQuestionnaireSections(sections) {
+  if (!Array.isArray(sections) || !sections.length) return [];
+  return sections
+    .filter((s) => s && !mqIsCxOutcomeTopic(s))
+    .slice(0, 16)
+    .map((s) => {
+      const qLen = Array.isArray(s.questions) ? s.questions.length : 0;
+      return {
+        nameEn: String(s.topicEn || '').trim() || 'New Block',
+        nameAr: String(s.topicAr || '').trim() || 'كتلة جديدة',
+        descEn: '',
+        descAr: '',
+        qCount: Math.max(1, qLen || 1),
+      };
+    });
+}
+
+/** Prefer explicit `roshd_model_quality_overrides.flowBlocks`, else Questionnaire sections (saved or defaults). */
+async function mqResolveInitialFlowBlocks(stored) {
+  if (stored && Array.isArray(stored.flowBlocks) && stored.flowBlocks.length) {
+    return stored.flowBlocks.slice(0, 16);
+  }
+  let sections = readQuestionnaireStoredSections();
+  if (!Array.isArray(sections) || !sections.length) {
+    if (!_qnDefaultSections.length) {
+      const defHtml = await fetchDefaultQuestionnairePanelHtml();
+      _qnDefaultSections = qnExtractSectionsFromHtml(defHtml);
+    }
+    sections = _qnDefaultSections;
+  }
+  const fromQn = mqFlowBlocksFromQuestionnaireSections(sections);
+  if (fromQn.length) return fromQn;
+  return (_mqDefaultFlowBlocks || []).slice(0, 16);
 }
 
 function mqEsc(s) {
@@ -6662,7 +6708,9 @@ async function loadModelQualityEditorForm(forceReloadDefaults) {
     _mqDefaultValues = mqExtractValuesFromHtml(html);
     _mqDefaultFlowBlocks = mqExtractFlowBlocksFromHtml(html);
   }
-  renderModelQualityEditor(_mqDefaultPairs, _mqDefaultValues, readModelQualityStored());
+  const stored = readModelQualityStored();
+  const flowBlocks = await mqResolveInitialFlowBlocks(stored);
+  renderModelQualityEditor(_mqDefaultPairs, _mqDefaultValues, Object.assign({}, stored, { flowBlocks }));
 }
 
 async function saveModelQualityOverridesFromForm() {
@@ -6732,7 +6780,7 @@ function resetModelQualityOverrides() {
   try {
     localStorage.removeItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY);
   } catch (_) {}
-  renderModelQualityEditor(_mqDefaultPairs, _mqDefaultValues, { pairs: {}, values: {}, flowBlocks: null });
+  void loadModelQualityEditorForm(false);
   addAuditEntry('UPDATE', 'Model Quality overrides', 'Reset to defaults');
   notifyCustomerDashboardOverrides('model-quality-overrides-updated');
   toast('Model Quality overrides cleared.', 'info');
