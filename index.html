@@ -5032,16 +5032,16 @@ async function handleLogin() {
       : t('Invalid email or password.', 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'));
     errorEl.textContent = msg;
     errorEl.classList.add('show');
-  } catch(_) {
-    // Demo fallback when server not connected
-    if (email && password.length >= 4) {
-      closeLogin();
-      showDashboard({ email, first_name: email.split('@')[0], role: 'customer' });
-      showToast(t('Demo mode — Dashboard loaded.', 'وضع العرض التجريبي — تم تحميل لوحة التحكم.'));
-    } else {
-      errorEl.textContent = t('Invalid credentials.', 'بيانات الدخول غير صحيحة.');
-      errorEl.classList.add('show');
-    }
+  } catch (err) {
+    /* Never grant a session without a successful /api/auth/login — avoids fake "demo" access on network/CORS errors. */
+    errorEl.textContent = t(
+      'Could not reach the sign-in server. Check your connection and try again.',
+      'تعذّر الاتصال بخادم تسجيل الدخول. تحقق من الاتصال وحاول مجدداً.'
+    );
+    errorEl.classList.add('show');
+    try {
+      console.error('[roshd login]', err, 'API_BASE=', typeof API_BASE === 'string' ? API_BASE : '');
+    } catch (_) {}
   } finally {
     if (btnEl) { btnEl.disabled = false; btnEl.innerHTML = originalText; }
   }
@@ -6187,6 +6187,7 @@ function dbGetData() {
     d.drivers = dbDedupeDrivers(d.drivers);
   }
 
+  
   if (ageSel === "<25") {
     d.top = "Price Fairness";
     d.topAr = "عدالة السعر";
@@ -6207,15 +6208,8 @@ function dbGetData() {
     d.investAr = ["العملاء الأصغر سناً أكثر حساسية للسعر؛ حسّن شفافية التقدير وشرح القيمة.", ...tailAr];
   }
 
-  const fc = dbFilteredCustomers();
-  if (fc.length) {
-    d.score = fc.reduce((acc, row) => acc + row[10], 0) / fc.length;
-    let adj = 0;
-    if (fc.length < 30) adj = 7;
-    else if (fc.length < 60) adj = 3;
-    d.explanatory = Math.max(52, Math.min(78, Math.round(d.explanatory - adj)));
-  }
-
+  /* Do not replace model score/explanatory with the mean of synthetic micro-rows (`dbFilteredCustomers`).
+   * That average ignored admin branch scores and `roshd_dashboard_db_model`, so the KPI strip never matched admin. */
   const cxOvr = dbGetCxDriversOverrides();
   const normRows = dbNormalizeCxOverrideRows(cxOvr && cxOvr.driversRows);
   if (normRows && normRows.length) {
