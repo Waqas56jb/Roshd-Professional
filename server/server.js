@@ -82,6 +82,8 @@ function dbReady(res) {
 // ─── Express app ───────────────────────────────────────────────────────────────
 
 const ALLOWED_ORIGINS = [
+  'https://roshd-professional.vercel.app',
+  'https://www.roshd-professional.vercel.app',
   'https://roshd-professional-27zf.vercel.app',
   'https://roshd-professional-s8lh.vercel.app',
   'http://localhost:3000',

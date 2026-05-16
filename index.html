@@ -4847,15 +4847,21 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 <script>
 /* ── Backend API base URL (same host in dev so GET/PUT use your running server + Supabase) ── */
 const API_BASE = (function () {
+  /** Deployment that has Supabase + `/api/*` wired (see `/api/health` → `roshd_server_api: 2`). */
+  const ROSHD_VERCEL_API_CANON = 'https://roshd-professional-s8lh.vercel.app';
   try {
     const h = window.location.hostname;
     if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]') return window.location.origin;
     if (!h && window.location.protocol === 'file:') return 'http://localhost:5000';
     if (/^(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})$/.test(h))
       return window.location.origin;
-    if (h && h.endsWith('.vercel.app')) return window.location.origin;
+    if (h && h.endsWith('.vercel.app')) {
+      /* Bare `roshd-professional.vercel.app` is a different Vercel alias than `*-s8lh` and often returns 500 on auth (no env). */
+      if (h === 'roshd-professional.vercel.app' || h === 'www.roshd-professional.vercel.app') return ROSHD_VERCEL_API_CANON;
+      return window.location.origin;
+    }
   } catch (_) {}
-  return 'https://roshd-professional-s8lh.vercel.app';
+  return ROSHD_VERCEL_API_CANON;
 })();
 
 /* ── Language System ── */
