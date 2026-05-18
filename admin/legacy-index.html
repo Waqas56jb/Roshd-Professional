@@ -741,6 +741,12 @@ html[data-lang="ar"] .admin-dash-filter-mirror .db-filter-bar-scroll-outer::afte
   flex: 1 1 128px;
   max-width: 200px;
 }
+.db-filter-chip.is-locked {
+  opacity: 0.42;
+}
+.db-filter-chip.is-locked .db-select {
+  cursor: not-allowed;
+}
 .admin-dash-filter-mirror .db-filter-chip-lbl {
   font-size: 9px;
   font-weight: 600;
@@ -2492,7 +2498,13 @@ input[type=range].admin-range::-webkit-slider-thumb:hover { background: var(--go
             <div id="mqFlowBlocksMount"></div>
           </div>
           <div class="exec-editor-section">
-            <h3>Model values</h3>
+            <h3>Model values <span style="font-size:12px;font-weight:500;color:var(--text-dim)">— per Region / Branch / Service Type</span></h3>
+            <p class="exec-editor-hint">
+              Model metrics (R², Cronbach's Alpha, CR, AVE, HTMT, …) are saved <b>per filter scope</b>. Pick a Region (or Branch) and Service Type below, edit the values, then <b>Save</b> — the customer dashboard shows the matching scope. Labels and flow blocks above stay global.
+            </p>
+            <div class="admin-dash-filter-mirror" style="margin-bottom:12px">
+              <div class="db-filter-bar-inner" id="mqFilterStripInner"></div>
+            </div>
             <div id="mqValuesMount"></div>
           </div>
           <div class="exec-editor-actions">
@@ -3024,18 +3036,18 @@ async function fetchCustomerDashboardHtmlBundle() {
    CONSTANTS & STATE
 ═══════════════════════════════════════════ */
 const API_BASE = (function () {
+  /** Only `*-s8lh` has Supabase env vars wired; all production hosts use it. */
   const ROSHD_VERCEL_API_CANON = 'https://roshd-professional-s8lh.vercel.app';
   try {
+    if (typeof window.__ROSHD_API_BASE__ === 'string' && window.__ROSHD_API_BASE__) {
+      return String(window.__ROSHD_API_BASE__).replace(/\/$/, '');
+    }
     const h = window.location.hostname;
     if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]') return window.location.origin;
     if (!h && window.location.protocol === 'file:') return 'http://localhost:5000';
     // LAN / Docker host port: use this origin so we do not fall through to production Vercel.
     if (/^(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})$/.test(h))
       return window.location.origin;
-    if (h && h.endsWith('.vercel.app')) {
-      if (h === 'roshd-professional.vercel.app' || h === 'www.roshd-professional.vercel.app') return ROSHD_VERCEL_API_CANON;
-      return window.location.origin;
-    }
   } catch (_) {}
   return ROSHD_VERCEL_API_CANON;
 })();
@@ -3429,9 +3441,153 @@ function admDefaultFilterBarConfig() {
       { key: 'age', labelEn: 'Age', labelAr: 'العمر', allValue: 'All Ages', allLabelEn: 'All Ages', allLabelAr: 'كل الأعمار', options: [{ value: '<25', labelEn: '<25', labelAr: 'أقل من 25' }, { value: '25–34', labelEn: '25–34', labelAr: '25–34' }, { value: '35–44', labelEn: '35–44', labelAr: '35–44' }, { value: '45+', labelEn: '45+', labelAr: '45+' }] },
       { key: 'extra1', labelEn: 'Channel', labelAr: 'القناة', allValue: '__ALL__', allLabelEn: 'All channels', allLabelAr: 'كل القنوات', options: [{ value: 'Walk-in', labelEn: 'Walk-in', labelAr: 'حضوري' }, { value: 'App', labelEn: 'App / Online', labelAr: 'التطبيق' }, { value: 'Phone', labelEn: 'Phone', labelAr: 'هاتف' }] },
       { key: 'extra2', labelEn: 'Customer type', labelAr: 'نوع العميل', allValue: '__ALL__', allLabelEn: 'All types', allLabelAr: 'كل الأنواع', options: [{ value: 'New', labelEn: 'New', labelAr: 'جديد' }, { value: 'Returning', labelEn: 'Returning', labelAr: 'عائد' }] },
-      { key: 'extra3', labelEn: 'Day part', labelAr: 'فترة اليوم', allValue: '__ALL__', allLabelEn: 'All', allLabelAr: 'الكل', options: [{ value: 'Weekday', labelEn: 'Weekday', labelAr: 'يوم عمل' }, { value: 'Weekend', labelEn: 'Weekend', labelAr: 'عطلة' }] }
+      { key: 'extra3', labelEn: 'Day part', labelAr: 'فترة اليوم', allValue: '__ALL__', allLabelEn: 'All', allLabelAr: 'الكل', options: [{ value: 'Weekday', labelEn: 'Weekday', labelAr: 'يوم عمل' }, { value: 'Weekend', labelEn: 'Weekend', labelAr: 'عطلة' }] },
+      { key: 'region', labelEn: 'Region', labelAr: 'المنطقة', allValue: 'All Regions', allLabelEn: 'All Regions', allLabelAr: 'كل المناطق', options: [] }
     ]
   };
+}
+
+/** Region options + branch membership come from /api/regions (admin-managed). */
+function admInjectRegionOptions(cfg) {
+  if (!cfg || !Array.isArray(cfg.filters)) return cfg;
+  let rf = cfg.filters.find((f) => f && f.key === 'region');
+  if (!rf) {
+    rf = { key: 'region', labelEn: 'Region', labelAr: 'المنطقة', allValue: 'All Regions', allLabelEn: 'All Regions', allLabelAr: 'كل المناطق', options: [] };
+    cfg.filters.push(rf);
+  }
+  const list = Array.isArray(window.__ROSHD_REGION_LIST__) ? window.__ROSHD_REGION_LIST__ : [];
+  if (list.length) {
+    rf.options = list.map((r) => ({
+      value: String(r.slug),
+      labelEn: String(r.name_en || r.slug),
+      labelAr: String(r.name_ar || r.name_en || r.slug),
+      active: true,
+    }));
+  }
+  return cfg;
+}
+
+/** Load regions from the API into window globals, then rebuild admin filter strips. */
+async function admSyncRegionsFromApi() {
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (!base) return;
+    const res = await fetch(base + '/api/regions', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || !data.success || !Array.isArray(data.regions)) return;
+    window.__ROSHD_REGION_LIST__ = data.regions
+      .filter((r) => r && r.is_active !== false)
+      .map((r) => ({ slug: r.slug, name_en: r.name_en, name_ar: r.name_ar }));
+    const map = {};
+    data.regions.forEach((r) => {
+      map[r.slug] = (r.branches || [])
+        .map((b) => String((b && (b.slug || b.name_en)) || '').trim())
+        .filter(Boolean);
+    });
+    window.__ROSHD_REGION_BRANCHES__ = map;
+    __admCustFilterSelectorsSig = '';
+    if (typeof execEnsureFilterSelectorsMounted === 'function') execEnsureFilterSelectorsMounted();
+  } catch (_) {}
+}
+
+/**
+ * Load every management panel's data from Supabase (replaces the old in-memory
+ * mock arrays). Maps API shapes to the shapes the existing render fns expect.
+ */
+async function admLoadAdminDataFromApi() {
+  const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+  if (!base) return;
+  const getJson = async (p) => {
+    try {
+      const r = await fetch(base + p, { cache: 'no-store', credentials: 'omit' });
+      if (!r.ok) return null;
+      return await r.json();
+    } catch (_) {
+      return null;
+    }
+  };
+
+  const u = await getJson('/api/admin/all-users');
+  if (u && u.success && Array.isArray(u.users)) {
+    usersData = u.users.map((x) => ({
+      id: x.id,
+      firstName: x.first_name || String(x.email || '').split('@')[0] || '—',
+      lastName: x.last_name || '',
+      email: x.email || '',
+      role: x.role || 'customer',
+      branch: x.branch || '',
+      status: String(x.status || 'Active').toLowerCase() === 'suspended' ? 'suspended' : 'active',
+      org: '',
+      loginCount: 0,
+      createdAt: String(x.created_at || '').slice(0, 10),
+      lastLogin: String(x.last_sign_in_at || '').slice(0, 10),
+      notes: '',
+    }));
+  }
+
+  const b = await getJson('/api/branches');
+  if (b && b.success && Array.isArray(b.branches)) {
+    branchesData = b.branches.map((x, i) => ({
+      id: x.id || `BR-${i + 1}`,
+      nameEn: x.name_en || x.name || x.slug || '—',
+      nameAr: x.name_ar || '',
+      region: x.region_id || '',
+      manager: '',
+      address: [x.city || ''],
+      cxScore: Number(x.avg_satisfaction) || 0,
+      sampleN: Number(x.survey_records) || 0,
+      status: x.is_active === false ? 'inactive' : 'active',
+      slug: x.slug,
+    }));
+  }
+
+  const c = await getJson('/api/customers');
+  if (c && c.success && Array.isArray(c.customers)) {
+    allRecords = c.customers.map((x) => ({
+      id: x.customer_ref || x.id,
+      branch: x.branch || '',
+      gender: x.gender || '',
+      service: x.service_line || '',
+      freq: x.visit_frequency || '',
+      age: x.age_band || '',
+      q: x.rating_1, c: x.rating_2, p: x.rating_3, s: x.rating_4,
+      cx: x.overall_satisfaction != null ? x.overall_satisfaction : '',
+      risk: x.risk_tier || '',
+    }));
+  }
+
+  const a = await getJson('/api/admin/audit');
+  if (a && a.success && Array.isArray(a.entries)) {
+    auditLog = a.entries.map((e, i) => ({
+      id: e.id != null ? 'AL-' + e.id : 'AL-' + i,
+      timestamp: String(e.created_at || '').replace('T', ' ').slice(0, 19),
+      admin: e.actor_email || 'System',
+      action: e.action || 'UPDATE',
+      resource: e.entity || '',
+      detail: (e.payload && e.payload.detail) || '',
+      ip: e.ip || '',
+      status: String(e.status || 'success').toUpperCase(),
+    }));
+  }
+
+  const rep = await getJson('/api/admin/reports');
+  if (rep && rep.success && Array.isArray(rep.reports) && typeof reportHistory !== 'undefined') {
+    reportHistory = rep.reports.map((r) => ({
+      id: r.id,
+      name: r.name || r.report_type,
+      type: r.report_type || '',
+      branch: r.branch || 'All',
+      format: (r.format || 'csv').toUpperCase(),
+      by: r.generated_by_email || 'Admin',
+      date: String(r.created_at || '').slice(0, 10),
+      status: r.status === 'ready' ? 'Ready' : r.status || 'Ready',
+    }));
+  }
+
+  ['renderUsersTable', 'renderRecordsTable', 'renderAuditLog', 'renderBranchPanel', 'renderOverview', 'renderReports'].forEach((fn) => {
+    try { if (typeof window[fn] === 'function') window[fn](); } catch (_) {}
+  });
 }
 
 function admDeepCloneJson(x) {
@@ -3446,7 +3602,7 @@ function admNormalizeFilterBarConfig(parsed) {
   const def = admDefaultFilterBarConfig();
   if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.filters)) return def;
   const out = { filters: [] };
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < def.filters.length; i++) {
     const d = admDeepCloneJson(def).filters[i];
     const s = parsed.filters[i];
     if (!s || typeof s !== 'object') {
@@ -3483,11 +3639,14 @@ function admNormalizeFilterBarConfig(parsed) {
 }
 
 function admGetFilterBarConfig() {
+  let cfg;
   try {
     const raw = localStorage.getItem(FILTER_BAR_STORAGE_KEY);
-    if (raw) return admNormalizeFilterBarConfig(JSON.parse(raw));
-  } catch (_) {}
-  return admDefaultFilterBarConfig();
+    cfg = raw ? admNormalizeFilterBarConfig(JSON.parse(raw)) : admDefaultFilterBarConfig();
+  } catch (_) {
+    cfg = admDefaultFilterBarConfig();
+  }
+  return admInjectRegionOptions(cfg);
 }
 
 function admFilterFingerprint() {
@@ -3506,7 +3665,54 @@ function admFilterDatasetCol(filterIndex) {
 function admFilId(kind, i) {
   if (kind === 'exec') return 'execFil' + i;
   if (kind === 'cx') return 'cxFil' + i;
+  if (kind === 'mq') return 'mqFil' + i;
   return 'admDf' + i;
+}
+
+/** Build the Model Quality scope strip — only Region / Branch / Service Type. */
+function mqBuildFilterStrip() {
+  const host = document.getElementById('mqFilterStripInner');
+  if (!host) return;
+  const cfg = admGetFilterBarConfig();
+  const wanted = ['region', 'branch', 'service'];
+  host.innerHTML = wanted
+    .map((key) => {
+      const i = cfg.filters.findIndex((f) => f && f.key === key);
+      if (i < 0) return '';
+      const f = cfg.filters[i];
+      const fid = admFilId('mq', i);
+      const lbl = `<label class="db-filter-chip-lbl" for="${fid}"><span class="en">${admAttrEsc(f.labelEn)}</span><span class="ar">${admAttrEsc(f.labelAr)}</span></label>`;
+      const optAll = `<option value="${admAttrEsc(f.allValue)}" data-en="${admAttrEsc(f.allLabelEn)}" data-ar="${admAttrEsc(f.allLabelAr)}">${admAttrEsc(f.allLabelEn)}</option>`;
+      const opts = (f.options || [])
+        .filter((o) => o && o.active !== false)
+        .map((o) => `<option value="${admAttrEsc(o.value)}" data-en="${admAttrEsc(o.labelEn)}" data-ar="${admAttrEsc(o.labelAr)}">${admAttrEsc(o.labelEn)}</option>`)
+        .join('');
+      return `<div class="db-filter-chip" data-filter-key="${admAttrEsc(f.key)}">${lbl}<div class="db-filter-chip-select-wrap"><select class="db-select" id="${fid}" aria-label="${admAttrEsc(f.labelEn)}" onchange="mqOnFilterChange()">${optAll}${opts}</select></div></div>`;
+    })
+    .join('');
+  document.querySelectorAll('#mqFilterStripInner select option[data-en]').forEach((opt) => {
+    const en = opt.dataset.en, ar = opt.dataset.ar;
+    opt.textContent = document.documentElement.getAttribute('data-lang') === 'ar' ? ar || en : en;
+  });
+  admApplyBranchRegionLock('mq');
+}
+
+function getMqFilterContext() {
+  const cfg = admGetFilterBarConfig();
+  const out = {};
+  cfg.filters.forEach((f, i) => {
+    out[f.key] = admGetFilValue('mq', i);
+  });
+  return out;
+}
+
+function buildMqFilterKey(ctx) {
+  return admBuildScope3Key(ctx || getMqFilterContext());
+}
+
+function mqOnFilterChange() {
+  admApplyBranchRegionLock('mq');
+  try { loadModelQualityEditorForm(false); } catch (_) {}
 }
 
 function admGetFilValue(kind, i) {
@@ -3582,8 +3788,16 @@ function admRebuildCustomerFilterSelectors() {
   __admCustFilterSelectorsSig = sig;
   function build(kind, host, onchg) {
     const cfg = admGetFilterBarConfig();
-    host.innerHTML = cfg.filters
-      .map((f, i) => {
+    // Keep config indices stable, but show Region right after Branch.
+    const order = cfg.filters.map((f, i) => ({ f, i }));
+    const regionItem = order.find((x) => x.f && x.f.key === 'region');
+    if (regionItem) {
+      order.splice(order.indexOf(regionItem), 1);
+      const bIx = order.findIndex((x) => x.f && x.f.key === 'branch');
+      order.splice(bIx >= 0 ? bIx + 1 : order.length, 0, regionItem);
+    }
+    host.innerHTML = order
+      .map(({ f, i }) => {
         const fid = admFilId(kind, i);
         const lbl = `<label class="db-filter-chip-lbl" for="${fid}"><span class="en">${admAttrEsc(f.labelEn)}</span><span class="ar">${admAttrEsc(f.labelAr)}</span></label>`;
         const optAll = `<option value="${admAttrEsc(f.allValue)}" data-en="${admAttrEsc(f.allLabelEn)}" data-ar="${admAttrEsc(f.allLabelAr)}">${admAttrEsc(f.allLabelEn)}</option>`;
@@ -3594,16 +3808,49 @@ function admRebuildCustomerFilterSelectors() {
               `<option value="${admAttrEsc(o.value)}" data-en="${admAttrEsc(o.labelEn)}" data-ar="${admAttrEsc(o.labelAr)}">${admAttrEsc(o.labelEn)}</option>`
           )
           .join('');
-        const ev = onchg ? ` onchange="${onchg}"` : '';
+        const ev = onchg ? ` onchange="admOnFilterSelChange('${kind}')"` : '';
         const aria = admAttrEsc(f.labelEn);
-        return `<div class="db-filter-chip">${lbl}<div class="db-filter-chip-select-wrap"><select class="db-select" id="${fid}" aria-label="${aria}"${ev}>${optAll}${opts}</select></div></div>`;
+        return `<div class="db-filter-chip" data-filter-key="${admAttrEsc(f.key)}">${lbl}<div class="db-filter-chip-select-wrap"><select class="db-select" id="${fid}" aria-label="${aria}"${ev}>${optAll}${opts}</select></div></div>`;
       })
       .join('');
   }
   build('exec', execHost, 'loadExecutiveEditorForm()');
   build('cx', cxHost, 'loadCxDriversEditorForm()');
   admSyncDashFilterSelectOptions();
+  admApplyBranchRegionLock('exec');
+  admApplyBranchRegionLock('cx');
   admBindDashFilterScrollFade();
+}
+
+/** Branch & Region are mutually exclusive in the admin filter strips too. */
+function admApplyBranchRegionLock(kind) {
+  const cfg = admGetFilterBarConfig();
+  const bi = cfg.filters.findIndex((f) => f && f.key === 'branch');
+  const ri = cfg.filters.findIndex((f) => f && f.key === 'region');
+  if (bi < 0 || ri < 0) return;
+  const bSel = document.getElementById(admFilId(kind, bi));
+  const rSel = document.getElementById(admFilId(kind, ri));
+  if (!bSel || !rSel) return;
+  const bAll = String(cfg.filters[bi].allValue ?? '').trim();
+  const rAll = String(cfg.filters[ri].allValue ?? '').trim();
+  const bActive = bSel.value && String(bSel.value).trim() !== bAll;
+  const rActive = rSel.value && String(rSel.value).trim() !== rAll;
+  const setLock = (sel, locked) => {
+    sel.disabled = locked;
+    const chip = sel.closest('.db-filter-chip');
+    if (chip) chip.classList.toggle('is-locked', locked);
+  };
+  if (rActive) { bSel.value = bAll; setLock(bSel, true); } else { setLock(bSel, false); }
+  if (bActive) { rSel.value = rAll; setLock(rSel, true); } else { setLock(rSel, false); }
+}
+
+/** Filter <select> change in an editor strip — enforce lock, then reload that editor. */
+function admOnFilterSelChange(kind) {
+  admApplyBranchRegionLock(kind);
+  try {
+    if (kind === 'cx') loadCxDriversEditorForm();
+    else loadExecutiveEditorForm();
+  } catch (_) {}
 }
 
 function admApplyRoshdSnapshotTo(kind) {
@@ -4729,30 +4976,59 @@ function executeConfirmedAction() {
     'clear-audit':   `Audit log cleared.`,
     'suspend':       `Selected users suspended.`,
   };
+  const apiBase = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
   if (a.startsWith('delete-user-')) {
     const uid = a.replace('delete-user-','');
-    usersData = usersData.filter(u => u.id !== uid);
-    renderUsersTable();
-    addAuditEntry('DELETE', `User ${uid}`, 'Account permanently deleted');
-    toast(`User ${uid} deleted.`,'success');
+    (async () => {
+      try {
+        const res = await fetch(apiBase + '/api/admin/user/' + encodeURIComponent(uid), { method: 'DELETE', headers: admJsonHeaders() });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+        addAuditEntry('DELETE', `User ${uid}`, 'Account permanently deleted');
+        toast('User deleted.', 'success');
+        await admLoadAdminDataFromApi();
+      } catch (e) { toast('Delete failed: ' + (e.message || e), 'error'); }
+    })();
   } else if (a.startsWith('delete-branch-')) {
     const bid = a.replace('delete-branch-','');
-    branchesData = branchesData.filter(b => b.id !== bid);
-    renderBranchPanel();
-    addAuditEntry('DELETE', `Branch ${bid}`, 'Branch removed');
-    toast('Branch deleted.','success');
+    (async () => {
+      try {
+        const res = await fetch(apiBase + '/api/admin/branches/' + encodeURIComponent(bid), { method: 'DELETE', headers: admJsonHeaders() });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+        addAuditEntry('DELETE', `Branch ${bid}`, 'Branch removed');
+        toast('Branch deleted.', 'success');
+        await admLoadAdminDataFromApi();
+      } catch (e) { toast('Delete failed: ' + (e.message || e), 'error'); }
+    })();
   } else if (a.startsWith('delete-record-')) {
-    toast('Record deleted.','success');
-    addAuditEntry('DELETE', 'Record', 'Response record removed');
+    const rid = a.replace('delete-record-','');
+    (async () => {
+      try {
+        const res = await fetch(apiBase + '/api/admin/customer/' + encodeURIComponent(rid), { method: 'DELETE', headers: admJsonHeaders() });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+        addAuditEntry('DELETE', 'Record', `Response record ${rid} removed`);
+        toast('Record deleted.', 'success');
+        await admLoadAdminDataFromApi();
+      } catch (e) { toast('Delete failed: ' + (e.message || e), 'error'); }
+    })();
   } else if (a === 'reset-model') {
     modelOverrides = {};
     Object.keys(DRIVERS_DATA).forEach(b => { modelOverrides[b] = DRIVERS_DATA[b].map(d=>({...d})); });
     renderModelWeights();
     void admPersistRoshdDashboardDbModel('Model weights reset to defaults');
   } else if (a === 'clear-audit') {
-    auditLog = [];
-    renderAuditLog();
-    toast('Audit log cleared.','warning');
+    (async () => {
+      try {
+        const res = await fetch(apiBase + '/api/admin/audit', { method: 'DELETE', headers: admJsonHeaders() });
+        const d = await res.json().catch(() => ({}));
+        if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+        auditLog = [];
+        renderAuditLog();
+        toast('Audit log cleared.', 'warning');
+      } catch (e) { toast('Clear failed: ' + (e.message || e), 'error'); }
+    })();
   } else {
     toast(msgs[a] || 'Action completed.','success');
     addAuditEntry('OVERRIDE', 'System', msgs[a] || 'Admin action executed');
@@ -4772,6 +5048,10 @@ function launchAdmin(user, opts) {
   initAllPanels();
   admHydrateAdminFromStoredDashboardDbModel();
   applyAdminLanguage();
+  // Load regions so the Type-3 editor strips show the Region selector.
+  try { admSyncRegionsFromApi(); } catch (_) {}
+  // Load Users / Branches / Records / Audit from Supabase (replaces mock data).
+  try { admLoadAdminDataFromApi(); } catch (_) {}
   if (!opts.quiet) toast(I18N[currentLang].messages.welcome(user.name), 'success');
 }
 
@@ -4818,10 +5098,22 @@ function execBranchForAggregateData(ctx) {
   return EXEC_DB_DATA[b] ? b : 'All Branches';
 }
 
+/**
+ * Type-3 scope key — region | branch | service only (client spec).
+ * Region & branch are mutually exclusive. Identical format to the customer
+ * dashboard's dbBuildScope3Key() so saved overrides resolve on both sides.
+ */
+function admBuildScope3Key(ctx) {
+  const region = admCtxIsAll(ctx, 'region') ? '' : admCtxSel(ctx, 'region');
+  const branch = admCtxIsAll(ctx, 'branch') ? '' : admCtxSel(ctx, 'branch');
+  const service = admCtxIsAll(ctx, 'service') ? '' : admCtxSel(ctx, 'service');
+  const geo = region ? 'r:' + region : branch ? 'b:' + branch : 'all';
+  const svc = service ? 's:' + service : 'all';
+  return geo + ' | ' + svc;
+}
+
 function buildExecutiveFilterKey(ctx) {
-  const c = ctx || getExecutiveFilterContext();
-  const cfg = admGetFilterBarConfig();
-  return cfg.filters.map((f) => admCtxSel(c, f.key) || String(f.allValue ?? '')).join(' | ');
+  return admBuildScope3Key(ctx || getExecutiveFilterContext());
 }
 
 function syncExecutiveContextToCustomerFilters(ctx) {
@@ -5162,9 +5454,7 @@ function getCxFilterContext() {
 }
 
 function buildCxFilterKey(ctx) {
-  const c = ctx || getCxFilterContext();
-  const cfg = admGetFilterBarConfig();
-  return cfg.filters.map((f) => admCtxSel(c, f.key) || String(f.allValue ?? '')).join(' | ');
+  return admBuildScope3Key(ctx || getCxFilterContext());
 }
 
 function syncCxContextToCustomerFilters(ctx) {
@@ -6702,20 +6992,38 @@ function mqEsc(s) {
   return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
 }
 
-function readModelQualityStored() {
+/** Whole stored Model Quality object: { pairs, flowBlocks, byFilter:{ [scopeKey]:{values} } }. */
+function readModelQualityRaw() {
   try {
     const raw = localStorage.getItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY);
-    if (!raw) return { pairs: {}, values: {}, flowBlocks: null };
+    if (!raw) return { pairs: {}, flowBlocks: null, byFilter: {} };
     const o = JSON.parse(raw);
-    if (!o || typeof o !== 'object') return { pairs: {}, values: {}, flowBlocks: null };
+    if (!o || typeof o !== 'object') return { pairs: {}, flowBlocks: null, byFilter: {} };
+    const byFilter = o.byFilter && typeof o.byFilter === 'object' ? Object.assign({}, o.byFilter) : {};
+    // Migrate a legacy flat `values` blob into the unscoped bucket.
+    if (o.values && typeof o.values === 'object' && Object.keys(o.values).length && !byFilter['all | all']) {
+      byFilter['all | all'] = { values: o.values };
+    }
     return {
       pairs: o.pairs && typeof o.pairs === 'object' ? o.pairs : {},
-      values: o.values && typeof o.values === 'object' ? o.values : {},
       flowBlocks: Array.isArray(o.flowBlocks) ? o.flowBlocks.slice(0, 16) : null,
+      byFilter,
     };
   } catch (_) {
-    return { pairs: {}, values: {}, flowBlocks: null };
+    return { pairs: {}, flowBlocks: null, byFilter: {} };
   }
+}
+
+/** Model Quality for the CURRENT scope — pairs/flowBlocks global, values per Region/Branch/Service. */
+function readModelQualityStored() {
+  const raw = readModelQualityRaw();
+  const key = buildMqFilterKey();
+  const scoped = raw.byFilter[key];
+  return {
+    pairs: raw.pairs,
+    values: scoped && typeof scoped.values === 'object' ? scoped.values : {},
+    flowBlocks: raw.flowBlocks,
+  };
 }
 
 function mqRenderFlowBlocksEditor() {
@@ -6814,6 +7122,7 @@ async function loadModelQualityEditorForm(forceReloadDefaults) {
     _mqDefaultValues = mqExtractValuesFromHtml(html);
     _mqDefaultFlowBlocks = mqExtractFlowBlocksFromHtml(html);
   }
+  mqBuildFilterStrip();
   const stored = readModelQualityStored();
   const flowBlocks = await mqResolveInitialFlowBlocks(stored);
   renderModelQualityEditor(_mqDefaultPairs, _mqDefaultValues, Object.assign({}, stored, { flowBlocks }));
@@ -6853,43 +7162,58 @@ async function saveModelQualityOverridesFromForm() {
   const needPersistFlow =
     currFlowStr !== defFlowStr || (prevFlowStr != null && prevFlowStr !== currFlowStr);
 
-  const fullPersist = {};
-  if (Object.keys(pairs).length) fullPersist.pairs = pairs;
-  else if (Object.keys(prevPairs).length) fullPersist.pairs = prevPairs;
-  if (Object.keys(values).length) fullPersist.values = values;
-  else if (Object.keys(prevValues).length) fullPersist.values = prevValues;
-  if (needPersistFlow) fullPersist.flowBlocks = flowSnap;
-  else if (Array.isArray(prev.flowBlocks) && prev.flowBlocks.length) fullPersist.flowBlocks = prev.flowBlocks.slice(0, 16);
+  // pairs + flowBlocks are global; metric values are scoped per Region/Branch/Service.
+  const mqKey = buildMqFilterKey();
+  const raw = readModelQualityRaw();
+  const newPairs = Object.keys(pairs).length ? pairs : prevPairs;
+  const newFlow = needPersistFlow
+    ? flowSnap
+    : Array.isArray(prev.flowBlocks) && prev.flowBlocks.length
+      ? prev.flowBlocks.slice(0, 16)
+      : raw.flowBlocks;
+  const newValues = Object.keys(values).length ? values : prevValues;
 
-  const sig = (o) =>
-    JSON.stringify({
-      pairs: o.pairs && typeof o.pairs === 'object' ? o.pairs : {},
-      values: o.values && typeof o.values === 'object' ? o.values : {},
-      flowBlocks: Array.isArray(o.flowBlocks) ? o.flowBlocks : null,
-    });
-  if (sig(fullPersist) === sig(prev)) {
+  const out = { pairs: newPairs, byFilter: Object.assign({}, raw.byFilter) };
+  if (newFlow && newFlow.length) out.flowBlocks = newFlow;
+  if (Object.keys(newValues).length) out.byFilter[mqKey] = { values: newValues };
+  else delete out.byFilter[mqKey];
+
+  const before = JSON.stringify({ pairs: raw.pairs, flowBlocks: raw.flowBlocks, byFilter: raw.byFilter });
+  const after = JSON.stringify({ pairs: out.pairs, flowBlocks: out.flowBlocks || null, byFilter: out.byFilter });
+  if (before === after) {
     toast('No changes to save.', 'info');
     return;
   }
   try {
-    localStorage.setItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, JSON.stringify(fullPersist));
+    localStorage.setItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, JSON.stringify(out));
   } catch (_) {
     toast('Could not save (storage blocked).', 'error');
     return;
   }
-  addAuditEntry('UPDATE', 'Model Quality overrides', 'Customer Model Quality labels/values/flow blocks saved to localStorage');
+  addAuditEntry('UPDATE', 'Model Quality overrides', `Model Quality saved for scope: ${mqKey}`);
   notifyCustomerDashboardOverrides('model-quality-overrides-updated');
   await admFinishDashboardKvSave(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, 'Model Quality');
 }
 
 function resetModelQualityOverrides() {
+  const mqKey = buildMqFilterKey();
+  const raw = readModelQualityRaw();
+  delete raw.byFilter[mqKey];
+  const stillHas = Object.keys(raw.byFilter).length || Object.keys(raw.pairs || {}).length || (raw.flowBlocks && raw.flowBlocks.length);
   try {
-    localStorage.removeItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY);
+    if (stillHas) {
+      const keep = { pairs: raw.pairs || {}, byFilter: raw.byFilter };
+      if (raw.flowBlocks && raw.flowBlocks.length) keep.flowBlocks = raw.flowBlocks;
+      localStorage.setItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, JSON.stringify(keep));
+    } else {
+      localStorage.removeItem(MODEL_QUALITY_OVERRIDES_STORAGE_KEY);
+    }
   } catch (_) {}
   void loadModelQualityEditorForm(false);
-  addAuditEntry('UPDATE', 'Model Quality overrides', 'Reset to defaults');
+  addAuditEntry('UPDATE', 'Model Quality overrides', `Reset Model Quality values for scope: ${mqKey}`);
   notifyCustomerDashboardOverrides('model-quality-overrides-updated');
-  toast('Model Quality overrides cleared.', 'info');
+  admFinishDashboardKvSave(MODEL_QUALITY_OVERRIDES_STORAGE_KEY, 'Model Quality reset');
+  toast(`Model Quality values cleared for: ${mqKey}`, 'info');
 }
 
 const ADMIN_MIRROR_DB_PANEL = {
@@ -7338,19 +7662,34 @@ function saveUser() {
   if (!fn || !ln || !email) { errEl.textContent='First name, last name, and email are required.'; errEl.classList.add('show'); return; }
   if (!editingUserId && pw.length < 8) { errEl.textContent='Password must be at least 8 characters.'; errEl.classList.add('show'); return; }
 
-  if (editingUserId) {
-    const u = usersData.find(x=>x.id===editingUserId);
-    if (u) { Object.assign(u, {firstName:fn,lastName:ln,email,role,branch,status,org,notes}); if(pw.length>=8) u.passwordChanged=true; }
-    addAuditEntry('UPDATE',`User ${editingUserId}`,`User profile updated (${role})`);
-    toast('User updated successfully.','success');
-  } else {
-    const id = `USR-${String(usersData.length+1).padStart(3,'0')}`;
-    usersData.unshift({id,firstName:fn,lastName:ln,email,role,branch,status,org,notes,loginCount:0,createdAt:new Date().toISOString().slice(0,10),lastLogin:'—'});
-    addAuditEntry('CREATE',`User ${id}`,`New ${role} account created`);
-    toast('User created successfully.','success');
-  }
-  closeModalById('userModal');
-  renderUsersTable();
+  const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+  const dbStatus = status === 'suspended' ? 'Suspended' : 'Active';
+  (async () => {
+    try {
+      let res;
+      if (editingUserId) {
+        const body = { first_name: fn, last_name: ln, email, role, branch, status: dbStatus };
+        if (pw.length >= 8) body.password = pw;
+        res = await fetch(base + '/api/admin/users/' + encodeURIComponent(editingUserId), {
+          method: 'PUT', headers: admJsonHeaders(), body: JSON.stringify(body),
+        });
+      } else {
+        res = await fetch(base + '/api/admin/users', {
+          method: 'POST', headers: admJsonHeaders(),
+          body: JSON.stringify({ email, password: pw, first_name: fn, last_name: ln, role, branch, status: dbStatus }),
+        });
+      }
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+      addAuditEntry(editingUserId ? 'UPDATE' : 'CREATE', `User ${email}`, editingUserId ? `Profile updated (${role})` : `New ${role} account created`);
+      toast(editingUserId ? 'User updated in Supabase.' : 'User created in Supabase.', 'success');
+      closeModalById('userModal');
+      await admLoadAdminDataFromApi();
+    } catch (e) {
+      errEl.textContent = 'Save failed: ' + (e.message || e);
+      errEl.classList.add('show');
+    }
+  })();
 }
 
 function viewUser(uid) {
@@ -7389,14 +7728,41 @@ function viewUser(uid) {
 function toggleUserStatus(uid) {
   const u = usersData.find(x=>x.id===uid);
   if (!u) return;
-  u.status = u.status === 'active' ? 'suspended' : 'active';
-  addAuditEntry('UPDATE',`User ${uid}`,`Status changed to ${u.status}`);
-  toast(`User ${u.status==='active'?'activated':'suspended'}.`, u.status==='active'?'success':'warning');
-  renderUsersTable();
+  const next = u.status === 'active' ? 'Suspended' : 'Active';
+  const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+  (async () => {
+    try {
+      const res = await fetch(base + '/api/admin/users/' + encodeURIComponent(uid), {
+        method: 'PUT', headers: admJsonHeaders(), body: JSON.stringify({ status: next }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+      addAuditEntry('UPDATE', `User ${uid}`, `Status changed to ${next}`);
+      toast(`User ${next === 'Active' ? 'activated' : 'suspended'}.`, next === 'Active' ? 'success' : 'warning');
+      await admLoadAdminDataFromApi();
+    } catch (e) {
+      toast('Status change failed: ' + (e.message || e), 'error');
+    }
+  })();
 }
 
 function deleteUser(uid) {
-  confirmDanger(`delete-user-${uid}`, 'Delete User', `This will permanently delete the user account and all associated data. This cannot be undone.`);
+  if (!confirm('Permanently delete this user account? This cannot be undone.')) return;
+  const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+  (async () => {
+    try {
+      const res = await fetch(base + '/api/admin/user/' + encodeURIComponent(uid), {
+        method: 'DELETE', headers: admJsonHeaders(),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+      addAuditEntry('DELETE', `User ${uid}`, 'User account permanently deleted');
+      toast('User deleted.', 'success');
+      await admLoadAdminDataFromApi();
+    } catch (e) {
+      toast('Delete failed: ' + (e.message || e), 'error');
+    }
+  })();
 }
 
 function toggleSelectAll(cb) {
@@ -7539,21 +7905,32 @@ async function saveBranch() {
   const n    = parseInt(document.getElementById('bSampleN').value)||100;
   const st   = document.getElementById('bStatus').value;
   if (!en || !ar) { toast('Branch names (EN and AR) are required.','error'); return; }
-  if (editingBranchId) {
-    const b = branchesData.find(x=>x.id===editingBranchId);
-    if (b) { Object.assign(b,{nameEn:en,nameAr:ar,manager:mgr,address:addr,sampleN:n,status:st}); if(!branchOverrides[en]) branchOverrides[en]={...branchOverrides[b.nameEn]||{score:cx}}; branchOverrides[en].score=cx; }
-    addAuditEntry('UPDATE',`Branch ${en}`,`Branch details updated`);
-    toast('Branch updated.','success');
-  } else {
-    const id = `BR-${String(branchesData.length+1).padStart(2,'0')}`;
-    branchesData.push({id,nameEn:en,nameAr:ar,region:en,manager:mgr,address:addr,cxScore:cx,sampleN:n,status:st});
-    branchOverrides[en] = {score:cx,explanatory:65,top:'Quality',topAr:'الجودة',n};
-    addAuditEntry('CREATE',`Branch ${en}`,`New branch added`);
-    toast('Branch created.','success');
+  const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+  const body = {
+    name_en: en, name_ar: ar, city: addr || en,
+    is_active: st !== 'inactive',
+  };
+  try {
+    let res;
+    if (editingBranchId) {
+      res = await fetch(base + '/api/admin/branches/' + encodeURIComponent(editingBranchId), {
+        method: 'PUT', headers: admJsonHeaders(), body: JSON.stringify(body),
+      });
+    } else {
+      body.slug = en.replace(/[^A-Za-z0-9]+/g, '-');
+      res = await fetch(base + '/api/admin/branches', {
+        method: 'POST', headers: admJsonHeaders(), body: JSON.stringify(body),
+      });
+    }
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+    addAuditEntry(editingBranchId ? 'UPDATE' : 'CREATE', `Branch ${en}`, editingBranchId ? 'Branch details updated' : 'New branch added');
+    toast(editingBranchId ? 'Branch updated in Supabase.' : 'Branch created in Supabase.', 'success');
+    closeModalById('branchModal');
+    await admLoadAdminDataFromApi();
+  } catch (e) {
+    toast('Branch save failed: ' + (e.message || e), 'error');
   }
-  closeModalById('branchModal');
-  renderBranchPanel();
-  if (EXEC_DB_DATA[en]) await admPersistRoshdDashboardDbModel(`Branch record: ${en}`);
 }
 
 /* ═══════════════════════════════════════════
@@ -7712,21 +8089,110 @@ function onDragLeave()    { document.getElementById('uploadZone').classList.remo
 function onDrop(e)        { e.preventDefault(); document.getElementById('uploadZone').classList.remove('drag-over'); const f=e.dataTransfer.files[0]; if(f) simulateUpload(f); }
 function handleFileUpload(inp) { if(inp.files[0]) simulateUpload(inp.files[0]); }
 
-function simulateUpload(file) {
+/** Minimal RFC-4180-ish CSV parser → array of header-keyed row objects. */
+function admParseCsv(text) {
+  const lines = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n').filter((l) => l.trim() !== '');
+  if (!lines.length) return [];
+  const splitRow = (line) => {
+    const out = [];
+    let cur = '', q = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (q) {
+        if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+        else cur += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === ',') { out.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    out.push(cur);
+    return out;
+  };
+  const headers = splitRow(lines[0]).map((h) => h.trim().toLowerCase());
+  return lines.slice(1).map((l) => {
+    const cells = splitRow(l);
+    const o = {};
+    headers.forEach((h, i) => { o[h] = (cells[i] || '').trim(); });
+    return o;
+  });
+}
+
+/** Real CSV upload — parses the file and pushes rows to Supabase via /api/admin/customers/bulk. */
+async function simulateUpload(file) {
   const prog = document.getElementById('uploadProgress');
-  const bar  = document.getElementById('uploadBar');
+  const bar = document.getElementById('uploadBar');
   const pct2 = document.getElementById('uploadPct');
   const stat = document.getElementById('uploadStatus');
-  const fn   = document.getElementById('uploadFileName');
+  const fn = document.getElementById('uploadFileName');
+  if (!prog) return;
   prog.style.display = '';
   fn.textContent = file.name;
-  let p = 0;
-  const iv = setInterval(() => {
-    p += Math.random()*15+5;
-    if (p >= 100) { p=100; clearInterval(iv); stat.textContent='✓ Validated — 300 records ready to activate'; stat.style.color='var(--green)'; addAuditEntry('UPLOAD',`Dataset ${file.name}`,`${file.name} uploaded and validated`); toast('File uploaded and validated successfully.','success'); datasets.unshift({id:datasets.length+1,name:file.name,period:'Q2 2026',rows:300,status:'pending',uploader:currentAdmin?.name||'Admin',date:new Date().toISOString().slice(0,10)}); renderDatasets(); }
-    bar.style.width = p+'%';
-    pct2.textContent = Math.round(p)+'%';
-  }, 150);
+  const setBar = (p, msg, color) => {
+    bar.style.width = p + '%';
+    pct2.textContent = Math.round(p) + '%';
+    if (msg != null) { stat.textContent = msg; stat.style.color = color || 'var(--text-dim)'; }
+  };
+  setBar(15, 'Reading file…');
+  if (/\.xlsx?$/i.test(file.name)) {
+    setBar(100, '✗ Excel not supported — please export the sheet as CSV and upload that.', '#e5484d');
+    toast('Save the sheet as .csv, then upload.', 'error');
+    return;
+  }
+  let text = '';
+  try { text = await file.text(); } catch (_) {
+    setBar(100, '✗ Could not read file.', '#e5484d');
+    return;
+  }
+  setBar(40, 'Parsing rows…');
+  const rows = admParseCsv(text);
+  if (!rows.length) {
+    setBar(100, '✗ No data rows found in the file.', '#e5484d');
+    return;
+  }
+  const num = (v) => { const n = Number(v); return isFinite(n) && v !== '' && v != null ? n : undefined; };
+  const pick = (o, ...keys) => { for (const k of keys) { if (o[k] != null && o[k] !== '') return o[k]; } return undefined; };
+  const records = rows
+    .map((r, i) => ({
+      customer_ref: pick(r, 'id', 'customer_ref', 'customer id', 'ref') || 'CSR-' + Date.now() + '-' + i,
+      branch: pick(r, 'branch'),
+      gender: pick(r, 'gender'),
+      service_line: pick(r, 'service', 'service_line', 'service type'),
+      visit_frequency: pick(r, 'frequency', 'visit_frequency', 'visits'),
+      age_band: pick(r, 'age', 'age_band', 'age category'),
+      rating_1: num(pick(r, 'q_score', 'quality', 'rating_1', 'q')),
+      rating_2: num(pick(r, 'c_score', 'communication', 'rating_2', 'c')),
+      rating_3: num(pick(r, 'p_score', 'price', 'rating_3', 'p')),
+      rating_4: num(pick(r, 's_score', 'speed', 'rating_4', 's')),
+      overall_satisfaction: num(pick(r, 'cx_score', 'cx', 'overall', 'overall_satisfaction')),
+      risk_tier: pick(r, 'risk', 'risk_tier') || 'Unrated',
+    }))
+    .filter((r) => r.branch);
+  if (!records.length) {
+    setBar(100, '✗ No valid rows — every row needs a Branch column.', '#e5484d');
+    return;
+  }
+  setBar(65, 'Uploading ' + records.length + ' rows to Supabase…');
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    const res = await fetch(base + '/api/admin/customers/bulk', {
+      method: 'POST',
+      headers: admJsonHeaders(),
+      body: JSON.stringify({ records }),
+    });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+    setBar(100, '✓ ' + (d.upserted || records.length) + ' records saved to Supabase', 'var(--green)');
+    addAuditEntry('UPLOAD', `Dataset ${file.name}`, `${d.upserted || records.length} records uploaded to Supabase`);
+    toast('Dataset uploaded — ' + (d.upserted || records.length) + ' records.', 'success');
+    if (typeof datasets !== 'undefined' && Array.isArray(datasets)) {
+      datasets.unshift({ id: datasets.length + 1, name: file.name, period: '—', rows: records.length, status: 'active', uploader: currentAdmin?.name || 'Admin', date: new Date().toISOString().slice(0, 10) });
+      if (typeof renderDatasets === 'function') renderDatasets();
+    }
+    admLoadAdminDataFromApi();
+  } catch (e) {
+    setBar(100, '✗ Upload failed: ' + (e.message || e), '#e5484d');
+    toast('Upload failed: ' + (e.message || e), 'error');
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -7953,18 +8419,42 @@ function renderReports() {
 }
 
 function generateReport() {
-  const type   = document.getElementById('reportType').value;
-  const branch = document.getElementById('reportBranch').value;
-  const format = document.getElementById('reportFormat').value;
-  const lang   = document.getElementById('reportLang').value;
-  toast(`Generating ${type} (${branch}) as ${format} — ${lang}…`,'info');
-  setTimeout(() => {
-    const id = `RPT-${String(reportHistory.length+1).padStart(3,'0')}`;
-    reportHistory.unshift({id,name:`${type} — ${branch}`,type,branch,format,by:currentAdmin?.name||'Admin',date:new Date().toISOString().slice(0,10),status:'Ready'});
-    addAuditEntry('EXPORT',`Report ${id}`,`${type} report generated`);
-    toast('Report ready for download.','success');
-    renderReports();
-  }, 2000);
+  const typeEl = document.getElementById('reportType');
+  const branchEl = document.getElementById('reportBranch');
+  const formatEl = document.getElementById('reportFormat');
+  const type = (typeEl && typeEl.value) || 'customers';
+  const branch = (branchEl && branchEl.value) || '';
+  const format = (formatEl && formatEl.value) || 'csv';
+  // Map UI labels to API report types.
+  const t = /branch/i.test(type) ? 'branches' : /user/i.test(type) ? 'users' : 'customers';
+  toast(`Generating ${type}…`, 'info');
+  const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+  (async () => {
+    try {
+      const res = await fetch(base + '/api/admin/reports/generate', {
+        method: 'POST', headers: admJsonHeaders(),
+        body: JSON.stringify({ report_type: t, branch: branch && !/^all/i.test(branch) ? branch : null, format: 'csv', name: `${type}${branch ? ' — ' + branch : ''}` }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+      // Trigger a CSV download in the browser.
+      if (d.csv != null) {
+        const blob = new Blob([d.csv], { type: 'text/csv;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = (d.report && d.report.name ? d.report.name : 'report') + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      }
+      addAuditEntry('EXPORT', `Report ${d.report && d.report.id || ''}`, `${type} report generated (${d.report && d.report.rows_count || 0} rows)`);
+      toast('Report generated and downloaded.', 'success');
+      await admLoadAdminDataFromApi();
+    } catch (e) {
+      toast('Report generation failed: ' + (e.message || e), 'error');
+    }
+  })();
 }
 
 function openScheduleModal() { openModal('scheduleModal'); }
@@ -7984,7 +8474,22 @@ function saveSchedule() {
 function toggleSchedule(id, el) { el.classList.toggle('on'); const s=scheduledExportsList.find(x=>x.id===id); if(s) s.active=!s.active; toast(`Schedule ${s?.active?'activated':'paused'}.`,'info'); }
 function deleteSchedule(id) { scheduledExportsList=scheduledExportsList.filter(s=>s.id!==id); toast('Schedule deleted.','success'); renderReports(); }
 function downloadReport(id) { toast(`Report ${id} downloading…`,'info'); addAuditEntry('EXPORT',`Report ${id}`,'Report downloaded'); }
-function deleteReport(id) { reportHistory=reportHistory.filter(r=>r.id!==id); toast('Report removed.','success'); renderReports(); }
+function deleteReport(id) {
+  const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+  (async () => {
+    try {
+      const res = await fetch(base + '/api/admin/reports/' + encodeURIComponent(id), {
+        method: 'DELETE', headers: admJsonHeaders(),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+      toast('Report removed.', 'success');
+      await admLoadAdminDataFromApi();
+    } catch (e) {
+      toast('Delete failed: ' + (e.message || e), 'error');
+    }
+  })();
+}
 
 /* ═══════════════════════════════════════════
    SETTINGS
@@ -7993,8 +8498,23 @@ function saveSettings() {
   const quarter = document.getElementById('quarterLabel')?.value;
   const n       = document.getElementById('sampleSizeN')?.value;
   const r2      = document.getElementById('modelR2')?.value;
-  addAuditEntry('UPDATE','Settings',`Platform settings saved — Q:${quarter}, N:${n}, R²:${r2}%`);
-  toast('Settings saved successfully.','success');
+  const payload = {
+    display: { quarter: quarter || '', sampleSizeN: Number(n) || 0, modelR2Pct: Number(r2) || 0 },
+  };
+  const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+  (async () => {
+    try {
+      const res = await fetch(base + '/api/admin/settings', {
+        method: 'PUT', headers: admJsonHeaders(), body: JSON.stringify({ settings: payload }),
+      });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok || !d.success) throw new Error(d.message || res.statusText);
+      addAuditEntry('UPDATE', 'Settings', `Platform settings saved — Q:${quarter}, N:${n}, R²:${r2}%`);
+      toast('Settings saved to Supabase.', 'success');
+    } catch (e) {
+      toast('Settings save failed: ' + (e.message || e), 'error');
+    }
+  })();
 }
 
 /* ═══════════════════════════════════════════

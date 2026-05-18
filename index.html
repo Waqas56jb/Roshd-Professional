@@ -8,6 +8,8 @@
 <link rel="apple-touch-icon" href="/search-bar.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<!-- Supabase JS — powers live (Realtime) updates from the admin panel -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.min.js" defer></script>
 <style>
 /* ═══════════════════════════════════════════════
    ROOT VARIABLES
@@ -1020,6 +1022,12 @@ html[data-lang="ar"] .db-filter-bar-scroll-outer::after {
   min-width: 0;
   flex: 1 1 128px;
   max-width: 200px;
+}
+.db-filter-chip.is-locked {
+  opacity: 0.42;
+}
+.db-filter-chip.is-locked .db-select {
+  cursor: not-allowed;
 }
 
 .db-filter-chip-lbl {
@@ -4847,20 +4855,26 @@ html[data-lang="ar"] .db-model-metric-desc { font-family: 'Cairo', sans-serif; }
 <script>
 /* ── Backend API base URL (same host in dev so GET/PUT use your running server + Supabase) ── */
 const API_BASE = (function () {
-  /** Deployment that has Supabase + `/api/*` wired (see `/api/health` → `roshd_server_api: 2`). */
+  /**
+   * The one deployment that has Supabase env vars + `/api/*` wired
+   * (verified: `/api/health` → `roshd_server_api: 2`, supabase connected).
+   * Every other Vercel alias (3gs5, bare roshd-professional, …) lacks the
+   * env vars and 500s on auth — so production frontends ALWAYS use this URL.
+   * Override per-deployment by setting window.__ROSHD_API_BASE__ before this script.
+   */
   const ROSHD_VERCEL_API_CANON = 'https://roshd-professional-s8lh.vercel.app';
   try {
+    if (typeof window.__ROSHD_API_BASE__ === 'string' && window.__ROSHD_API_BASE__) {
+      return String(window.__ROSHD_API_BASE__).replace(/\/$/, '');
+    }
     const h = window.location.hostname;
+    // Local development — frontend + API served from the same Node server.
     if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]') return window.location.origin;
     if (!h && window.location.protocol === 'file:') return 'http://localhost:5000';
     if (/^(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})$/.test(h))
       return window.location.origin;
-    if (h && h.endsWith('.vercel.app')) {
-      /* Bare `roshd-professional.vercel.app` is a different Vercel alias than `*-s8lh` and often returns 500 on auth (no env). */
-      if (h === 'roshd-professional.vercel.app' || h === 'www.roshd-professional.vercel.app') return ROSHD_VERCEL_API_CANON;
-      return window.location.origin;
-    }
   } catch (_) {}
+  // Any production host → the known-good backend.
   return ROSHD_VERCEL_API_CANON;
 })();
 
@@ -5184,14 +5198,18 @@ const DB_DATA = {
 const ROSHD_DB_MODEL_KEY = 'roshd_dashboard_db_model';
 
 /** Same filter signature as admin `buildExecutiveFilterKey` / `buildCxFilterKey` (all 8 filters, ` | `). */
+/**
+ * Type-3 scope key — region | branch | service only (client spec).
+ * Region & branch are mutually exclusive. Must match the admin panel's
+ * admBuildScope3Key() exactly so saved overrides resolve here.
+ */
 function dbBuildDashboardFilterKey() {
-  const cfg = dbGetFilterBarConfig();
-  return cfg.filters
-    .map((f, i) => {
-      const sel = String(dbGetFilValue('db', i) ?? '').trim();
-      return sel || String(f.allValue ?? '');
-    })
-    .join(' | ');
+  const region = dbFilValueByKey('region', '');
+  const branch = dbFilValueByKey('branch', '');
+  const service = dbFilValueByKey('service', '');
+  const geo = region ? 'r:' + region : branch ? 'b:' + branch : 'all';
+  const svc = service ? 's:' + service : 'all';
+  return geo + ' | ' + svc;
 }
 
 /** Merge `GET /api/dashboard/data` (segment_insights + metrics) over embedded `DB_DATA` when no full KV model. */
@@ -5354,9 +5372,30 @@ function dbDefaultFilterBarConfig() {
       { key: 'age', labelEn: 'Age', labelAr: 'العمر', allValue: 'All Ages', allLabelEn: 'All Ages', allLabelAr: 'كل الأعمار', options: [{ value: '<25', labelEn: '<25', labelAr: 'أقل من 25' }, { value: '25–34', labelEn: '25–34', labelAr: '25–34' }, { value: '35–44', labelEn: '35–44', labelAr: '35–44' }, { value: '45+', labelEn: '45+', labelAr: '45+' }] },
       { key: 'extra1', labelEn: 'Channel', labelAr: 'القناة', allValue: '__ALL__', allLabelEn: 'All channels', allLabelAr: 'كل القنوات', options: [{ value: 'Walk-in', labelEn: 'Walk-in', labelAr: 'حضوري' }, { value: 'App', labelEn: 'App / Online', labelAr: 'التطبيق' }, { value: 'Phone', labelEn: 'Phone', labelAr: 'هاتف' }] },
       { key: 'extra2', labelEn: 'Customer type', labelAr: 'نوع العميل', allValue: '__ALL__', allLabelEn: 'All types', allLabelAr: 'كل الأنواع', options: [{ value: 'New', labelEn: 'New', labelAr: 'جديد' }, { value: 'Returning', labelEn: 'Returning', labelAr: 'عائد' }] },
-      { key: 'extra3', labelEn: 'Day part', labelAr: 'فترة اليوم', allValue: '__ALL__', allLabelEn: 'All', allLabelAr: 'الكل', options: [{ value: 'Weekday', labelEn: 'Weekday', labelAr: 'يوم عمل' }, { value: 'Weekend', labelEn: 'Weekend', labelAr: 'عطلة' }] }
+      { key: 'extra3', labelEn: 'Day part', labelAr: 'فترة اليوم', allValue: '__ALL__', allLabelEn: 'All', allLabelAr: 'الكل', options: [{ value: 'Weekday', labelEn: 'Weekday', labelAr: 'يوم عمل' }, { value: 'Weekend', labelEn: 'Weekend', labelAr: 'عطلة' }] },
+      { key: 'region', labelEn: 'Region', labelAr: 'المنطقة', allValue: 'All Regions', allLabelEn: 'All Regions', allLabelAr: 'كل المناطق', options: [] }
     ]
   };
+}
+
+/** Region = combination of branches; options + branch membership come from /api/regions. */
+function dbInjectRegionOptions(cfg) {
+  if (!cfg || !Array.isArray(cfg.filters)) return cfg;
+  let rf = cfg.filters.find((f) => f && f.key === 'region');
+  if (!rf) {
+    rf = { key: 'region', labelEn: 'Region', labelAr: 'المنطقة', allValue: 'All Regions', allLabelEn: 'All Regions', allLabelAr: 'كل المناطق', options: [] };
+    cfg.filters.push(rf);
+  }
+  const list = Array.isArray(window.__ROSHD_REGION_LIST__) ? window.__ROSHD_REGION_LIST__ : [];
+  if (list.length) {
+    rf.options = list.map((r) => ({
+      value: String(r.slug),
+      labelEn: String(r.name_en || r.slug),
+      labelAr: String(r.name_ar || r.name_en || r.slug),
+      active: true,
+    }));
+  }
+  return cfg;
 }
 
 function dbDeepCloneJson(x) {
@@ -5367,7 +5406,7 @@ function dbNormalizeFilterBarConfig(parsed) {
   const def = dbDefaultFilterBarConfig();
   if (!parsed || typeof parsed !== 'object' || !Array.isArray(parsed.filters)) return def;
   const out = { filters: [] };
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < def.filters.length; i++) {
     const d = dbDeepCloneJson(def).filters[i];
     const s = parsed.filters[i];
     if (!s || typeof s !== 'object') {
@@ -5404,11 +5443,14 @@ function dbNormalizeFilterBarConfig(parsed) {
 }
 
 function dbGetFilterBarConfig() {
+  let cfg;
   try {
     const raw = localStorage.getItem(FILTER_BAR_STORAGE_KEY);
-    if (raw) return dbNormalizeFilterBarConfig(JSON.parse(raw));
-  } catch (_) {}
-  return dbDefaultFilterBarConfig();
+    cfg = raw ? dbNormalizeFilterBarConfig(JSON.parse(raw)) : dbDefaultFilterBarConfig();
+  } catch (_) {
+    cfg = dbDefaultFilterBarConfig();
+  }
+  return dbInjectRegionOptions(cfg);
 }
 
 /** Pull latest toolbar filters from API (same JSON as localStorage). No-op if API missing or empty. */
@@ -5467,17 +5509,22 @@ function dbFilMatchesCustomerRow(cust, filterIndex, selectedRaw) {
   const cfg = dbGetFilterBarConfig();
   const f = cfg.filters[filterIndex];
   if (!f) return true;
-  const col = dbFilterDatasetCol(filterIndex);
   const allV = String(f.allValue ?? '').trim();
   const sel = String(selectedRaw ?? '').trim();
   if (sel === '' || sel === allV) return true;
+  // Region is a grouping of branches — a row matches if its branch is in the region.
+  if (f.key === 'region') {
+    const branches = (window.__ROSHD_REGION_BRANCHES__ || {})[sel] || [];
+    return branches.indexOf(String(cust[1] ?? '').trim()) >= 0;
+  }
+  const col = dbFilterDatasetCol(filterIndex);
   return String(cust[col] ?? '').trim() === sel;
 }
 
 function dbGetAllFilValues(kind) {
   const cfg = dbGetFilterBarConfig();
   const out = [];
-  for (let i = 0; i < 8; i++) out.push(dbGetFilValue(kind, i));
+  for (let i = 0; i < cfg.filters.length; i++) out.push(dbGetFilValue(kind, i));
   return out;
 }
 
@@ -5512,6 +5559,7 @@ function dbRestoreRoshdFilters(obj) {
     const has = Array.from(el.options).some((o) => String(o.value) === String(v));
     if (has) el.value = String(v);
   });
+  if (typeof dbApplyBranchRegionLock === 'function') dbApplyBranchRegionLock();
 }
 
 function dbSyncFilterBarAfterExternalConfigChange() {
@@ -5566,7 +5614,15 @@ function dbBuildCustomerFilterBar() {
   const host = document.getElementById('dbFilterBarInner');
   if (!host) return;
   const cfg = dbGetFilterBarConfig();
-  host.innerHTML = cfg.filters.map((f, i) => {
+  // Keep config indices stable for value reads, but show Region right after Branch.
+  const order = cfg.filters.map((f, i) => ({ f, i }));
+  const regionItem = order.find((x) => x.f && x.f.key === 'region');
+  if (regionItem) {
+    order.splice(order.indexOf(regionItem), 1);
+    const bIx = order.findIndex((x) => x.f && x.f.key === 'branch');
+    order.splice(bIx >= 0 ? bIx + 1 : order.length, 0, regionItem);
+  }
+  host.innerHTML = order.map(({ f, i }) => {
     const fid = dbFilId('db', i);
     const lbl = `<label class="db-filter-chip-lbl" for="${fid}"><span class="en">${dbEscAttr(f.labelEn)}</span><span class="ar">${dbEscAttr(f.labelAr)}</span></label>`;
     const optAll = `<option value="${dbEscAttr(f.allValue)}" data-en="${dbEscAttr(f.allLabelEn)}" data-ar="${dbEscAttr(f.allLabelAr)}">${dbEscAttr(f.allLabelEn)}</option>`;
@@ -5576,14 +5632,162 @@ function dbBuildCustomerFilterBar() {
       (o) =>
         `<option value="${dbEscAttr(o.value)}" data-en="${dbEscAttr(o.labelEn)}" data-ar="${dbEscAttr(o.labelAr)}">${dbEscAttr(o.labelEn)}</option>`
     ).join('');
-    return `<div class="db-filter-chip">${lbl}<div class="db-filter-chip-select-wrap"><select class="db-select" id="${fid}" aria-label="${dbEscAttr(f.labelEn)}" onchange="dbRender()">${optAll}${opts}</select></div></div>`;
+    return `<div class="db-filter-chip" data-filter-key="${dbEscAttr(f.key)}">${lbl}<div class="db-filter-chip-select-wrap"><select class="db-select" id="${fid}" aria-label="${dbEscAttr(f.labelEn)}" onchange="dbOnFilterChange(this)">${optAll}${opts}</select></div></div>`;
   }).join('');
   document.querySelectorAll('#dbFilterBarInner select option[data-en]').forEach((opt) => {
     const en = opt.dataset.en;
     const ar = opt.dataset.ar;
     opt.textContent = document.documentElement.getAttribute('data-lang') === 'ar' ? (ar || en) : en;
   });
+  dbApplyBranchRegionLock();
   dbBindFilterBarScrollFade();
+}
+
+/** Client rule: Region & Branch are mutually exclusive — picking one disables the other. */
+function dbApplyBranchRegionLock() {
+  const cfg = dbGetFilterBarConfig();
+  const bi = cfg.filters.findIndex((f) => f && f.key === 'branch');
+  const ri = cfg.filters.findIndex((f) => f && f.key === 'region');
+  if (bi < 0 || ri < 0) return;
+  const bSel = document.getElementById(dbFilId('db', bi));
+  const rSel = document.getElementById(dbFilId('db', ri));
+  if (!bSel || !rSel) return;
+  const bAll = String(cfg.filters[bi].allValue ?? '').trim();
+  const rAll = String(cfg.filters[ri].allValue ?? '').trim();
+  const bActive = bSel.value && String(bSel.value).trim() !== bAll;
+  const rActive = rSel.value && String(rSel.value).trim() !== rAll;
+  const setLock = (sel, locked) => {
+    sel.disabled = locked;
+    const chip = sel.closest('.db-filter-chip');
+    if (chip) chip.classList.toggle('is-locked', locked);
+  };
+  if (rActive) { bSel.value = bAll; setLock(bSel, true); } else { setLock(bSel, false); }
+  if (bActive) { rSel.value = rAll; setLock(rSel, true); } else { setLock(rSel, false); }
+}
+
+/** Filter <select> change handler — enforces the Branch/Region lock, then re-renders. */
+function dbOnFilterChange() {
+  dbApplyBranchRegionLock();
+  if (typeof dbRender === 'function') dbRender();
+}
+
+/** Load regions + branch membership from the API and refresh the toolbar. */
+async function dbSyncRegionsFromApi() {
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (!base) return;
+    const res = await fetch(base + '/api/regions', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || !data.success || !Array.isArray(data.regions)) return;
+    window.__ROSHD_REGION_LIST__ = data.regions
+      .filter((r) => r && r.is_active !== false)
+      .map((r) => ({ slug: r.slug, name_en: r.name_en, name_ar: r.name_ar }));
+    const map = {};
+    data.regions.forEach((r) => {
+      map[r.slug] = (r.branches || [])
+        .map((b) => String((b && (b.slug || b.name_en)) || '').trim())
+        .filter(Boolean);
+    });
+    window.__ROSHD_REGION_BRANCHES__ = map;
+    dbBuildCustomerFilterBar();
+  } catch (_) {}
+}
+
+/**
+ * Type-2 data source — pull real survey rows from customer_satisfaction_records.
+ * When the admin has uploaded data, the dashboard computes scores/means/
+ * distributions from it; otherwise it falls back to the synthetic sample.
+ */
+async function dbSyncCustomerRecordsFromApi() {
+  try {
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    if (!base) return;
+    const res = await fetch(base + '/api/customers', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data || !data.success || !Array.isArray(data.customers) || !data.customers.length) {
+      window.__ROSHD_REAL_CUSTOMERS__ = null;
+      return;
+    }
+    const num = (v, d) => { const n = Number(v); return isFinite(n) ? n : d; };
+    window.__ROSHD_REAL_CUSTOMERS__ = data.customers.map((c) => {
+      const q = num(c.rating_1, 3), cm = num(c.rating_2, 3), p = num(c.rating_3, 3), s = num(c.rating_4, 3);
+      let sat = num(c.overall_satisfaction, NaN);
+      if (!isFinite(sat)) sat = Math.max(1, Math.min(5, q * 0.38 + cm * 0.27 + p * 0.22 + s * 0.05 + 1.0));
+      const risk = c.risk_tier || (sat < 3 ? 'High' : sat < 3.6 ? 'Medium' : 'Low');
+      return [
+        c.customer_ref || c.id, c.branch || '', c.gender || '', c.service_line || '',
+        c.visit_frequency || '', c.age_band || '',
+        +q.toFixed(1), +cm.toFixed(1), +p.toFixed(1), +s.toFixed(1), +sat.toFixed(1),
+        risk, '—', '—', '—',
+      ];
+    });
+    __dbgFilterCfgSig = '';
+    dbEnsureCustomersBuiltForFilters();
+  } catch (_) {}
+}
+
+/** Re-pull all admin-controlled config + data, then re-render the open dashboard. */
+let __roshdRtTimer = null;
+function roshdLiveRefresh() {
+  clearTimeout(__roshdRtTimer);
+  __roshdRtTimer = setTimeout(async () => {
+    try {
+      await roshdHydrateAllConfigFromApi();
+      await dbSyncRegionsFromApi();
+      await dbSyncCustomerRecordsFromApi();
+      if (typeof dbTrySyncDashboardDataFromApi === 'function') await dbTrySyncDashboardDataFromApi();
+      if (typeof dbSyncFilterBarAfterExternalConfigChange === 'function') {
+        dbSyncFilterBarAfterExternalConfigChange();
+      } else if (typeof dbRender === 'function') {
+        dbRender();
+      }
+    } catch (_) {}
+  }, 300);
+}
+
+/** Subscribe to Supabase Realtime so admin changes reflect live, cross-device. */
+async function roshdSetupRealtime() {
+  try {
+    if (window.__ROSHD_RT_DONE__) return;
+    // Wait briefly for the deferred Supabase CDN script.
+    for (let i = 0; i < 40 && !(window.supabase && window.supabase.createClient); i++) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    if (!window.supabase || !window.supabase.createClient) return;
+    const base = typeof API_BASE === 'string' ? API_BASE.replace(/\/$/, '') : '';
+    const res = await fetch(base + '/api/public-config', { cache: 'no-store', credentials: 'omit' });
+    if (!res.ok) return;
+    const cfg = await res.json();
+    if (!cfg || !cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
+    const sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
+      auth: { persistSession: false },
+      realtime: { params: { eventsPerSecond: 5 } },
+    });
+    window.__ROSHD_RT_DONE__ = true;
+    window.__ROSHD_SB__ = sb;
+    const tables = [
+      'roshd_config_kv', 'filter_bar_remote_config', 'regions', 'branches',
+      'segment_insights', 'segment_driver_metrics', 'customer_satisfaction_records',
+      'dashboard_settings', 'dashboard_model_quality', 'drivers',
+    ];
+    let ch = sb.channel('roshd-dashboard-rt');
+    tables.forEach((t) => {
+      ch = ch.on('postgres_changes', { event: '*', schema: 'public', table: t }, roshdLiveRefresh);
+    });
+    ch.subscribe();
+    // Polling safety-net — guarantees admin changes appear even if a Realtime
+    // event is missed (network blip, mobile sleep, subscription lag).
+    if (!window.__ROSHD_RT_POLL__) {
+      window.__ROSHD_RT_POLL__ = setInterval(() => {
+        try {
+          const dash = document.getElementById('customerDashboard');
+          if (dash && dash.classList.contains('open')) roshdLiveRefresh();
+        } catch (_) {}
+      }, 30000);
+    }
+  } catch (_) {}
 }
 
 /** @type {Array<any>} Customer rows: … + risk @11, extra1–3 @12–14 */
@@ -5591,6 +5795,12 @@ const DB_CUSTOMERS = [];
 
 function dbRegenerateCustomers() {
   DB_CUSTOMERS.length = 0;
+  // Type-2: use real uploaded survey rows when available.
+  const real = window.__ROSHD_REAL_CUSTOMERS__;
+  if (Array.isArray(real) && real.length) {
+    for (let i = 0; i < real.length; i++) DB_CUSTOMERS.push(real[i]);
+    return;
+  }
   const cfg = dbGetFilterBarConfig();
 
   function optVals(ix) {
@@ -5686,6 +5896,12 @@ function dbRegenerateCustomers() {
     try {
       await roshdHydrateAllConfigFromApi();
     } catch (_) {}
+    try {
+      await dbSyncRegionsFromApi();
+    } catch (_) {}
+    try {
+      await dbSyncCustomerRecordsFromApi();
+    } catch (_) {}
     dbRegenerateCustomers();
   })();
 })();
@@ -5708,9 +5924,15 @@ function dbFilteredCustomers() {
 /** Benchmark for comparison charts: same demographics as toolbar, branches pooled (ignores Branch filter). */
 function dbFilteredCustomersBenchSameDemo() {
   dbEnsureCustomersBuiltForFilters();
+  const cfg = dbGetFilterBarConfig();
   const vals = dbGetAllFilValues('db');
   return DB_CUSTOMERS.filter((c) =>
-    vals.every((v, i) => (i === 0 ? true : dbFilMatchesCustomerRow(c, i, v)))
+    vals.every((v, i) => {
+      const key = cfg.filters[i] && cfg.filters[i].key;
+      // Benchmark pools geography — ignore Branch and Region.
+      if (i === 0 || key === 'region') return true;
+      return dbFilMatchesCustomerRow(c, i, v);
+    })
   );
 }
 
@@ -6056,6 +6278,8 @@ async function showDashboard(user) {
 
   try {
     await roshdHydrateAllConfigFromApi();
+    await dbSyncRegionsFromApi();
+    await dbSyncCustomerRecordsFromApi();
     await dbTrySyncDashboardDataFromApi();
   } catch (_) {}
 
@@ -6073,6 +6297,7 @@ async function showDashboard(user) {
     dbRestoreRoshdFilters(JSON.parse(localStorage.getItem('roshd_filters') || 'null'));
   } catch (_) {}
   dbEnsureCustomersBuiltForFilters();
+  roshdSetupRealtime();
 
   // Seed simulation levers from each driver's avg (top 4 only); dbRenderSimulation does the same if missing
   const d = dbGetData();
@@ -6880,7 +7105,18 @@ function dbGetModelQualityOverrides() {
     const raw = localStorage.getItem(MODEL_QUALITY_OVERRIDES_KEY);
     if (!raw) return null;
     const o = JSON.parse(raw);
-    return o && typeof o === 'object' ? o : null;
+    if (!o || typeof o !== 'object') return null;
+    // Labels + flow blocks are global; metric values resolve per Region/Branch/Service.
+    const pairs = o.pairs && typeof o.pairs === 'object' ? o.pairs : {};
+    const flowBlocks = Array.isArray(o.flowBlocks) ? o.flowBlocks : null;
+    let values = {};
+    if (o.byFilter && typeof o.byFilter === 'object') {
+      const scoped = o.byFilter[dbBuildDashboardFilterKey()];
+      if (scoped && typeof scoped.values === 'object') values = scoped.values;
+    } else if (o.values && typeof o.values === 'object') {
+      values = o.values; // legacy flat shape
+    }
+    return { pairs, values, flowBlocks };
   } catch (_) {
     return null;
   }

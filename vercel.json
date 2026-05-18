@@ -5,7 +5,7 @@
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/dashboard", "destination": "/index.html" },
     { "source": "/dashboard/", "destination": "/index.html" },
-    { "source": "/admin", "destination": "/admin/admin.html" },
-    { "source": "/admin/", "destination": "/admin/admin.html" }
+    { "source": "/admin", "destination": "/admin/legacy-index.html" },
+    { "source": "/admin/", "destination": "/admin/legacy-index.html" }
   ]
 }

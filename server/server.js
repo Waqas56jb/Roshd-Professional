@@ -9,6 +9,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+import { mountAdminExtra } from './admin-extra.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const envPath = path.join(__dirname, '..', '.env');
@@ -178,6 +179,15 @@ app.get('/api/health', (_req, res) => {
   });
 });
 
+/** Public bootstrap config — lets the static dashboard init a Supabase Realtime client. */
+app.get('/api/public-config', (_req, res) => {
+  res.json({
+    success: true,
+    supabaseUrl: SUPABASE_URL || null,
+    supabaseAnonKey: SUPABASE_ANON_KEY || null,
+  });
+});
+
 app.get('/api/filters', async (_req, res) => {
   try {
     if (!supabaseAdmin) {
@@ -293,6 +303,14 @@ app.put('/api/roshd/config', async (req, res) => {
     console.error('[api/roshd/config PUT]', e);
     return res.status(500).json({ success: false, message: e.message || 'Failed to save config bundle.' });
   }
+});
+
+// ─── Extended API (regions, admin CRUD, audit, settings, reports) ─────────────
+mountAdminExtra(app, {
+  supabaseAdmin,
+  supabaseAnon,
+  dbReady,
+  writeAuthorized: roshdDashboardWriteAuthorized,
 });
 
 const statRoot = path.join(__dirname, '..');
@@ -751,15 +769,11 @@ if (!process.env.VERCEL) {
   app.get('/', (_req, res) => res.sendFile(path.join(statRoot, 'index.html')));
   app.get(['/dashboard', '/dashboard/'], (_req, res) => res.sendFile(path.join(statRoot, 'index.html')));
 
-  const adminUi = path.join(statRoot, 'admin', 'admin.html');
-  app.get(['/admin', '/admin/', '/admin.html'], (_req, res) =>
-    fs.existsSync(adminUi) ? res.sendFile(adminUi) : res.status(404).send('Admin UI not deployed')
-  );
-
+  // Admin control center — all admin routes serve admin/legacy-index.html.
   const legacyAdminPath = path.join(statRoot, 'admin', 'legacy-index.html');
-  app.get(['/admin/legacy-index.html', '/admin/legacy'], (_req, res) => {
+  const serveAdmin = (_req, res) => {
     if (!fs.existsSync(legacyAdminPath)) {
-      return res.status(404).send('legacy-index.html not found');
+      return res.status(404).send('admin/legacy-index.html not found');
     }
     if (ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH && ROSHD_DASHBOARD_WRITE_SECRET) {
       try {
@@ -772,7 +786,11 @@ if (!process.env.VERCEL) {
       }
     }
     res.sendFile(legacyAdminPath);
-  });
+  };
+  app.get(
+    ['/admin', '/admin/', '/admin.html', '/admin/legacy', '/admin/legacy-index.html'],
+    serveAdmin
+  );
 
   app.use(express.static(statRoot));
 }
