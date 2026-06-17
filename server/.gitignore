@@ -1,0 +1,16 @@
+# Dependencies
+node_modules/
+
+# Local env (secrets)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/
+.vercel/

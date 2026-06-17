@@ -1,6 +1,7 @@
 /**
- * Roshd Professional — Express API + static hosting.
- * Loads ../.env from project root when running locally.
+ * Roshd Professional — Express API.
+ * Loads server/.env when running locally. The frontend is a separate app
+ * (../client), so this server is API-only.
  */
 import path from 'path';
 import fs from 'fs';
@@ -12,7 +13,7 @@ import { createClient } from '@supabase/supabase-js';
 import { mountAdminExtra } from './admin-extra.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const envPath = path.join(__dirname, '..', '.env');
+const envPath = path.join(__dirname, '.env');
 if (fs.existsSync(envPath)) dotenv.config({ path: envPath });
 else dotenv.config();
 
@@ -312,8 +313,6 @@ mountAdminExtra(app, {
   dbReady,
   writeAuthorized: roshdDashboardWriteAuthorized,
 });
-
-const statRoot = path.join(__dirname, '..');
 
 /** Quick DB reachability check (local dev only). */
 async function logDatabaseConnection() {
@@ -760,40 +759,6 @@ app.delete('/api/admin/customers/:id', requireAdmin(), async (req, res) => {
     return res.status(500).json({ success: false, message: e.message || 'Failed to delete customer record.' });
   }
 });
-
-// ─── Static files (local dev only) ────────────────────────────────────────────
-// On Vercel the frontend is a separate deployment; skip static serving entirely
-// to avoid sendFile() hanging on missing paths inside the Lambda sandbox.
-
-if (!process.env.VERCEL) {
-  app.get('/', (_req, res) => res.sendFile(path.join(statRoot, 'index.html')));
-  app.get(['/dashboard', '/dashboard/'], (_req, res) => res.sendFile(path.join(statRoot, 'index.html')));
-
-  // Admin control center — all admin routes serve admin/legacy-index.html.
-  const legacyAdminPath = path.join(statRoot, 'admin', 'legacy-index.html');
-  const serveAdmin = (_req, res) => {
-    if (!fs.existsSync(legacyAdminPath)) {
-      return res.status(404).send('admin/legacy-index.html not found');
-    }
-    if (ROSHD_REQUIRE_DASHBOARD_WRITE_AUTH && ROSHD_DASHBOARD_WRITE_SECRET) {
-      try {
-        let html = fs.readFileSync(legacyAdminPath, 'utf8');
-        const inj = `<script>window.__ROSHD_SERVER_INJECTED_WRITE_TOKEN__=${JSON.stringify(ROSHD_DASHBOARD_WRITE_SECRET)};</script>\n`;
-        html = html.includes('</head>') ? html.replace('</head>', inj + '</head>') : inj + html;
-        return res.type('html').send(html);
-      } catch (e) {
-        return res.status(500).send(String(e.message || e));
-      }
-    }
-    res.sendFile(legacyAdminPath);
-  };
-  app.get(
-    ['/admin', '/admin/', '/admin.html', '/admin/legacy', '/admin/legacy-index.html'],
-    serveAdmin
-  );
-
-  app.use(express.static(statRoot));
-}
 
 // ─── 404 fallback ─────────────────────────────────────────────────────────────
 

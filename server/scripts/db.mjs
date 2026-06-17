@@ -1,6 +1,6 @@
 /**
  * Direct Postgres connection helper for migrations + verification.
- * Reads DATABASE_URL from ../../.env.
+ * Reads DATABASE_URL from ../.env.
  * Usage:
  *   node scripts/db.mjs ping
  *   node scripts/db.mjs query "select now()"
@@ -17,7 +17,7 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, '..', '..', '.env') });
+dotenv.config({ path: path.resolve(__dirname, '..', '.env') });
 
 // Supabase direct-DB host is IPv6-only on new projects. Prefer v6.
 dns.setDefaultResultOrder('verbatim');

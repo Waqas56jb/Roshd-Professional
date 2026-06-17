@@ -1,5 +1,19 @@
-node_modules
-server/node_modules
+# Root-level safety net. Each app (client/, server/) also has its own .gitignore.
+
+# Dependencies (any level)
+node_modules/
+
+# Local env / secrets (any level)
 .env
 .env.local
 .env.*.local
+
+# Build output
+dist/
+
+# Vercel
+.vercel/
+
+# OS / editor
+.DS_Store
+*.log
