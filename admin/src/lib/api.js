@@ -1,19 +1,17 @@
 /**
- * Admin API client. Same API_BASE detection as the customer app so it talks to
- * the same backend + database. In dev, Vite proxies /api → the Node server.
+ * Admin API client. Talks to the deployed backend on Vercel (same backend +
+ * Supabase database as the customer app). Override with window.__ROSHD_API_BASE__
+ * before load to point at a local server.
  */
+const ROSHD_BACKEND_URL = 'https://roshd-professional-backend.vercel.app';
+
 export const API_BASE = (function () {
-  const ROSHD_VERCEL_API_CANON = 'https://roshd-professional-s8lh.vercel.app';
   try {
-    if (typeof window.__ROSHD_API_BASE__ === 'string' && window.__ROSHD_API_BASE__) {
+    if (typeof window !== 'undefined' && typeof window.__ROSHD_API_BASE__ === 'string' && window.__ROSHD_API_BASE__) {
       return String(window.__ROSHD_API_BASE__).replace(/\/$/, '');
     }
-    const h = window.location.hostname;
-    if (h === 'localhost' || h === '127.0.0.1' || h === '::1' || h === '[::1]') return window.location.origin;
-    if (/^(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})$/.test(h))
-      return window.location.origin;
   } catch (_) {}
-  return ROSHD_VERCEL_API_CANON;
+  return ROSHD_BACKEND_URL;
 })();
 
 const TOKEN_KEY = 'roshd_admin_token';
