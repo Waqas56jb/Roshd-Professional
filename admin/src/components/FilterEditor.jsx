@@ -16,9 +16,11 @@ export default function FilterEditor({ filter, onChange, lockLabel }) {
           onEn={(v) => set({ labelEn: v })} onAr={(v) => set({ labelAr: v })} />
       )}
 
-      {filter.key === 'region' ? (
+      {filter.key === 'region' || filter.key === 'branch' ? (
         <div className="rounded-xl border border-gold/20 bg-gold/5 px-4 py-3 text-sm text-ink-soft">
-          Region options are managed in <b className="text-gold">Masters → Regions</b> and injected automatically. Only the label is editable here.
+          {filter.key === 'region' ? 'Region' : 'Branch'} options are managed in{' '}
+          <b className="text-gold">Masters → {filter.key === 'region' ? 'Regions' : 'Branches'}</b>{' '}
+          and injected automatically into the customer dashboard. Only the label is editable here.
         </div>
       ) : (
         <div>

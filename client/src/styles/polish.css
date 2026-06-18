@@ -1,0 +1,151 @@
+/* ============================================================================
+   ROSHD — UI polish layer (additive only)
+   Loaded AFTER legacy.css. Refines header, footer, filters, sidebar and
+   responsiveness in the SAME navy/gold theme. No structural or JS-hook changes.
+   ============================================================================ */
+
+/* ── Global niceties ──────────────────────────────────────────────────────── */
+* { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+::selection { background: rgba(212, 175, 85, 0.28); color: #fff; }
+:focus-visible { outline: 2px solid rgba(212, 175, 85, 0.55); outline-offset: 2px; }
+
+/* refined scrollbars across the dashboard */
+.db-main::-webkit-scrollbar, .db-sidebar::-webkit-scrollbar, .db-nav::-webkit-scrollbar { width: 8px; height: 8px; }
+.db-main::-webkit-scrollbar-thumb, .db-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(184, 150, 46, 0.22); border-radius: 99px; border: 2px solid transparent; background-clip: padding-box;
+}
+.db-main::-webkit-scrollbar-thumb:hover, .db-sidebar::-webkit-scrollbar-thumb:hover { background: rgba(184, 150, 46, 0.4); background-clip: padding-box; }
+
+/* ── Landing navbar ───────────────────────────────────────────────────────── */
+#navbar {
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  background: rgba(15, 28, 61, 0.55);
+  border-bottom: 1px solid rgba(184, 150, 46, 0.12);
+  transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, padding 0.3s ease;
+}
+#navbar.scrolled {
+  background: rgba(13, 22, 45, 0.86);
+  box-shadow: 0 12px 40px -18px rgba(0, 0, 0, 0.7);
+  border-bottom-color: rgba(184, 150, 46, 0.2);
+}
+.nav-links a { transition: color 0.2s ease; }
+.lang-nav-btn { transition: all 0.2s ease; border-radius: 8px; }
+.lang-nav-btn.active { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy-deep) !important; box-shadow: 0 4px 14px -6px rgba(212, 175, 85, 0.7); }
+.nav-btn {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light)) !important;
+  color: var(--navy-deep) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 6px 18px -8px rgba(212, 175, 85, 0.65);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease !important;
+}
+.nav-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 26px -8px rgba(212, 175, 85, 0.8); filter: brightness(1.04); }
+
+/* ── Landing footer ───────────────────────────────────────────────────────── */
+footer {
+  position: relative;
+  background:
+    radial-gradient(700px 240px at 85% -40%, rgba(184, 150, 46, 0.07), transparent 70%),
+    var(--navy-deep);
+  border-top: none;
+}
+footer::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184, 150, 46, 0.45), transparent);
+}
+.footer-links a { transition: color 0.2s ease, padding 0.2s ease; }
+.footer-links a:hover { color: var(--gold-light); padding-inline-start: 4px; }
+.footer-col-title { color: var(--gold); }
+
+/* ── Dashboard topbar (header) ────────────────────────────────────────────── */
+.db-topbar {
+  background: linear-gradient(180deg, rgba(20, 32, 64, 0.92), rgba(17, 30, 56, 0.92));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(184, 150, 46, 0.16);
+  box-shadow: 0 8px 24px -20px rgba(0, 0, 0, 0.9);
+}
+.db-topbar-btn {
+  border-radius: 10px;
+  transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+.db-topbar-btn:hover { background: rgba(184, 150, 46, 0.12); transform: translateY(-1px); }
+.db-period-badge {
+  background: linear-gradient(135deg, rgba(184, 150, 46, 0.16), rgba(184, 150, 46, 0.08));
+  border-radius: 8px;
+}
+
+/* ── Dashboard left sidebar ───────────────────────────────────────────────── */
+.db-sidebar {
+  background: linear-gradient(180deg, #0c1626 0%, #0a1120 100%);
+  border-inline-end: 1px solid rgba(184, 150, 46, 0.14);
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.02);
+}
+.db-brand img { filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4)); }
+.db-avatar { box-shadow: 0 6px 16px -6px rgba(212, 175, 85, 0.6), 0 0 0 1px rgba(212, 175, 85, 0.25); }
+
+.db-nav-item {
+  border-radius: 10px;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
+}
+.db-nav-item:hover { background: rgba(255, 255, 255, 0.06); transform: translateX(2px); }
+html[data-lang="ar"] .db-nav-item:hover { transform: translateX(-2px); }
+.db-nav-item.active {
+  background: linear-gradient(135deg, rgba(184, 150, 46, 0.20), rgba(184, 150, 46, 0.08));
+  border-color: rgba(184, 150, 46, 0.28);
+  box-shadow: 0 6px 18px -12px rgba(212, 175, 85, 0.6);
+}
+.db-nav-item.active::before { width: 3px; background: linear-gradient(180deg, var(--gold-light), var(--gold)); box-shadow: 0 0 10px rgba(212, 175, 85, 0.6); }
+
+.db-logout-btn { border-radius: 10px; transition: all 0.2s ease; }
+
+/* ── Dashboard filter bar ─────────────────────────────────────────────────── */
+.db-filter-bar {
+  background: linear-gradient(180deg, rgba(22, 32, 64, 0.96), rgba(20, 30, 58, 0.96));
+  border-bottom: 1px solid rgba(184, 150, 46, 0.12);
+}
+.db-select {
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+.db-select:hover { border-color: rgba(184, 150, 46, 0.35); background-color: rgba(255, 255, 255, 0.06); }
+.db-filter-chip-select-wrap { border-radius: 8px; }
+.db-filter-chip-select-wrap:focus-within { box-shadow: 0 0 0 2px rgba(184, 150, 46, 0.4), 0 6px 18px -10px rgba(212, 175, 85, 0.5); }
+.db-export-btn {
+  border-radius: 8px;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
+}
+.db-export-btn:hover {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--navy-deep);
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px -8px rgba(212, 175, 85, 0.7);
+}
+.db-period-badge--filter { border-radius: 6px; }
+
+/* ── Responsiveness refinements ───────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .db-topbar { padding: 0 18px; }
+  .db-filter-bar { padding-inline: 16px; }
+}
+@media (max-width: 768px) {
+  .db-topbar { height: 58px; padding: 0 14px; }
+  .db-page-title { font-size: 19px; }
+  .db-sidebar { box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.8); }
+  .db-nav-item { min-height: 46px; }
+  .db-select { font-size: 12.5px; padding-block: 8px; } /* easier tap targets */
+}
+@media (max-width: 640px) {
+  .db-topbar { padding: 0 12px; gap: 8px; }
+  .db-topbar-right { gap: 8px; }
+  .db-filter-chip { flex: 1 1 140px; max-width: none; }
+  .db-export-btn { padding: 8px 12px; }
+  footer { padding: 56px 0 32px; }
+}
+@media (max-width: 420px) {
+  .db-page-title { font-size: 17px; }
+  .db-period-badge { display: none; } /* declutter tiny screens; logic untouched */
+}

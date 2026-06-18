@@ -1,0 +1,194 @@
+/* ============================================================================
+   ROSHD — Deep UI polish (additive, visuals only)
+   Loaded AFTER polish.css. Elevates every inner dashboard component to a
+   premium, modern standard in the navy/gold theme. No layout math, no structure,
+   no JS hooks are changed — only color, gradient, border, shadow, radius,
+   transition and hover/focus states.
+   ============================================================================ */
+
+/* ── Cards & panels: refined glass surfaces ───────────────────────────────── */
+.db-card {
+  border-radius: 16px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0)) ,
+    var(--db-card) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px -28px rgba(0, 0, 0, 0.85) !important;
+  transition: transform 0.22s cubic-bezier(.2,.7,.3,1), box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.db-card:hover {
+  border-color: rgba(184, 150, 46, 0.28) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 26px 60px -28px rgba(0, 0, 0, 0.9) !important;
+}
+.db-card-title { letter-spacing: 0.01em; }
+.db-card-sub { color: var(--db-muted); }
+
+/* ── KPI strip — the hero ─────────────────────────────────────────────────── */
+.db-kpi-card {
+  border-radius: 16px !important;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(255, 255, 255, 0.05), transparent 55%),
+    linear-gradient(180deg, rgba(22, 32, 64, 0.9), rgba(16, 26, 50, 0.9)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 18px 44px -26px rgba(0, 0, 0, 0.85) !important;
+  transition: transform 0.22s cubic-bezier(.2,.7,.3,1), box-shadow 0.22s ease, border-color 0.22s ease;
+  overflow: hidden;
+  position: relative;
+}
+.db-kpi-card::after {
+  content: ''; position: absolute; inset: 0 0 auto 0; height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+  opacity: 0.85;
+}
+.db-kpi-card:hover { transform: translateY(-3px); border-color: rgba(184, 150, 46, 0.35) !important; box-shadow: 0 28px 64px -26px rgba(0, 0, 0, 0.92) !important; }
+.db-kpi-val { letter-spacing: -0.01em; }
+.db-kpi-trend { font-variant-numeric: tabular-nums; }
+
+/* ── Executive recommendation cards ───────────────────────────────────────── */
+.db-exec-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  box-shadow: 0 16px 40px -28px rgba(0, 0, 0, 0.85) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative; overflow: hidden;
+}
+.db-exec-card::before {
+  content: ''; position: absolute; inset-inline-start: 0; top: 0; bottom: 0; width: 3px; opacity: 0.9;
+}
+.db-exec-card:hover { transform: translateY(-2px); box-shadow: 0 24px 56px -28px rgba(0, 0, 0, 0.9) !important; }
+.db-exec-invest { background: linear-gradient(165deg, rgba(46, 86, 130, 0.22), rgba(22, 32, 64, 0.6)) !important; }
+.db-exec-invest::before { background: linear-gradient(180deg, #6fa8d8, #3f7fc0); }
+.db-exec-optimize { background: linear-gradient(165deg, rgba(94, 184, 144, 0.16), rgba(22, 32, 64, 0.6)) !important; }
+.db-exec-optimize::before { background: linear-gradient(180deg, #5eb890, #3f9b73); }
+.db-exec-avoid { background: linear-gradient(165deg, rgba(220, 80, 80, 0.16), rgba(22, 32, 64, 0.6)) !important; }
+.db-exec-avoid::before { background: linear-gradient(180deg, #e07a7a, #c44d4d); }
+.db-exec-card ul li { transition: color 0.18s ease; }
+
+/* ── Branch / performance bars ────────────────────────────────────────────── */
+.db-bar-track {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-radius: 99px !important;
+  overflow: hidden;
+}
+.db-bar-fill {
+  background: linear-gradient(90deg, var(--gold), var(--gold-light)) !important;
+  border-radius: 99px !important;
+  box-shadow: 0 0 14px -2px rgba(212, 175, 85, 0.5);
+  transition: width 0.6s cubic-bezier(.2,.7,.3,1);
+}
+.db-bar-val { font-variant-numeric: tabular-nums; color: var(--gold-light); }
+
+/* ── Driver bubble map ────────────────────────────────────────────────────── */
+.db-bubble {
+  background: radial-gradient(120% 120% at 30% 25%, rgba(212, 175, 85, 0.32), rgba(184, 150, 46, 0.12)) !important;
+  border: 1px solid rgba(212, 175, 85, 0.4) !important;
+  box-shadow: 0 10px 28px -12px rgba(212, 175, 85, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: transform 0.22s cubic-bezier(.2,.7,.3,1), box-shadow 0.22s ease;
+}
+.db-bubble:hover { transform: scale(1.06); box-shadow: 0 16px 36px -12px rgba(212, 175, 85, 0.6); }
+.db-bubble.low { background: radial-gradient(120% 120% at 30% 25%, rgba(220, 90, 90, 0.28), rgba(160, 60, 60, 0.1)) !important; border-color: rgba(220, 90, 90, 0.4) !important; box-shadow: 0 10px 28px -12px rgba(220, 90, 90, 0.4); }
+
+/* ── Tables ───────────────────────────────────────────────────────────────── */
+.db-table { border-radius: 12px; overflow: hidden; }
+.db-table thead th { background: rgba(255, 255, 255, 0.03); letter-spacing: 0.06em; }
+.db-table tbody tr { transition: background 0.15s ease; }
+.db-table tbody tr:hover { background: rgba(184, 150, 46, 0.06); }
+
+/* ── Decision badges ──────────────────────────────────────────────────────── */
+.db-badge { border-radius: 99px !important; font-weight: 600; letter-spacing: 0.02em; border: 1px solid transparent; }
+.db-badge-gold { background: rgba(184, 150, 46, 0.16); border-color: rgba(184, 150, 46, 0.35); color: var(--gold-light); }
+.db-badge-navy { background: rgba(111, 168, 216, 0.16); border-color: rgba(111, 168, 216, 0.35); color: #9cc4e6; }
+.db-badge-success { background: rgba(94, 184, 144, 0.16); border-color: rgba(94, 184, 144, 0.35); color: #7fd0aa; }
+.db-badge-warning { background: rgba(224, 152, 110, 0.16); border-color: rgba(224, 152, 110, 0.35); color: #f0b48e; }
+.db-badge-danger { background: rgba(220, 80, 80, 0.16); border-color: rgba(220, 80, 80, 0.35); color: #f0a0a0; }
+
+/* ── Simulation Lab sliders ───────────────────────────────────────────────── */
+.db-range {
+  -webkit-appearance: none; appearance: none;
+  height: 6px; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+.db-range::-webkit-slider-runnable-track { height: 6px; border-radius: 99px; background: linear-gradient(90deg, rgba(212,175,85,0.55), rgba(255,255,255,0.08)); }
+.db-range::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; margin-top: -6px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  border: 2px solid #0d1628;
+  box-shadow: 0 0 0 3px rgba(212, 175, 85, 0.25), 0 4px 10px -2px rgba(0, 0, 0, 0.6);
+  cursor: pointer; transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.db-range::-webkit-slider-thumb:hover { transform: scale(1.12); box-shadow: 0 0 0 4px rgba(212, 175, 85, 0.3), 0 6px 14px -2px rgba(0, 0, 0, 0.7); }
+.db-range::-moz-range-track { height: 6px; border-radius: 99px; background: rgba(255,255,255,0.1); }
+.db-range::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: linear-gradient(135deg, var(--gold-light), var(--gold)); border: 2px solid #0d1628; box-shadow: 0 0 0 3px rgba(212,175,85,0.25); cursor: pointer; }
+.db-slider-val { color: var(--gold-light) !important; font-variant-numeric: tabular-nums; }
+
+/* ── Demographics charts: donuts, bars, legends, funnel ───────────────────── */
+.db-demo-qcard { border-radius: 16px !important; transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; }
+.db-demo-qcard:hover { transform: translateY(-2px); box-shadow: 0 22px 50px -28px rgba(0,0,0,0.85) !important; }
+.db-demo-qcard-icon { box-shadow: 0 8px 20px -10px rgba(212, 175, 85, 0.5); }
+.db-demo-fill { border-radius: 99px !important; }
+.db-demo-track { background: rgba(255,255,255,0.06) !important; border-radius: 99px !important; }
+.db-demo-legend-sw { border-radius: 5px !important; }
+.db-demo-svg-wrap svg, .db-q-viz-svg, .db-mq-model-svg, .db-pilot-flow-svg, .db-demo-funnel-svg { filter: drop-shadow(0 8px 20px rgba(0,0,0,0.35)); }
+
+/* ── Questionnaire / measurement-model blocks ─────────────────────────────── */
+.db-q-section { border-radius: 14px !important; transition: border-color 0.2s ease, background 0.2s ease; }
+.db-q-section:hover { border-color: rgba(184,150,46,0.25) !important; }
+.db-q-tag { border-radius: 7px !important; font-weight: 600; }
+.db-mq-ant { border-radius: 12px !important; transition: transform 0.18s ease; }
+.db-mq-ant:hover { transform: translateX(2px); }
+html[data-lang="ar"] .db-mq-ant:hover { transform: translateX(-2px); }
+
+/* ── Pilot analysis ───────────────────────────────────────────────────────── */
+.db-pilot-flow-card, .db-pilot-alpha-block { border-radius: 14px !important; }
+.db-pilot-alpha-track { background: rgba(255,255,255,0.06) !important; border-radius: 99px !important; }
+.db-pilot-alpha-fill { border-radius: 99px !important; background: linear-gradient(90deg, var(--gold), var(--gold-light)) !important; }
+.db-pilot-legend-chip { border-radius: 99px !important; }
+
+/* ── Section / panel headers — refined hairline accents ───────────────────── */
+.db-panel { scroll-behavior: smooth; }
+
+/* ── Premium canvas: layered depth instead of flat navy ───────────────────── */
+.db-main {
+  background:
+    radial-gradient(1000px 520px at 100% -5%, rgba(184, 150, 46, 0.07), transparent 60%),
+    radial-gradient(820px 600px at -5% 105%, rgba(38, 57, 107, 0.28), transparent 60%),
+    linear-gradient(180deg, #0d1628, #0a1120) !important;
+}
+
+/* ── Bolder hero typography on the KPI strip ──────────────────────────────── */
+.db-kpi-val {
+  font-size: clamp(26px, 2.4vw, 34px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.05 !important;
+  background: linear-gradient(180deg, #ffffff, rgba(255, 255, 255, 0.78));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.db-kpi-card { padding: 20px !important; }
+.db-kpi-label { font-size: 11px !important; letter-spacing: 0.06em; color: var(--db-muted) !important; }
+
+/* ── Elegant page title (serif, gold kicker) ──────────────────────────────── */
+.db-page-title { font-size: clamp(22px, 2vw, 27px) !important; letter-spacing: 0.01em; }
+.db-breadcrumb { letter-spacing: 0.14em; text-transform: uppercase; font-size: 10px !important; }
+
+/* ── Card titles: refined weight + spacing ────────────────────────────────── */
+.db-card-title, .db-exec-card-title, .db-demo-qcard-title {
+  font-weight: 700 !important;
+  letter-spacing: 0.005em;
+}
+
+/* ── A touch more breathing room between stacked sections ──────────────────── */
+.db-kpi-grid { margin-bottom: 4px; }
+
+/* ── Crisp number rendering everywhere ────────────────────────────────────── */
+.db-kpi-val, .db-bar-val, .db-slider-val, .db-demo-legend-pct, .db-pilot-alpha-val,
+.db-model-metric-val { font-variant-numeric: tabular-nums; }
+
+/* ── Refined select & control focus glow (stronger, clearly visible) ──────── */
+.db-select:focus, .db-select:focus-visible {
+  border-color: rgba(212, 175, 85, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(212, 175, 85, 0.18) !important;
+}

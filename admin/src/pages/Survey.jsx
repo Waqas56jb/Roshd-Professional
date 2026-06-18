@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import * as XLSX from 'xlsx';
-import { Upload, Download, FileSpreadsheet, CheckCircle2, AlertTriangle, Trash2, Database } from 'lucide-react';
+import { Upload, Download, FileSpreadsheet, CheckCircle2, AlertTriangle, Trash2, Database, PencilLine } from 'lucide-react';
 import { api, notifyDashboard } from '../lib/api.js';
 import { useToast } from '../context/ToastContext.jsx';
 import { PageHeader, Confirm } from '../components/ui.jsx';
+import ManualSurveyEntry from '../components/ManualSurveyEntry.jsx';
 import { ALL_COLUMNS, CONSTRUCTS, META_COLS, STAGE_COLS, templateCsv, validateRows, rowToRecord } from '../lib/survey.js';
 
 function download(name, content, type) {
@@ -23,6 +24,7 @@ export default function Survey() {
   const [busy, setBusy] = useState(false);
   const [count, setCount] = useState('—');
   const [clearing, setClearing] = useState(false);
+  const [manual, setManual] = useState(false);
 
   const refreshCount = useCallback(async () => {
     try { const c = await api.get('/api/customers'); setCount((c?.customers || []).length); } catch { setCount('—'); }
@@ -79,6 +81,7 @@ export default function Survey() {
         subtitle="Upload the fixed 45-column survey file. Each row is one response and feeds the auto-calculated charts (CX score, sample size, demographics, distributions)."
         actions={
           <div className="flex gap-2">
+            <button className="btn-gold" onClick={() => setManual(true)}><PencilLine size={16} /> Add manually</button>
             <button className="btn-ghost" onClick={() => download('roshd-survey-template.csv', templateCsv(), 'text/csv')}><Download size={16} /> Template</button>
             <button className="btn-danger" onClick={() => setClearing(true)}><Trash2 size={16} /> Clear all</button>
           </div>
@@ -133,6 +136,8 @@ export default function Survey() {
       </div>
 
       <Confirm open={clearing} onClose={() => setClearing(false)} onConfirm={clearAll} title="Clear all survey records" message="This permanently deletes every uploaded survey record from the database. The dashboard auto-calcs will reset." />
+
+      <ManualSurveyEntry open={manual} onClose={() => setManual(false)} onSaved={refreshCount} />
     </div>
   );
 }

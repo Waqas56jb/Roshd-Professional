@@ -1,0 +1,75 @@
+/* ============================================================================
+   ROSHD — Card internals polish (Decision Flow, info boxes, branch bars, headers)
+   Additive, loaded last. Uses !important to override inline tile styles.
+   ============================================================================ */
+
+/* ── Card headers: elegant title with gold accent ─────────────────────────── */
+.db-card-header { padding: 18px 22px 15px !important; border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important; }
+.db-card-title { position: relative; padding-inline-start: 14px; }
+.db-card-title::before {
+  content: ''; position: absolute; inset-inline-start: 0; top: 52%; transform: translateY(-50%);
+  width: 4px; height: 17px; border-radius: 99px;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold));
+  box-shadow: 0 0 8px rgba(212, 175, 85, 0.55);
+}
+.db-card-subtitle { padding-inline-start: 14px; }
+
+/* ── Decision Logic Flow: even premium grid of step tiles ─────────────────── */
+#dbDecisionFlowSteps {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+  gap: 10px !important;
+}
+#dbDecisionFlowSteps > div {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 13px !important;
+  padding: 16px 13px !important;
+  min-width: 0 !important;
+  box-shadow: 0 10px 26px -22px rgba(0, 0, 0, 0.85);
+  transition: transform 0.2s cubic-bezier(.2,.7,.3,1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+#dbDecisionFlowSteps > div:hover {
+  transform: translateY(-3px);
+  border-color: rgba(212, 175, 85, 0.32) !important;
+  box-shadow: 0 18px 36px -22px rgba(0, 0, 0, 0.9);
+}
+#dbDecisionFlowSteps > div > div:first-child { color: var(--gold-light) !important; font-size: 13px !important; font-weight: 700 !important; margin-bottom: 5px !important; }
+#dbDecisionFlowSteps > div > div:last-child { color: rgba(255, 255, 255, 0.5) !important; font-size: 10.5px !important; line-height: 1.45 !important; }
+/* final "Recommend" step — gold highlight */
+#dbDecisionFlowSteps > div:last-child {
+  background: linear-gradient(160deg, rgba(212, 175, 85, 0.24), rgba(184, 150, 46, 0.05)) !important;
+  border-color: rgba(212, 175, 85, 0.38) !important;
+  box-shadow: 0 12px 28px -16px rgba(212, 175, 85, 0.45) !important;
+}
+#dbDecisionFlowSteps > div:last-child > div:last-child { color: rgba(255, 255, 255, 0.65) !important; }
+
+/* ── Info boxes (Core rule / Sample check) ────────────────────────────────── */
+.db-info-box { border-radius: 13px !important; padding: 14px 16px !important; line-height: 1.6 !important; }
+.db-info-box.gold {
+  background: linear-gradient(135deg, rgba(212, 175, 85, 0.13), rgba(184, 150, 46, 0.035)) !important;
+  border: 1px solid rgba(212, 175, 85, 0.26) !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+}
+.db-info-box.gold svg { color: var(--gold-light) !important; }
+.db-info-box.gold b, .db-info-box.gold strong { color: var(--gold-light) !important; }
+.db-info-box.warning {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+.db-info-box.warning b, .db-info-box.warning strong { color: var(--gold-light) !important; }
+.db-info-box.warning svg { color: var(--gold-light) !important; }
+
+/* ── Branch performance bars ──────────────────────────────────────────────── */
+.db-bar-list { gap: 20px !important; }
+.db-bar-row { align-items: center !important; }
+.db-bar-label { font-weight: 600 !important; color: rgba(255, 255, 255, 0.92) !important; letter-spacing: 0.01em; }
+.db-bar-track { height: 10px !important; background: rgba(255, 255, 255, 0.07) !important; border-radius: 99px !important; }
+.db-bar-fill { box-shadow: 0 0 14px -2px rgba(212, 175, 85, 0.5) !important; }
+.db-bar-val { color: var(--gold-light) !important; font-weight: 700 !important; font-variant-numeric: tabular-nums; }
+
+/* responsive: flow tiles stack neatly on small cards */
+@media (max-width: 640px) {
+  #dbDecisionFlowSteps { grid-template-columns: repeat(2, 1fr) !important; }
+}

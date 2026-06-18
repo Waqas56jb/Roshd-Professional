@@ -1,0 +1,140 @@
+/* ============================================================================
+   ROSHD — Dashboard header + filter bar — thin, solid, single-row filters
+   Additive, visuals only, loaded last. SOLID backgrounds (no bleed-through),
+   compact heights, and ONE horizontally-scrolling filter row so the KPI cards
+   sit right below. Structure & JS hooks untouched.
+   ============================================================================ */
+
+/* ── Header bar (thin) ────────────────────────────────────────────────────── */
+.db-topbar {
+  height: 56px !important;
+  padding: 0 24px !important;
+  background: linear-gradient(180deg, #16244a, #111d3a) !important;
+  border-bottom: 1px solid rgba(212, 175, 85, 0.18) !important;
+  box-shadow: 0 8px 22px -20px rgba(0, 0, 0, 0.9) !important;
+  position: relative; z-index: 6;
+}
+.db-page-title {
+  font-family: 'Cormorant Garamond', serif !important;
+  font-size: clamp(18px, 1.6vw, 22px) !important;
+  font-weight: 600 !important; color: #fff !important; line-height: 1.05 !important;
+}
+html[data-lang="ar"] .db-page-title { font-family: 'Cairo', sans-serif !important; font-weight: 700 !important; font-size: 18px !important; }
+.db-breadcrumb {
+  font-size: 9px !important; letter-spacing: 0.15em !important; text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.4) !important; margin-top: 2px !important;
+}
+html[data-lang="ar"] .db-breadcrumb { letter-spacing: 0 !important; }
+.db-breadcrumb span { color: var(--gold-light) !important; }
+
+.db-topbar-menu-btn {
+  width: 34px; height: 34px; border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09); background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.7); display: grid; place-items: center; cursor: pointer; transition: all 0.2s ease;
+}
+.db-topbar-menu-btn:hover { color: var(--gold-light); border-color: rgba(212, 175, 85, 0.4); background: rgba(212, 175, 85, 0.08); }
+
+/* language segmented pill */
+.lang-toggle-nav {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 3px !important; border-radius: 99px !important;
+  background: rgba(255, 255, 255, 0.05) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.lang-toggle-nav .lang-nav-btn {
+  border: none !important; background: transparent !important;
+  padding: 5px 13px !important; border-radius: 99px !important;
+  font-size: 11.5px !important; font-weight: 700 !important; letter-spacing: 0.03em !important;
+  color: rgba(255, 255, 255, 0.6) !important; cursor: pointer; min-width: 40px; text-align: center; transition: all 0.2s ease !important;
+}
+.lang-toggle-nav .lang-nav-btn:hover { color: #fff !important; }
+.lang-toggle-nav .lang-nav-btn.active {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light)) !important;
+  color: var(--navy-deep) !important; box-shadow: 0 4px 12px -4px rgba(212, 175, 85, 0.7) !important;
+}
+.db-topbar-btn { width: 34px !important; height: 34px !important; border-radius: 10px !important; }
+.db-topbar-btn:hover { background: rgba(212, 175, 85, 0.1) !important; }
+
+/* ── Filter bar (one thin solid row) ──────────────────────────────────────── */
+.db-filter-bar {
+  padding: 8px 24px 9px !important;
+  background: linear-gradient(180deg, #15203f, #121b37) !important; /* opaque */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07) !important;
+  gap: 0 14px !important;
+  align-items: center !important;
+  position: relative; z-index: 5;
+}
+.db-filter-bar__lead { gap: 9px; align-self: center; }
+.db-filter-bar__lead::before {
+  content: ''; width: 3px; height: 18px; border-radius: 99px;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold)); flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(212, 175, 85, 0.5);
+}
+.db-filter-bar__title {
+  font-size: 9px !important; letter-spacing: 0.18em !important; font-weight: 700 !important;
+  color: var(--gold-light) !important; opacity: 0.85;
+}
+html[data-lang="ar"] .db-filter-bar__title { letter-spacing: 0 !important; }
+
+/* single scrolling row */
+.db-filter-bar-scroll-outer { overflow-x: auto !important; overflow-y: visible !important; scrollbar-width: none; }
+.db-filter-bar-scroll-outer::-webkit-scrollbar { height: 0 !important; display: none; }
+.db-filter-bar-inner { flex-wrap: nowrap !important; max-width: none !important; padding: 1px 0 !important; gap: 0 12px !important; }
+.db-filter-chip { gap: 0 !important; flex: 0 0 146px !important; width: 146px !important; max-width: 146px !important; }
+.db-filter-chip-lbl {
+  font-size: 8.5px !important; letter-spacing: 0.1em !important; font-weight: 700 !important;
+  color: rgba(255, 255, 255, 0.42) !important; margin-bottom: 3px !important;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+html[data-lang="ar"] .db-filter-chip-lbl { letter-spacing: 0 !important; }
+
+.db-filter-chip-select-wrap { border-radius: 9px !important; }
+.db-filter-chip-select-wrap:focus-within { box-shadow: 0 0 0 3px rgba(212, 175, 85, 0.16) !important; }
+.db-select {
+  height: 34px !important;
+  padding: 0 28px 0 11px !important;
+  border-radius: 9px !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-size: 12px !important; font-weight: 500 !important; color: rgba(255, 255, 255, 0.92) !important;
+  background-position: right 10px center !important; background-size: 12px 12px !important;
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease !important;
+}
+html[data-lang="ar"] .db-select { padding: 0 11px 0 28px !important; background-position: left 10px center !important; }
+.db-select:hover { border-color: rgba(212, 175, 85, 0.4) !important; background-color: rgba(255, 255, 255, 0.065) !important; }
+.db-select:focus, .db-select:focus-visible { border-color: rgba(212, 175, 85, 0.7) !important; box-shadow: 0 0 0 3px rgba(212, 175, 85, 0.16) !important; }
+
+.db-filter-bar__trail { gap: 8px !important; align-self: center; }
+.db-period-badge--filter {
+  height: 30px; display: inline-flex; align-items: center;
+  padding: 0 12px !important; border-radius: 99px !important;
+  background: rgba(212, 175, 85, 0.1) !important; border: 1px solid rgba(212, 175, 85, 0.3) !important;
+  color: var(--gold-light) !important; font-size: 10px !important; font-weight: 700 !important; letter-spacing: 0.04em;
+}
+.db-export-btn {
+  height: 34px !important; padding: 0 15px !important; border-radius: 9px !important;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light)) !important;
+  color: var(--navy-deep) !important; border: none !important;
+  font-size: 12px !important; font-weight: 700 !important;
+  box-shadow: 0 6px 16px -8px rgba(212, 175, 85, 0.6) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease !important;
+}
+.db-export-btn:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 10px 22px -8px rgba(212, 175, 85, 0.78) !important; }
+.db-export-btn svg { stroke: var(--navy-deep) !important; }
+
+/* ── Responsiveness ───────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .db-topbar { padding: 0 16px !important; }
+  .db-filter-bar { padding: 8px 16px 9px !important; }
+}
+@media (max-width: 768px) {
+  .db-topbar { height: 54px !important; padding: 0 13px !important; }
+  .db-page-title { font-size: 17px !important; }
+  .db-breadcrumb { display: none; }
+  .db-filter-bar { padding: 8px 13px 9px !important; }
+  .db-filter-chip { flex: 0 0 150px !important; width: 150px !important; }
+  .db-select { height: 38px !important; font-size: 12.5px !important; }
+}
+@media (max-width: 640px) {
+  .db-topbar-right { gap: 8px !important; }
+  .db-export-btn { padding: 0 13px !important; }
+}

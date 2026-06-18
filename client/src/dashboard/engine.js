@@ -311,6 +311,27 @@ function dbInjectRegionOptions(cfg) {
   return cfg;
 }
 
+/** Branch options come from the Branches master (/api/regions → branches), so
+ *  adding/removing a branch in the admin reflects in the customer Branch filter. */
+function dbInjectBranchOptions(cfg) {
+  if (!cfg || !Array.isArray(cfg.filters)) return cfg;
+  const bf = cfg.filters.find((f) => f && f.key === 'branch');
+  if (!bf) return cfg;
+  const list = Array.isArray(window.__ROSHD_BRANCH_LIST__) ? window.__ROSHD_BRANCH_LIST__ : [];
+  if (list.length) {
+    bf.options = list
+      .filter((b) => b && b.is_active !== false)
+      .map((b) => ({
+        value: String(b.name_en || b.name || b.slug || '').trim(),
+        labelEn: String(b.name_en || b.name || b.slug || '').trim(),
+        labelAr: String(b.name_ar || b.name_en || b.slug || '').trim(),
+        active: true,
+      }))
+      .filter((o) => o.value);
+  }
+  return cfg;
+}
+
 function dbDeepCloneJson(x) {
   try { return JSON.parse(JSON.stringify(x)); } catch (_) { return dbDefaultFilterBarConfig(); }
 }
@@ -372,7 +393,10 @@ function dbGetFilterBarConfig() {
   const rl = Array.isArray(window.__ROSHD_REGION_LIST__) ? window.__ROSHD_REGION_LIST__ : [];
   let rkey = rl.length + '|';
   for (let i = 0; i < rl.length; i++) rkey += ((rl[i] && rl[i].slug) || '') + ',';
-  const key = raw + '' + rkey;
+  const bl = Array.isArray(window.__ROSHD_BRANCH_LIST__) ? window.__ROSHD_BRANCH_LIST__ : [];
+  let bkey = bl.length + '|';
+  for (let i = 0; i < bl.length; i++) bkey += ((bl[i] && (bl[i].name_en || bl[i].slug)) || '') + (bl[i] && bl[i].is_active !== false ? '+' : '-') + ',';
+  const key = raw + rkey + bkey;
   if (key === __fbCfgKey && __fbCfgVal) return __fbCfgVal;
   let cfg;
   try {
@@ -381,6 +405,7 @@ function dbGetFilterBarConfig() {
     cfg = dbDefaultFilterBarConfig();
   }
   cfg = dbInjectRegionOptions(cfg);
+  cfg = dbInjectBranchOptions(cfg);
   __fbCfgKey = key;
   __fbCfgVal = cfg;
   return cfg;
@@ -623,6 +648,8 @@ async function dbSyncRegionsFromApi() {
         .filter(Boolean);
     });
     window.__ROSHD_REGION_BRANCHES__ = map;
+    // Flat list of ALL branches (incl. region-less) → drives the Branch filter.
+    try { window.__ROSHD_BRANCH_LIST__ = Array.isArray(data.branches) ? data.branches : []; } catch (_) {}
     dbBuildCustomerFilterBar();
   } catch (_) {}
 }
@@ -3027,6 +3054,22 @@ window.addEventListener('scroll', () => {
 })();
 
   /* ════════════ END verbatim dashboard logic ════════════ */
+
+  // Live-sync with the admin: the admin app runs on a different origin, so
+  // BroadcastChannel/localStorage events don't cross to it. When the customer
+  // dashboard tab regains focus/visibility, re-pull all admin-controlled config
+  // so changes (new filters/options, model values, content) appear immediately
+  // — no manual reload needed. (roshdLiveRefresh is debounced internally.)
+  try {
+    const __roshdResyncIfOpen = () => {
+      const db = document.getElementById('customerDashboard');
+      if (db && db.classList.contains('open') && typeof roshdLiveRefresh === 'function') roshdLiveRefresh();
+    };
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') __roshdResyncIfOpen();
+    });
+    window.addEventListener('focus', __roshdResyncIfOpen);
+  } catch (_) {}
 
   // Handlers referenced by inline on* attributes — in the static markup AND in
   // dynamically generated HTML (filter selects, simulator sliders) — plus the

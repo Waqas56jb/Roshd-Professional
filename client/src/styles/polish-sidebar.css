@@ -1,0 +1,108 @@
+/* ============================================================================
+   ROSHD — Left side panel (dashboard sidebar) — modern redesign
+   Additive, visuals only. Loaded last so it wins over earlier sidebar rules.
+   Structure & JS hooks untouched (.db-sidebar / .db-brand / .db-user-strip /
+   .db-nav-item / .db-sidebar-footer / .db-logout-btn).
+   ============================================================================ */
+
+/* ── Canvas: deep layered gradient with a soft gold crown glow ─────────────── */
+.db-sidebar {
+  width: 270px !important;
+  background:
+    radial-gradient(130% 70% at 50% -8%, rgba(212, 175, 85, 0.10), transparent 58%),
+    linear-gradient(180deg, #0d1830 0%, #0a1124 55%, #070c18 100%) !important;
+  border-inline-end: 1px solid rgba(212, 175, 85, 0.16) !important;
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03), 6px 0 40px -24px rgba(0, 0, 0, 0.8) !important;
+}
+html[data-lang="ar"] .db-sidebar { border-inline-end: none !important; border-inline-start: 1px solid rgba(212, 175, 85, 0.16) !important; }
+
+/* ── Brand ────────────────────────────────────────────────────────────────── */
+.db-brand {
+  padding: 24px 20px 20px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+.db-brand img { height: 40px !important; filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.55)); }
+.db-brand-text strong { font-size: 18px !important; letter-spacing: 0.14em !important; color: #fff !important; }
+.db-brand-text small { color: var(--gold-light) !important; letter-spacing: 0.24em !important; opacity: 0.9; }
+
+/* ── User chip: floating glass card ───────────────────────────────────────── */
+.db-user-strip {
+  margin: 14px 14px 4px !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)) !important;
+  box-shadow: 0 14px 30px -22px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+.db-avatar {
+  width: 42px !important; height: 42px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 0 0 2px rgba(212, 175, 85, 0.4), 0 8px 18px -6px rgba(212, 175, 85, 0.6) !important;
+}
+.db-user-name { font-weight: 700 !important; font-size: 13.5px !important; }
+.db-user-role { color: var(--gold-light) !important; opacity: 0.85; letter-spacing: 0.14em !important; }
+
+/* ── Section labels ───────────────────────────────────────────────────────── */
+.db-nav-section {
+  font-size: 10px !important;
+  letter-spacing: 0.26em !important;
+  color: rgba(255, 255, 255, 0.3) !important;
+  padding: 18px 18px 8px !important;
+  font-weight: 700 !important;
+}
+html[data-lang="ar"] .db-nav-section { letter-spacing: 0 !important; }
+
+/* ── Nav items: pill rows with smooth micro-interaction ───────────────────── */
+.db-nav-item {
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  gap: 13px !important;
+  margin: 2px 6px !important;
+  width: auto !important;
+  color: rgba(255, 255, 255, 0.66) !important;
+  font-weight: 500 !important;
+  transition: background 0.22s ease, color 0.22s ease, transform 0.2s cubic-bezier(.2,.7,.3,1), box-shadow 0.22s ease !important;
+}
+.db-nav-item svg { opacity: 0.65; transition: opacity 0.2s ease, color 0.2s ease, transform 0.2s ease; }
+.db-nav-item:hover {
+  background: rgba(255, 255, 255, 0.055) !important;
+  color: #fff !important;
+  transform: translateX(3px) !important;
+}
+html[data-lang="ar"] .db-nav-item:hover { transform: translateX(-3px) !important; }
+.db-nav-item:hover svg { opacity: 1; color: var(--gold-light); }
+
+/* Active — premium gradient pill with glowing accent */
+.db-nav-item.active {
+  background: linear-gradient(135deg, rgba(212, 175, 85, 0.24), rgba(184, 150, 46, 0.06)) !important;
+  color: #fff !important;
+  border: 1px solid rgba(212, 175, 85, 0.34) !important;
+  box-shadow: 0 10px 26px -12px rgba(212, 175, 85, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+  transform: none !important;
+}
+.db-nav-item.active svg { opacity: 1; color: var(--gold-light); }
+.db-nav-item.active::before {
+  content: '' !important;
+  width: 3px !important;
+  top: 24% !important; bottom: 24% !important;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold)) !important;
+  box-shadow: 0 0 12px rgba(212, 175, 85, 0.85) !important;
+  border-radius: 0 99px 99px 0 !important;
+}
+html[data-lang="ar"] .db-nav-item.active::before { border-radius: 99px 0 0 99px !important; }
+
+/* ── Footer / logout ──────────────────────────────────────────────────────── */
+.db-sidebar-footer { padding: 14px !important; border-top: 1px solid rgba(255, 255, 255, 0.06) !important; }
+.db-logout-btn {
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(220, 38, 38, 0.18) !important;
+  background: rgba(220, 38, 38, 0.05) !important;
+  font-weight: 600 !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+}
+.db-logout-btn:hover { background: rgba(220, 38, 38, 0.13) !important; border-color: rgba(220, 38, 38, 0.32) !important; }
+
+/* ── Refined scrollbar inside the nav ─────────────────────────────────────── */
+.db-nav::-webkit-scrollbar, nav.db-nav::-webkit-scrollbar { width: 5px; }
+.db-nav::-webkit-scrollbar-thumb, nav.db-nav::-webkit-scrollbar-thumb { background: rgba(212, 175, 85, 0.28); border-radius: 99px; }
